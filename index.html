@@ -3295,23 +3295,24 @@ body.in-session #end-session-dashboard { display: flex; }
   };
 
   function inferSessionName(entries) {
+    if (!Array.isArray(entries) || entries.length === 0) return 'Workout';
     // Quick-logged sessions take priority
-    const quick = entries.find(s => s.exercise && s.exercise.startsWith('Quick:'));
+    const quick = entries.find(s =>
+      s && typeof s.exercise === 'string' && s.exercise.startsWith('Quick:'));
     if (quick) {
       const raw = quick.exercise.replace('Quick: ', '').trim();
-      // Add "Day" suffix where it makes sense
       if (raw === 'Push') return 'Push Day';
       if (raw === 'Pull') return 'Pull Day';
-      return raw; // "Arms + Shoulders", "Cardio", custom
+      return raw || 'Workout';
     }
     // Infer from logged muscle groups
-    const gs = new Set(entries.map(s => (s.group || '').toLowerCase()));
+    const gs = new Set(entries.map(s => (s && s.group || '').toLowerCase()));
     if (gs.has('cardio')) return 'Cardio';
     if (gs.has('chest') && gs.has('back')) return 'Chest / Back';
     if (gs.has('chest')) return 'Push Day';
     if (gs.has('back') && !gs.has('chest')) return 'Pull Day';
     if (gs.has('biceps') || gs.has('triceps')) return 'Arms + Shoulders';
-    return entries[0]?.group || 'Workout';
+    return (entries[0] && entries[0].group) || 'Workout';
   }
 
   const GROUP_EMOJI = { Chest: '💪', Back: '🏋', Shoulders: '🔺', Biceps: '💪', Triceps: '💪', Cardio: '🏃' };
@@ -3354,7 +3355,12 @@ body.in-session #end-session-dashboard { display: flex; }
       });
       Object.values(best).forEach(s => {
         const emoji = GROUP_EMOJI[s.group] || '🏋';
-        const weightLabel = (s.weight === 0 || s.weight == null) ? 'BW' : s.weight + ' kg';
+        // Label: Cardio entries → "Done"; weight 0 → "BW"; otherwise the weight
+        const isCardio = (s.group || '').toLowerCase() === 'cardio';
+        let weightLabel;
+        if (isCardio) weightLabel = 'Done';
+        else if (s.weight === 0 || s.weight == null) weightLabel = 'BW';
+        else weightLabel = s.weight + ' kg';
         const row = document.createElement('div');
         row.className = 'detail-row';
         row.innerHTML = `
@@ -3379,19 +3385,29 @@ body.in-session #end-session-dashboard { display: flex; }
         const toRemove = new Set();
         if (quickKey) toRemove.add(quickKey);
         (loggedEntries || []).forEach(s => toRemove.add(s.exercise));
-        // Remove matching entries from global session list
+        // Remove matching entries from global session list (date + exercise match)
         d2.sessions = (d2.sessions || []).filter(s =>
-          !(s.date === date && toRemove.has(s.exercise))
+          !(s.date === date && s.exercise && toRemove.has(s.exercise))
         );
-        // Also clean per-exercise session history
+        // Also clean per-exercise session history for that date
         (loggedEntries || []).forEach(s => {
-          if (d2.exercises[s.exercise]?.sessions) {
+          if (d2.exercises && d2.exercises[s.exercise] && d2.exercises[s.exercise].sessions) {
             d2.exercises[s.exercise].sessions =
               d2.exercises[s.exercise].sessions.filter(es => es.date !== date);
           }
         });
+        // If we deleted the currently active session, also end it
+        const deletedActiveSession = d2.activeSession &&
+          quickKey && d2.activeSession.exerciseKey === quickKey;
+        if (deletedActiveSession) {
+          d2.activeSession = null;
+        }
         saveData(d2);
         closeAllSheets();
+        if (deletedActiveSession) {
+          // Fully reset dashboard out of in-session mode
+          setSwipeIdle();
+        }
         renderSessionLog();
         renderFrequency();
         showToast('Session deleted');
@@ -3444,38 +3460,46 @@ body.in-session #end-session-dashboard { display: flex; }
 
     const slots = [];
     Object.keys(byDate).sort((a, b) => b.localeCompare(a)).forEach(date => {
-      const dayEntries = byDate[date];
+      const dayEntries = byDate[date]; // chronological (push order)
 
-      // Unique Quick: keys in order of first appearance
-      const quickKeys = [];
-      const seen = new Set();
+      // Chronological assignment: each weight entry attaches to the most
+      // recently started Quick: session on the same day. Entries logged
+      // before any Quick: marker go into a manual-only bucket. This avoids
+      // double-counting exercises whose muscle group overlaps multiple
+      // session types (e.g., Triceps appearing in both Push and Arms).
+      const slotsByKey = new Map();
+      let manualSlot = null;
+      let currentKey = null;
+
       dayEntries.forEach(s => {
-        if (s.exercise.startsWith('Quick:') && !seen.has(s.exercise)) {
-          quickKeys.push(s.exercise);
-          seen.add(s.exercise);
+        const isQuick = typeof s.exercise === 'string' && s.exercise.startsWith('Quick:');
+        if (isQuick) {
+          if (!slotsByKey.has(s.exercise)) {
+            slotsByKey.set(s.exercise, {
+              date, quickKey: s.exercise,
+              allEntries: [], loggedEntries: []
+            });
+          }
+          currentKey = s.exercise;
+          slotsByKey.get(s.exercise).allEntries.push(s);
+        } else {
+          // Logged exercise — attach to current Quick: session, or manual bucket
+          if (currentKey && slotsByKey.has(currentKey)) {
+            const slot = slotsByKey.get(currentKey);
+            slot.loggedEntries.push(s);
+            slot.allEntries.push(s);
+          } else {
+            if (!manualSlot) {
+              manualSlot = { date, quickKey: null, allEntries: [], loggedEntries: [] };
+            }
+            manualSlot.loggedEntries.push(s);
+            manualSlot.allEntries.push(s);
+          }
         }
       });
 
-      // All explicitly logged exercises (not Quick: markers), any weight
-      const loggedEntries = dayEntries.filter(s => !s.exercise.startsWith('Quick:'));
-
-      if (quickKeys.length > 0) {
-        quickKeys.forEach(qk => {
-          const qEntries = dayEntries.filter(s => s.exercise === qk);
-          const sessionGroups = new Set(qEntries.map(s => s.group).filter(Boolean));
-          // One Quick: session → all logged entries belong to it
-          // Multiple → only entries whose group overlaps with this session
-          const slotLogged = quickKeys.length === 1
-            ? loggedEntries
-            : loggedEntries.filter(s => sessionGroups.has(s.group));
-          slots.push({ date, quickKey: qk, allEntries: [...qEntries, ...slotLogged], loggedEntries: slotLogged });
-        });
-      }
-
-      // Manual-only slot (logged exercises, no Quick: on this date)
-      if (quickKeys.length === 0 && loggedEntries.length > 0) {
-        slots.push({ date, quickKey: null, allEntries: loggedEntries, loggedEntries });
-      }
+      slotsByKey.forEach(slot => slots.push(slot));
+      if (manualSlot) slots.push(manualSlot);
     });
 
     // ── Active session filter ──────────────────────────────────────────────────
@@ -3551,10 +3575,18 @@ body.in-session #end-session-dashboard { display: flex; }
     renderExerciseLists();
     renderFrequency();
     initSwipeLog();
-    // Restore session state if a session was already active
-    if (d.activeSession) {
+    // Restore session state if a session was already active and still valid
+    const stored = d.activeSession;
+    const validActive = stored && typeof stored === 'object' &&
+      typeof stored.displayName === 'string' &&
+      (typeof stored.name === 'string' || typeof stored.exerciseKey === 'string');
+    if (validActive) {
       document.body.classList.add('in-session');
-      requestAnimationFrame(() => setSwipeSession(d.activeSession.displayName, d.activeSession.dayKey ?? null));
+      requestAnimationFrame(() => setSwipeSession(stored.displayName, stored.dayKey ?? null));
+    } else if (stored) {
+      // Corrupted activeSession — clear it so the UI isn't stuck in-session
+      d.activeSession = null;
+      saveData(d);
     }
   }
   boot();
