@@ -3317,7 +3317,7 @@ body.in-session #end-session-dashboard { display: flex; }
   const GROUP_EMOJI = { Chest: '💪', Back: '🏋', Shoulders: '🔺', Biceps: '💪', Triceps: '💪', Cardio: '🏃' };
 
   function openSessionDetail(slot, sessionName) {
-    const { date, quickKey, allEntries: entries, weightEntries } = slot;
+    const { date, quickKey, allEntries: entries, loggedEntries } = slot;
     const sheetDetail = document.getElementById('sheet-session-detail');
     const overlay     = document.getElementById('sheet-overlay');
     if (!sheetDetail) return;
@@ -3333,8 +3333,8 @@ body.in-session #end-session-dashboard { display: flex; }
     const list = document.getElementById('detail-list');
     list.innerHTML = '';
 
-    if (weightEntries.length === 0) {
-      // Quick-logged only: show targeted muscle groups
+    if (!loggedEntries || loggedEntries.length === 0) {
+      // Quick-logged only — show targeted muscle groups as a summary
       const quick = entries.find(s => s.exercise && s.exercise.startsWith('Quick:'));
       if (quick) {
         const groups = [...new Set(entries.filter(s => s.group).map(s => s.group))];
@@ -3347,13 +3347,14 @@ body.in-session #end-session-dashboard { display: flex; }
         list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
       }
     } else {
-      // Show weight exercises — deduplicate by name, keep highest weight
+      // Show all logged exercises — deduplicate by name, keep highest weight
       const best = {};
-      weightEntries.forEach(s => {
+      loggedEntries.forEach(s => {
         if (!best[s.exercise] || s.weight > best[s.exercise].weight) best[s.exercise] = s;
       });
       Object.values(best).forEach(s => {
         const emoji = GROUP_EMOJI[s.group] || '🏋';
+        const weightLabel = (s.weight === 0 || s.weight == null) ? 'BW' : s.weight + ' kg';
         const row = document.createElement('div');
         row.className = 'detail-row';
         row.innerHTML = `
@@ -3362,7 +3363,7 @@ body.in-session #end-session-dashboard { display: flex; }
             <div class="detail-row-name">${escapeHtml(s.exercise)}</div>
             <div class="detail-row-group">${escapeHtml(s.group || '')}</div>
           </div>
-          <div class="detail-row-weight">${s.weight} kg</div>
+          <div class="detail-row-weight">${weightLabel}</div>
         `;
         list.appendChild(row);
       });
@@ -3375,16 +3376,15 @@ body.in-session #end-session-dashboard { display: flex; }
       oldBtn.replaceWith(btn);
       btn.addEventListener('click', () => {
         const d2 = loadData();
-        // Collect all exercise keys belonging to this slot
         const toRemove = new Set();
         if (quickKey) toRemove.add(quickKey);
-        weightEntries.forEach(s => toRemove.add(s.exercise));
-        // Remove from global sessions list
+        (loggedEntries || []).forEach(s => toRemove.add(s.exercise));
+        // Remove matching entries from global session list
         d2.sessions = (d2.sessions || []).filter(s =>
           !(s.date === date && toRemove.has(s.exercise))
         );
-        // Also clean per-exercise history
-        weightEntries.forEach(s => {
+        // Also clean per-exercise session history
+        (loggedEntries || []).forEach(s => {
           if (d2.exercises[s.exercise]?.sessions) {
             d2.exercises[s.exercise].sessions =
               d2.exercises[s.exercise].sessions.filter(es => es.date !== date);
@@ -3410,9 +3410,8 @@ body.in-session #end-session-dashboard { display: flex; }
     const data = loadData();
     const active = data.activeSession || null;
 
-    const allEntries = (data.sessions || []).filter(s =>
-      s && s.exercise && s.date &&
-      (s.weight > 0 || s.exercise.startsWith('Quick:')));
+    // Include all explicitly logged entries (Quick: markers + any named exercise)
+    const allEntries = (data.sessions || []).filter(s => s && s.exercise && s.date);
 
     container.innerHTML = '';
 
@@ -3457,24 +3456,25 @@ body.in-session #end-session-dashboard { display: flex; }
         }
       });
 
-      const weightEntries = dayEntries.filter(s => s.weight > 0);
+      // All explicitly logged exercises (not Quick: markers), any weight
+      const loggedEntries = dayEntries.filter(s => !s.exercise.startsWith('Quick:'));
 
       if (quickKeys.length > 0) {
         quickKeys.forEach(qk => {
           const qEntries = dayEntries.filter(s => s.exercise === qk);
           const sessionGroups = new Set(qEntries.map(s => s.group).filter(Boolean));
-          // One Quick: session → all weight entries belong to it
+          // One Quick: session → all logged entries belong to it
           // Multiple → only entries whose group overlaps with this session
-          const wEntries = quickKeys.length === 1
-            ? weightEntries
-            : weightEntries.filter(s => sessionGroups.has(s.group));
-          slots.push({ date, quickKey: qk, allEntries: [...qEntries, ...wEntries], weightEntries: wEntries });
+          const slotLogged = quickKeys.length === 1
+            ? loggedEntries
+            : loggedEntries.filter(s => sessionGroups.has(s.group));
+          slots.push({ date, quickKey: qk, allEntries: [...qEntries, ...slotLogged], loggedEntries: slotLogged });
         });
       }
 
-      // Manual-only slot (weight exercises, no Quick: on this date)
-      if (quickKeys.length === 0 && weightEntries.length > 0) {
-        slots.push({ date, quickKey: null, allEntries: weightEntries, weightEntries });
+      // Manual-only slot (logged exercises, no Quick: on this date)
+      if (quickKeys.length === 0 && loggedEntries.length > 0) {
+        slots.push({ date, quickKey: null, allEntries: loggedEntries, loggedEntries });
       }
     });
 
@@ -3495,7 +3495,7 @@ body.in-session #end-session-dashboard { display: flex; }
     tl.className = 'session-tl';
 
     visibleSlots.slice(0, 30).forEach(slot => {
-      const { date, allEntries: entries, weightEntries: wEntries } = slot;
+      const { date, allEntries: entries, loggedEntries: lEntries } = slot;
       const d = new Date(date + 'T00:00:00');
       const sessionName = inferSessionName(entries);
 
@@ -3509,9 +3509,9 @@ body.in-session #end-session-dashboard { display: flex; }
       const absLabel = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
       const dateLabel = (relLabel === 'Today' || relLabel === 'Yesterday') ? relLabel : absLabel;
 
-      // Weight pill: shows exercise count if any weights were logged
-      const weightPill = wEntries.length > 0
-        ? `<div class="session-tl-weights">${wEntries.length} exercise${wEntries.length !== 1 ? 's' : ''} logged</div>`
+      // Exercise pill: shows count of individually logged exercises
+      const weightPill = lEntries && lEntries.length > 0
+        ? `<div class="session-tl-weights">${lEntries.length} exercise${lEntries.length !== 1 ? 's' : ''} logged</div>`
         : '';
 
       const item = document.createElement('div');
