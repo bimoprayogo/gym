@@ -8,8 +8,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Gym Tracker">
 <title>Gym Tracker</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B0B0F'/%3E%3Cpath d='M44 22 a16 16 0 1 0 0 20 M44 32 L34 32' stroke='%23FFFFFF' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='44' cy='32' r='3.2' fill='%237C3AED'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B0B0F'/%3E%3Cpath d='M44 22 a16 16 0 1 0 0 20 M44 32 L34 32' stroke='%23FFFFFF' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='44' cy='32' r='3.2' fill='%237C3AED'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1144,7 +1146,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .quick-log-card {
   margin-top: 18px;
   background: var(--white);
-  border: 1px solid var(--grey-150);
   border-radius: 22px;
   padding: 6px;
 }
@@ -1341,6 +1342,65 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   content: 'Custom · ';
   color: var(--accent);
   font-weight: 700;
+}
+
+/* ===== Session history (per-date log) ===== */
+.session-log-list { margin-top: 4px; }
+.session-day-group { margin-bottom: 14px; }
+.session-day-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.session-day-date {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--grey-400);
+}
+.session-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.session-day-line { flex: 1; height: 1px; background: var(--grey-150); }
+.session-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--grey-50);
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+.session-entry-icon {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--charcoal); color: white;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 13px;
+}
+.session-entry-icon.chest   { background: #3B82F6; }
+.session-entry-icon.back    { background: #10B981; }
+.session-entry-icon.shoulders { background: #F59E0B; }
+.session-entry-icon.biceps  { background: #8B5CF6; }
+.session-entry-icon.triceps { background: #EC4899; }
+.session-entry-icon.cardio  { background: #EF4444; }
+.session-entry-body { flex: 1; min-width: 0; }
+.session-entry-name {
+  font-size: 12px; font-weight: 700; color: var(--charcoal);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.session-entry-meta {
+  font-size: 10px; font-weight: 600; color: var(--grey-400);
+  margin-top: 1px; letter-spacing: 0.2px;
+}
+.session-entry-weight {
+  font-size: 11px; font-weight: 700; color: var(--charcoal);
+  background: var(--grey-150); padding: 3px 8px; border-radius: 100px;
+  flex-shrink: 0; letter-spacing: -0.2px;
+}
+.session-log-empty {
+  text-align: center; padding: 24px 0;
+  font-size: 12px; font-weight: 600; color: var(--grey-400);
+  line-height: 1.6;
 }
 
 /* Remove (custom) button inside log sheet */
@@ -1884,6 +1944,19 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
               </div>
             </div>
 
+            <!-- Per-date session log -->
+            <div class="chart-card" style="margin-top:10px;">
+              <div class="chart-head">
+                <div>
+                  <div class="chart-title">Session Log</div>
+                  <div class="chart-sub">Every logged weight · by date</div>
+                </div>
+              </div>
+              <div class="session-log-list" id="session-log-list">
+                <div class="session-log-empty">No sessions logged yet.<br>Tap an exercise to log your weight.</div>
+              </div>
+            </div>
+
           </section>
 
           <!-- SETTINGS -->
@@ -2316,7 +2389,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     });
     const active = document.querySelector('.view.active');
     if (active) active.scrollTop = 0;
-    if (name === 'stats') renderFrequency();
+    if (name === 'stats') { renderFrequency(); renderSessionLog(); }
     tap();
   }
   navItems.forEach(item => item.addEventListener('click', () => switchView(item.dataset.target)));
@@ -2879,6 +2952,83 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       list.appendChild(row);
     });
     document.getElementById('freq-total-num').innerHTML = totalDone + '<span class="of"> / ' + totalTarget + '</span>';
+  }
+
+  // ─── Session log (per-date) ───────────────────────────────────────────────────
+  const GROUP_ICON = {
+    Chest: { emoji: '💪', cls: 'chest' },
+    Back: { emoji: '🏋', cls: 'back' },
+    Shoulders: { emoji: '🔺', cls: 'shoulders' },
+    Biceps: { emoji: '💪', cls: 'biceps' },
+    Triceps: { emoji: '💪', cls: 'triceps' },
+    Cardio: { emoji: '🏃', cls: 'cardio' },
+  };
+
+  function renderSessionLog() {
+    const container = document.getElementById('session-log-list');
+    if (!container) return;
+    const data = loadData();
+    const allSessions = (data.sessions || []).filter(s => s.weight > 0 || s.exercise.startsWith('Quick:'));
+
+    if (allSessions.length === 0) {
+      container.innerHTML = '<div class="session-log-empty">No sessions logged yet.<br>Tap an exercise to log your weight.</div>';
+      return;
+    }
+
+    // Group by date, most-recent first
+    const byDate = {};
+    allSessions.forEach(s => {
+      if (!byDate[s.date]) byDate[s.date] = [];
+      byDate[s.date].push(s);
+    });
+    const sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+
+    container.innerHTML = '';
+    sortedDates.slice(0, 14).forEach(date => {
+      const entries = byDate[date];
+      const group = document.createElement('div');
+      group.className = 'session-day-group';
+
+      // Header row: dot · date label · line
+      const header = document.createElement('div');
+      header.className = 'session-day-header';
+      const formattedDate = formatDate(date);
+      const rawDate = new Date(date + 'T00:00:00');
+      const fullLabel = rawDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      header.innerHTML = `
+        <span class="session-day-dot"></span>
+        <span class="session-day-date">${formattedDate === 'Today' || formattedDate === 'Yesterday' ? formattedDate + ' · ' + fullLabel : fullLabel}</span>
+        <span class="session-day-line"></span>
+      `;
+      group.appendChild(header);
+
+      // One row per logged exercise (deduplicated by exercise name within date)
+      const seen = new Set();
+      entries.forEach(s => {
+        const key = s.exercise + '|' + s.date;
+        if (seen.has(key)) return;
+        seen.add(key);
+
+        const info = GROUP_ICON[s.group] || { emoji: '🏋', cls: 'back' };
+        const isQuick = s.exercise.startsWith('Quick:');
+        const displayName = isQuick ? s.exercise.replace('Quick: ', '') + ' Session' : s.exercise;
+        const weightLabel = s.weight > 0 ? s.weight + ' kg' : s.group;
+
+        const entry = document.createElement('div');
+        entry.className = 'session-entry';
+        entry.innerHTML = `
+          <div class="session-entry-icon ${info.cls}">${info.emoji}</div>
+          <div class="session-entry-body">
+            <div class="session-entry-name">${escapeHtml(displayName)}</div>
+            <div class="session-entry-meta">${s.group}</div>
+          </div>
+          ${!isQuick ? `<div class="session-entry-weight">${weightLabel}</div>` : ''}
+        `;
+        group.appendChild(entry);
+      });
+
+      container.appendChild(group);
+    });
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────────
