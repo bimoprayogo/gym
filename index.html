@@ -1110,17 +1110,30 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 
 @media (max-width: 480px) {
-  body { background: var(--white); }
-  .stage { padding: 0; min-height: 100dvh; align-items: stretch; }
+  /* Lock the entire page so only the inner .view scrolls */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .stage {
+    padding: 0;
+    height: 100%;
+    min-height: unset;
+    align-items: stretch;
+  }
   .phone-frame {
     width: 100%;
-    height: 100dvh;
+    height: 100%;
     border-radius: 0;
     padding: 0;
     box-shadow: none;
     background: var(--white);
   }
-  .phone-screen { border-radius: 0; }
+  .phone-screen {
+    border-radius: 0;
+    height: 100%;
+  }
   .dynamic-island { display: none; }
   .status-bar { display: none; }
   .home-indicator { display: none; }
@@ -1129,8 +1142,11 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   }
   .bottom-nav {
     position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     height: auto;
-    padding: 12px 22px calc(env(safe-area-inset-bottom, 12px) + 12px);
+    padding: 12px 22px calc(env(safe-area-inset-bottom, 0px) + 12px);
   }
   .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 110px); }
   .sheet { border-radius: 28px 28px 0 0; }
