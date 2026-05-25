@@ -1454,6 +1454,45 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   line-height: 1.6;
 }
 
+/* Active session banner */
+.session-active-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--accent);
+  border-radius: 18px;
+  padding: 13px 14px 13px 16px;
+  margin-bottom: 20px;
+}
+.session-active-info { flex: 1; min-width: 0; }
+.session-active-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.session-active-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+  letter-spacing: 0.1px;
+}
+.session-active-end {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  border: none;
+  border-radius: 100px;
+  padding: 6px 13px;
+  flex-shrink: 0;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: background 0.15s;
+}
+.session-active-end:active { background: rgba(255,255,255,0.32); }
+
 /* Remove (custom) button inside log sheet */
 .remove-block {
   margin-top: 16px;
@@ -2834,6 +2873,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
         const data = loadData();
         const date = todayISO();
         info.groups.forEach(group => data.sessions.push({ date, exercise: 'Quick: ' + info.name, group, weight: 0 }));
+        const displayNames = { Push: 'Push Day', Pull: 'Pull Day', 'Arms + Shoulders': 'Arms + Shoulders', Cardio: 'Cardio' };
+        data.activeSession = { name: info.name, displayName: displayNames[info.name] || info.name };
         saveData(data);
         renderFrequency();
         renderSessionLog();
@@ -3068,10 +3109,34 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     const container = document.getElementById('session-log-list');
     if (!container) return;
     const data = loadData();
+    const active = data.activeSession || null;
     const allSessions = (data.sessions || []).filter(s => s.weight > 0 || s.exercise.startsWith('Quick:'));
 
+    container.innerHTML = '';
+
+    // Active session banner
+    if (active) {
+      const banner = document.createElement('div');
+      banner.className = 'session-active-banner';
+      banner.innerHTML = `
+        <div class="session-active-info">
+          <div class="session-active-name">${escapeHtml(active.displayName)}</div>
+          <div class="session-active-sub">Showing ${escapeHtml(active.displayName)} history</div>
+        </div>
+        <button class="session-active-end">End session</button>
+      `;
+      banner.querySelector('.session-active-end').addEventListener('click', () => {
+        const d = loadData();
+        d.activeSession = null;
+        saveData(d);
+        renderSessionLog();
+        tap();
+      });
+      container.appendChild(banner);
+    }
+
     if (allSessions.length === 0) {
-      container.innerHTML = '<div class="session-log-empty">No sessions logged yet.<br>Tap an exercise to log your weight.</div>';
+      container.insertAdjacentHTML('beforeend', '<div class="session-log-empty">No sessions logged yet.<br>Swipe to log today\'s session.</div>');
       return;
     }
 
@@ -3081,9 +3146,18 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       if (!byDate[s.date]) byDate[s.date] = [];
       byDate[s.date].push(s);
     });
-    const sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+    let sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
 
-    container.innerHTML = '';
+    // Filter to active session type when a session is active
+    if (active) {
+      sortedDates = sortedDates.filter(date => inferSessionName(byDate[date]) === active.displayName);
+    }
+
+    if (sortedDates.length === 0) {
+      container.insertAdjacentHTML('beforeend', `<div class="session-log-empty">No ${escapeHtml(active?.displayName || '')} sessions yet.<br>This is your first one!</div>`);
+      return;
+    }
+
     const tl = document.createElement('div');
     tl.className = 'session-tl';
 
@@ -3091,18 +3165,15 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       const entries = byDate[date];
       const d = new Date(date + 'T00:00:00');
 
-      // Session name
       const sessionName = inferSessionName(entries);
 
-      // Unique muscle groups for subtitle (exclude cardio duplicates, keep readable)
       const groupSet = new Set();
       entries.forEach(s => { if (s.group) groupSet.add(s.group); });
       const groupList = [...groupSet];
 
-      // Date parts
       const dayNum  = d.getDate();
       const weekday = d.toLocaleDateString(undefined, { weekday: 'short' });
-      const relLabel = formatDate(date); // "Today", "Yesterday", "3 days ago", etc.
+      const relLabel = formatDate(date);
       const absLabel = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
       const dateLabel = (relLabel === 'Today' || relLabel === 'Yesterday') ? relLabel : absLabel;
 
