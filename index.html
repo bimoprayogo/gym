@@ -1533,6 +1533,28 @@ body.in-session #end-session-dashboard { display: flex; }
   text-align: center; padding: 20px 0;
   font-size: 12px; font-weight: 600; color: var(--grey-400);
 }
+.detail-delete-btn {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 12px 20px 4px;
+  padding: 13px;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+.detail-delete-btn:active { background: rgba(239, 68, 68, 0.16); }
+.session-tl-weights {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 3px;
+}
 .session-tl-item { cursor: pointer; }
 .session-tl-card:active { opacity: 0.75; }
 
@@ -2489,6 +2511,7 @@ body.in-session #end-session-dashboard { display: flex; }
           </div>
           <div class="detail-meta" id="detail-meta"></div>
           <div id="detail-list"></div>
+          <button id="detail-delete-btn" class="detail-delete-btn">Delete session</button>
         </div>
 
         <div class="toast" id="toast">
@@ -3293,9 +3316,10 @@ body.in-session #end-session-dashboard { display: flex; }
 
   const GROUP_EMOJI = { Chest: '💪', Back: '🏋', Shoulders: '🔺', Biceps: '💪', Triceps: '💪', Cardio: '🏃' };
 
-  function openSessionDetail(date, sessionName, entries) {
-    const sheetDetail  = document.getElementById('sheet-session-detail');
-    const overlay      = document.getElementById('sheet-overlay');
+  function openSessionDetail(slot, sessionName) {
+    const { date, quickKey, allEntries: entries, weightEntries } = slot;
+    const sheetDetail = document.getElementById('sheet-session-detail');
+    const overlay     = document.getElementById('sheet-overlay');
     if (!sheetDetail) return;
 
     // Header
@@ -3305,13 +3329,12 @@ body.in-session #end-session-dashboard { display: flex; }
     document.getElementById('detail-title').textContent = sessionName;
     document.getElementById('detail-meta').textContent = fullDate;
 
-    // Exercise rows — only manual logs with weight > 0
+    // Exercise rows
     const list = document.getElementById('detail-list');
     list.innerHTML = '';
-    const logged = entries.filter(s => s.weight > 0);
 
-    if (logged.length === 0) {
-      // For quick-logged sessions, show the muscle groups that were targeted
+    if (weightEntries.length === 0) {
+      // Quick-logged only: show targeted muscle groups
       const quick = entries.find(s => s.exercise && s.exercise.startsWith('Quick:'));
       if (quick) {
         const groups = [...new Set(entries.filter(s => s.group).map(s => s.group))];
@@ -3324,9 +3347,9 @@ body.in-session #end-session-dashboard { display: flex; }
         list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
       }
     } else {
-      // Deduplicate by exercise (keep highest weight if dupes)
+      // Show weight exercises — deduplicate by name, keep highest weight
       const best = {};
-      logged.forEach(s => {
+      weightEntries.forEach(s => {
         if (!best[s.exercise] || s.weight > best[s.exercise].weight) best[s.exercise] = s;
       });
       Object.values(best).forEach(s => {
@@ -3337,11 +3360,42 @@ body.in-session #end-session-dashboard { display: flex; }
           <div class="detail-row-icon">${emoji}</div>
           <div class="detail-row-info">
             <div class="detail-row-name">${escapeHtml(s.exercise)}</div>
-            <div class="detail-row-group">${escapeHtml(s.group)}</div>
+            <div class="detail-row-group">${escapeHtml(s.group || '')}</div>
           </div>
           <div class="detail-row-weight">${s.weight} kg</div>
         `;
         list.appendChild(row);
+      });
+    }
+
+    // Delete button — clone to clear old listeners
+    const oldBtn = document.getElementById('detail-delete-btn');
+    if (oldBtn) {
+      const btn = oldBtn.cloneNode(true);
+      oldBtn.replaceWith(btn);
+      btn.addEventListener('click', () => {
+        const d2 = loadData();
+        // Collect all exercise keys belonging to this slot
+        const toRemove = new Set();
+        if (quickKey) toRemove.add(quickKey);
+        weightEntries.forEach(s => toRemove.add(s.exercise));
+        // Remove from global sessions list
+        d2.sessions = (d2.sessions || []).filter(s =>
+          !(s.date === date && toRemove.has(s.exercise))
+        );
+        // Also clean per-exercise history
+        weightEntries.forEach(s => {
+          if (d2.exercises[s.exercise]?.sessions) {
+            d2.exercises[s.exercise].sessions =
+              d2.exercises[s.exercise].sessions.filter(es => es.date !== date);
+          }
+        });
+        saveData(d2);
+        closeAllSheets();
+        renderSessionLog();
+        renderFrequency();
+        showToast('Session deleted');
+        tap();
       });
     }
 
@@ -3355,7 +3409,8 @@ body.in-session #end-session-dashboard { display: flex; }
     if (!container) return;
     const data = loadData();
     const active = data.activeSession || null;
-    const allSessions = (data.sessions || []).filter(s =>
+
+    const allEntries = (data.sessions || []).filter(s =>
       s && s.exercise && s.date &&
       (s.weight > 0 || s.exercise.startsWith('Quick:')));
 
@@ -3376,48 +3431,88 @@ body.in-session #end-session-dashboard { display: flex; }
       container.appendChild(banner);
     }
 
-    if (allSessions.length === 0) {
+    if (allEntries.length === 0) {
       container.insertAdjacentHTML('beforeend', '<div class="session-log-empty">No sessions logged yet.<br>Swipe to log today\'s session.</div>');
       return;
     }
 
-    // Group by date, most-recent first
+    // ── Group into session slots: one slot per unique (date, quickKey) ─────────
     const byDate = {};
-    allSessions.forEach(s => {
+    allEntries.forEach(s => {
       if (!byDate[s.date]) byDate[s.date] = [];
       byDate[s.date].push(s);
     });
-    let sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
 
-    // Filter to active session type — use stored exerciseKey (reliable) with fallback
+    const slots = [];
+    Object.keys(byDate).sort((a, b) => b.localeCompare(a)).forEach(date => {
+      const dayEntries = byDate[date];
+
+      // Unique Quick: keys in order of first appearance
+      const quickKeys = [];
+      const seen = new Set();
+      dayEntries.forEach(s => {
+        if (s.exercise.startsWith('Quick:') && !seen.has(s.exercise)) {
+          quickKeys.push(s.exercise);
+          seen.add(s.exercise);
+        }
+      });
+
+      const weightEntries = dayEntries.filter(s => s.weight > 0);
+
+      if (quickKeys.length > 0) {
+        quickKeys.forEach(qk => {
+          const qEntries = dayEntries.filter(s => s.exercise === qk);
+          const sessionGroups = new Set(qEntries.map(s => s.group).filter(Boolean));
+          // One Quick: session → all weight entries belong to it
+          // Multiple → only entries whose group overlaps with this session
+          const wEntries = quickKeys.length === 1
+            ? weightEntries
+            : weightEntries.filter(s => sessionGroups.has(s.group));
+          slots.push({ date, quickKey: qk, allEntries: [...qEntries, ...wEntries], weightEntries: wEntries });
+        });
+      }
+
+      // Manual-only slot (weight exercises, no Quick: on this date)
+      if (quickKeys.length === 0 && weightEntries.length > 0) {
+        slots.push({ date, quickKey: null, allEntries: weightEntries, weightEntries });
+      }
+    });
+
+    // ── Active session filter ──────────────────────────────────────────────────
+    let visibleSlots = slots;
     if (active) {
       const target = active.exerciseKey || ('Quick: ' + active.name);
-      sortedDates = sortedDates.filter(date => byDate[date].some(s => s.exercise === target));
+      visibleSlots = slots.filter(slot => slot.quickKey === target);
     }
 
-    if (sortedDates.length === 0) {
+    if (visibleSlots.length === 0) {
       container.insertAdjacentHTML('beforeend', `<div class="session-log-empty">No ${escapeHtml(active?.displayName || '')} sessions yet.<br>This is your first one!</div>`);
       return;
     }
 
+    // ── Build timeline ─────────────────────────────────────────────────────────
     const tl = document.createElement('div');
     tl.className = 'session-tl';
 
-    sortedDates.slice(0, 20).forEach(date => {
-      const entries = byDate[date];
+    visibleSlots.slice(0, 30).forEach(slot => {
+      const { date, allEntries: entries, weightEntries: wEntries } = slot;
       const d = new Date(date + 'T00:00:00');
-
       const sessionName = inferSessionName(entries);
 
       const groupSet = new Set();
       entries.forEach(s => { if (s.group) groupSet.add(s.group); });
       const groupList = [...groupSet];
 
-      const dayNum  = d.getDate();
-      const weekday = d.toLocaleDateString(undefined, { weekday: 'short' });
+      const dayNum   = d.getDate();
+      const weekday  = d.toLocaleDateString(undefined, { weekday: 'short' });
       const relLabel = formatDate(date);
       const absLabel = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
       const dateLabel = (relLabel === 'Today' || relLabel === 'Yesterday') ? relLabel : absLabel;
+
+      // Weight pill: shows exercise count if any weights were logged
+      const weightPill = wEntries.length > 0
+        ? `<div class="session-tl-weights">${wEntries.length} exercise${wEntries.length !== 1 ? 's' : ''} logged</div>`
+        : '';
 
       const item = document.createElement('div');
       item.className = 'session-tl-item';
@@ -3434,10 +3529,11 @@ body.in-session #end-session-dashboard { display: flex; }
         <div class="session-tl-card">
           <div class="session-tl-name">${escapeHtml(sessionName)}</div>
           ${groupList.length ? `<div class="session-tl-groups">${groupList.map(escapeHtml).join(' · ')}</div>` : ''}
+          ${weightPill}
           <div class="session-tl-date-label">${escapeHtml(dateLabel)}</div>
         </div>
       `;
-      item.addEventListener('click', () => openSessionDetail(date, sessionName, entries));
+      item.addEventListener('click', () => openSessionDetail(slot, sessionName));
       tl.appendChild(item);
     });
 
