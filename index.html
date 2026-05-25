@@ -1222,6 +1222,22 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   transition: opacity 0.15s;
   padding-left: 30px;
 }
+/* Active session locked state */
+.swipe-track.session-on {
+  background: rgba(139, 92, 246, 0.07);
+}
+.swipe-track.session-on .swipe-fill {
+  background: linear-gradient(90deg, rgba(139,92,246,0.25) 0%, rgba(139,92,246,0.55) 100%);
+}
+.swipe-track.session-on .swipe-thumb {
+  background: var(--accent);
+  box-shadow: 0 4px 18px var(--accent-glow);
+}
+.swipe-track.session-on .swipe-label {
+  color: var(--accent);
+  padding-left: 0;
+  padding-right: 60px;
+}
 
 /* + Add exercise button */
 .add-exercise-btn {
@@ -2874,12 +2890,13 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
         const date = todayISO();
         info.groups.forEach(group => data.sessions.push({ date, exercise: 'Quick: ' + info.name, group, weight: 0 }));
         const displayNames = { Push: 'Push Day', Pull: 'Pull Day', 'Arms + Shoulders': 'Arms + Shoulders', Cardio: 'Cardio' };
-        data.activeSession = { name: info.name, displayName: displayNames[info.name] || info.name };
+        const displayName = displayNames[info.name] || info.name;
+        data.activeSession = { name: info.name, displayName };
         saveData(data);
         renderFrequency();
         renderSessionLog();
         closeAllSheets();
-        resetSwipe();
+        setSwipeSession(displayName);
         showToast(info.name + ' session logged ✓');
         setTimeout(() => switchView('log'), 320);
         tap();
@@ -2893,18 +2910,55 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   // ─── Swipe-to-log ─────────────────────────────────────────────────────────────
   let swipeActive = false;
   let swipeStartX = 0;
+  let swipeMode = 'idle'; // 'idle' | 'active'
 
-  function resetSwipe() {
+  function setSwipeIdle() {
     const track = document.getElementById('swipe-track');
     const fill  = document.getElementById('swipe-fill');
     const thumb = document.getElementById('swipe-thumb');
     const label = document.getElementById('swipe-label');
     if (!track) return;
+    swipeMode = 'idle';
     swipeActive = false;
+    thumb.style.transition = 'background 0.2s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
     thumb.style.transform = '';
+    fill.style.transition = 'width 0.35s ease';
     fill.style.width = '0';
     label.style.opacity = '1';
+    label.textContent = 'Swipe to log today\'s session';
+    track.classList.remove('armed', 'session-on');
+  }
+
+  function setSwipeSession(displayName) {
+    const track = document.getElementById('swipe-track');
+    const fill  = document.getElementById('swipe-fill');
+    const thumb = document.getElementById('swipe-thumb');
+    const label = document.getElementById('swipe-label');
+    if (!track) return;
+    swipeMode = 'active';
+    swipeActive = false;
+    const max = track.clientWidth - 56;
+    thumb.style.transition = 'background 0.2s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+    thumb.style.transform = `translateX(${max}px)`;
+    fill.style.transition = 'width 0.35s ease';
+    fill.style.width = '100%';
+    label.style.opacity = '1';
+    label.textContent = '← Slide to end session';
     track.classList.remove('armed');
+    track.classList.add('session-on');
+  }
+
+  // alias kept for cancel button
+  function resetSwipe() { setSwipeIdle(); }
+
+  function endSession() {
+    const d = loadData();
+    d.activeSession = null;
+    saveData(d);
+    setSwipeIdle();
+    renderSessionLog();
+    showToast('Session ended');
+    tap();
   }
 
   function initSwipeLog() {
@@ -2915,20 +2969,39 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     if (!track) return;
 
     function getMax() { return track.clientWidth - 56; }
+
     function applyDrag(clientX) {
       const max = getMax();
-      const dx  = Math.min(max, Math.max(0, clientX - swipeStartX));
-      const pct = dx / max;
-      thumb.style.transform = `translateX(${dx}px)`;
-      fill.style.width = (dx + 56) + 'px';
-      label.style.opacity = pct > 0.3 ? 0 : 1;
-      track.classList.toggle('armed', pct > 0.5);
-      if (pct >= 0.70) {
-        swipeActive = false;
-        thumb.style.transform = `translateX(${max}px)`;
-        fill.style.width = '100%';
-        tap();
-        setTimeout(openQuickLog, 120);
+      thumb.style.transition = 'none';
+      fill.style.transition = 'none';
+
+      if (swipeMode === 'idle') {
+        // Drag RIGHT → log session
+        const dx  = Math.min(max, Math.max(0, clientX - swipeStartX));
+        const pct = dx / max;
+        thumb.style.transform = `translateX(${dx}px)`;
+        fill.style.width = (dx + 56) + 'px';
+        label.style.opacity = pct > 0.3 ? 0 : 1;
+        track.classList.toggle('armed', pct > 0.5);
+        if (pct >= 0.70) {
+          swipeActive = false;
+          thumb.style.transform = `translateX(${max}px)`;
+          fill.style.width = '100%';
+          tap();
+          setTimeout(openQuickLog, 120);
+        }
+      } else {
+        // Drag LEFT → end session
+        const dx  = Math.min(max, Math.max(0, max + (clientX - swipeStartX)));
+        const pct = dx / max; // 1 = far right, 0 = far left
+        thumb.style.transform = `translateX(${dx}px)`;
+        fill.style.width = (dx + 56) + 'px';
+        label.style.opacity = pct < 0.65 ? 1 : 0;
+        track.classList.toggle('armed', pct < 0.5);
+        if (pct <= 0.30) {
+          swipeActive = false;
+          endSession();
+        }
       }
     }
 
@@ -2936,7 +3009,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     thumb.addEventListener('touchstart', e => {
       swipeActive = true;
       swipeStartX = e.touches[0].clientX;
-      track.classList.add('armed');
       e.preventDefault();
     }, { passive: false });
     window.addEventListener('touchmove', e => {
@@ -2945,7 +3017,13 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     }, { passive: true });
     window.addEventListener('touchend', () => {
       if (!swipeActive) return;
-      swipeActive = false; resetSwipe();
+      swipeActive = false;
+      // Snap back to correct state if gesture wasn't completed
+      if (swipeMode === 'idle') {
+        setSwipeIdle();
+      } else {
+        setSwipeSession(loadData().activeSession?.displayName || '');
+      }
     });
 
     // Mouse (desktop)
@@ -2956,7 +3034,13 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       if (!swipeActive) return; applyDrag(e.clientX);
     });
     window.addEventListener('mouseup', () => {
-      if (!swipeActive) return; swipeActive = false; resetSwipe();
+      if (!swipeActive) return;
+      swipeActive = false;
+      if (swipeMode === 'idle') {
+        setSwipeIdle();
+      } else {
+        setSwipeSession(loadData().activeSession?.displayName || '');
+      }
     });
   }
 
@@ -3125,13 +3209,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
         </div>
         <button class="session-active-end">End session</button>
       `;
-      banner.querySelector('.session-active-end').addEventListener('click', () => {
-        const d = loadData();
-        d.activeSession = null;
-        saveData(d);
-        renderSessionLog();
-        tap();
-      });
+      banner.querySelector('.session-active-end').addEventListener('click', () => endSession());
       container.appendChild(banner);
     }
 
@@ -3148,9 +3226,10 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     });
     let sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
 
-    // Filter to active session type when a session is active
+    // Filter to active session type — match by exact exercise name (reliable)
     if (active) {
-      sortedDates = sortedDates.filter(date => inferSessionName(byDate[date]) === active.displayName);
+      const target = 'Quick: ' + active.name;
+      sortedDates = sortedDates.filter(date => byDate[date].some(s => s.exercise === target));
     }
 
     if (sortedDates.length === 0) {
@@ -3211,6 +3290,10 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     renderExerciseLists();
     renderFrequency();
     initSwipeLog();
+    // Restore swipe to locked state if a session is already active
+    if (d.activeSession) {
+      requestAnimationFrame(() => setSwipeSession(d.activeSession.displayName));
+    }
   }
   boot();
 
