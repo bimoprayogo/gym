@@ -2921,13 +2921,15 @@ body.in-session #end-session-dashboard { display: flex; }
         const date = todayISO();
         info.groups.forEach(group => data.sessions.push({ date, exercise: 'Quick: ' + info.name, group, weight: 0 }));
         const displayNames = { Push: 'Push Day', Pull: 'Pull Day', 'Arms + Shoulders': 'Arms + Shoulders', Cardio: 'Cardio' };
+        const dayKeys     = { Push: 'push', Pull: 'pull', 'Arms + Shoulders': 'arms-shoulder', Cardio: null };
         const displayName = displayNames[info.name] || info.name;
-        data.activeSession = { name: info.name, displayName };
+        const dayKey      = dayKeys[info.name] ?? null;
+        data.activeSession = { name: info.name, displayName, dayKey };
         saveData(data);
         renderFrequency();
         renderSessionLog();
         closeAllSheets();
-        setSwipeSession(displayName);
+        setSwipeSession(displayName, dayKey);
         showToast(info.name + ' session logged ✓');
         setTimeout(() => switchView('log'), 320);
         tap();
@@ -2962,9 +2964,11 @@ body.in-session #end-session-dashboard { display: flex; }
     label.textContent = 'Swipe to log today\'s session';
     track.classList.remove('armed', 'session-on');
     document.body.classList.remove('in-session');
+    // Restore all workout cards
+    document.querySelectorAll('.workout-card').forEach(card => card.style.display = '');
   }
 
-  function setSwipeSession(displayName) {
+  function setSwipeSession(displayName, dayKey) {
     const track = document.getElementById('swipe-track');
     const fill  = document.getElementById('swipe-fill');
     const thumb = document.getElementById('swipe-thumb');
@@ -2982,6 +2986,13 @@ body.in-session #end-session-dashboard { display: flex; }
     track.classList.remove('armed');
     track.classList.add('session-on');
     document.body.classList.add('in-session');
+    // Show only the matching workout card, hide the rest
+    document.querySelectorAll('.workout-card').forEach(card => {
+      const match = !dayKey || card.dataset.day === dayKey;
+      card.style.display = match ? '' : 'none';
+      // Ensure the active card is expanded
+      if (match && dayKey) card.classList.remove('collapsed');
+    });
   }
 
   // alias kept for cancel button
@@ -3058,7 +3069,7 @@ body.in-session #end-session-dashboard { display: flex; }
       if (swipeMode === 'idle') {
         setSwipeIdle();
       } else {
-        setSwipeSession(loadData().activeSession?.displayName || '');
+        const _s = loadData().activeSession; setSwipeSession(_s?.displayName || '', _s?.dayKey ?? null);
       }
     });
 
@@ -3075,7 +3086,7 @@ body.in-session #end-session-dashboard { display: flex; }
       if (swipeMode === 'idle') {
         setSwipeIdle();
       } else {
-        setSwipeSession(loadData().activeSession?.displayName || '');
+        const _s = loadData().activeSession; setSwipeSession(_s?.displayName || '', _s?.dayKey ?? null);
       }
     });
   }
@@ -3329,7 +3340,7 @@ body.in-session #end-session-dashboard { display: flex; }
     // Restore session state if a session was already active
     if (d.activeSession) {
       document.body.classList.add('in-session');
-      requestAnimationFrame(() => setSwipeSession(d.activeSession.displayName));
+      requestAnimationFrame(() => setSwipeSession(d.activeSession.displayName, d.activeSession.dayKey ?? null));
     }
   }
   boot();
