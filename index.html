@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Gym Tracker">
 <title>Gym Tracker</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B0B0F'/%3E%3Cpath d='M44 22 a16 16 0 1 0 0 20 M44 32 L34 32' stroke='%23FFFFFF' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='44' cy='32' r='3.2' fill='%237C3AED'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B0B0F'/%3E%3Cpath d='M44 22 a16 16 0 1 0 0 20 M44 32 L34 32' stroke='%23FFFFFF' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='44' cy='32' r='3.2' fill='%237C3AED'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1137,6 +1139,229 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   .card-title { font-size: 15px; }
   .weight-number { font-size: 44px; }
 }
+
+/* ===== Quick log swipe card ===== */
+.quick-log-card {
+  margin-top: 18px;
+  background: var(--white);
+  border: 1px solid var(--grey-150);
+  border-radius: 22px;
+  padding: 6px;
+}
+.swipe-track {
+  height: 56px;
+  background: var(--grey-100);
+  border-radius: 100px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.swipe-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-pale) 60%, rgba(139, 92, 246, 0.35) 100%);
+  border-radius: 100px;
+  pointer-events: none;
+  transition: width 0.25s ease;
+}
+.swipe-track.armed .swipe-fill { transition: none; }
+.swipe-thumb {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--charcoal);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  cursor: grab;
+  touch-action: none;
+  transition: background 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.swipe-thumb:active { cursor: grabbing; }
+.swipe-track.armed .swipe-thumb { background: var(--accent); box-shadow: 0 4px 18px var(--accent-glow); }
+.swipe-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--grey-500);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  padding-left: 30px;
+}
+
+/* + Add exercise button */
+.add-exercise-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0 4px;
+  background: transparent;
+  color: var(--grey-500);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px dashed var(--grey-200);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.add-exercise-btn:active {
+  background: var(--grey-50);
+  color: var(--charcoal);
+  border-color: var(--grey-300);
+  transform: scale(0.98);
+}
+
+/* Form fields in sheets */
+.text-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--grey-200);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--charcoal);
+  background: var(--grey-50);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: white;
+  box-shadow: 0 0 0 3px var(--accent-pale);
+}
+.text-input::placeholder { color: var(--grey-400); font-weight: 500; }
+
+/* Group selector chips */
+.group-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.group-btn {
+  padding: 8px 14px;
+  background: var(--grey-100);
+  color: var(--grey-500);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  transition: all 0.15s;
+}
+.group-btn:active { transform: scale(0.94); }
+.group-btn.on { background: var(--charcoal); color: white; }
+
+.sheet-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--grey-100);
+}
+.sheet-row-2col .sheet-block-label { margin-bottom: 10px; }
+
+/* Quick log category grid */
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+.quick-btn {
+  background: var(--grey-50);
+  border: 1px solid var(--grey-150);
+  border-radius: 18px;
+  padding: 16px 14px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.15s;
+  min-height: 130px;
+}
+.quick-btn:active {
+  transform: scale(0.97);
+  background: var(--accent-pale);
+  border-color: var(--accent);
+}
+.quick-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--charcoal);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.quick-btn[data-cat="push"] .quick-icon {
+  background: var(--accent);
+  box-shadow: 0 4px 12px -4px var(--accent-glow);
+}
+.quick-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--charcoal);
+  letter-spacing: -0.2px;
+  margin-top: auto;
+  line-height: 1.15;
+}
+.quick-sub {
+  font-size: 10px;
+  color: var(--grey-500);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Custom exercise badge */
+.exercise-item.custom .exercise-sub::before {
+  content: 'Custom · ';
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Remove (custom) button inside log sheet */
+.remove-block {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--grey-100);
+  text-align: center;
+}
+.btn-remove {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--danger);
+  padding: 9px 16px;
+  border-radius: 100px;
+  background: rgba(239, 68, 68, 0.08);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+.btn-remove:active { background: rgba(239, 68, 68, 0.15); }
 </style>
 </head>
 <body>
@@ -1233,13 +1458,23 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
               </div>
             </div>
 
+            <div class="quick-log-card">
+              <div class="swipe-track" id="swipe-track">
+                <div class="swipe-fill" id="swipe-fill"></div>
+                <div class="swipe-thumb" id="swipe-thumb">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                <div class="swipe-label" id="swipe-label">Swipe to log today's session</div>
+              </div>
+            </div>
+
             <div class="section-head">
               <div class="section-title">This Week's Sessions</div>
-              <div class="section-action">3 routines</div>
+              <div class="section-action">4 routines</div>
             </div>
 
             <!-- Card 1: PUSH -->
-            <div class="workout-card" data-day="mon-thu">
+            <div class="workout-card" data-day="push">
               <div class="card-head">
                 <div class="cat-icon accent">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1252,7 +1487,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
                 </div>
                 <div class="card-title-area">
                   <div class="card-days-row"><div class="card-days">Mon · Thu</div></div>
-                  <div class="card-title">Workout A <span class="pipe">|</span> Push</div>
+                  <div class="card-title">Push Day</div>
                   <div class="card-subtitle">Chest · Shoulders · Triceps</div>
                 </div>
                 <button class="chevron-btn" aria-label="Toggle">
@@ -1264,32 +1499,24 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
               <div class="collapsible">
                 <div class="focus-notes">
                   <span class="focus-dot"></span>
-                  HNP Safe <span class="sep">|</span> Recovery 90–120s
+                  Push Focus <span class="sep">|</span> Recovery 90–120s
                 </div>
                 <div class="exercise-list">
-                  <div class="exercise-item" data-exercise="Incline DB Press" data-group="Chest" data-target="3–4 × 6–8" data-note="Hold 20kg for 3×8 before progressing">
+                  <div class="exercise-item" data-exercise="Incline DB Press" data-group="Chest" data-target="3 × 15–20" data-note="15kg high-rep volume set">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Incline DB Press</div>
-                      <div class="exercise-sub">3–4 × 6–8</div>
+                      <div class="exercise-sub">3 × 15–20</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">20</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">15</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Chest Press · Machine" data-group="Chest" data-target="3 × 8–10">
+                  <div class="exercise-item" data-exercise="Chest Press · Machine" data-group="Chest" data-target="3 × 8–10" data-note="Currently at 4 reps — build to 10">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Chest Press · Machine</div>
                       <div class="exercise-sub">3 × 8–10</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">40</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-                  </div>
-                  <div class="exercise-item" data-exercise="DB Shoulder Press" data-group="Shoulders" data-target="3 × 8–10">
-                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
-                    <div class="exercise-info">
-                      <div class="exercise-name">DB Shoulder Press</div>
-                      <div class="exercise-sub">3 × 8–10</div>
-                    </div>
-                    <div class="exercise-weight"><span class="w-val">12</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">17.5</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                   <div class="exercise-item" data-exercise="Pec Deck Fly" data-group="Chest" data-target="3 × 10–15">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
@@ -1297,9 +1524,17 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
                       <div class="exercise-name">Pec Deck Fly</div>
                       <div class="exercise-sub">3 × 10–15</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">35</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">52</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Lateral Raise" data-group="Shoulders" data-target="4 × 15–20" data-note="Spam 7kg">
+                  <div class="exercise-item" data-exercise="DB Shoulder Press" data-group="Shoulders" data-target="3 × 8–10">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">DB Shoulder Press</div>
+                      <div class="exercise-sub">3 × 8–10</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">20</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Lateral Raise" data-group="Shoulders" data-target="4 × 15–20" data-note="Spam reps · 7kg">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Lateral Raise</div>
@@ -1307,20 +1542,20 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
                     </div>
                     <div class="exercise-weight"><span class="w-val">7</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Tricep Pushdown" data-group="Triceps" data-target="3 × 10–12">
+                  <div class="exercise-item" data-exercise="Tricep Pushdown" data-group="Triceps" data-target="3 × 10–12" data-note="Currently at 6 reps — build to 12">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Tricep Pushdown</div>
                       <div class="exercise-sub">3 × 10–12</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">25</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">18</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Card 2: PULL -->
-            <div class="workout-card" data-day="tue-fri">
+            <div class="workout-card" data-day="pull">
               <div class="card-head">
                 <div class="cat-icon dark">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1334,7 +1569,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
                 </div>
                 <div class="card-title-area">
                   <div class="card-days-row"><div class="card-days">Tue · Fri</div></div>
-                  <div class="card-title">Workout B <span class="pipe">|</span> Pull</div>
+                  <div class="card-title">Pull Day</div>
                   <div class="card-subtitle">Back · Biceps · Rear Delts</div>
                 </div>
                 <button class="chevron-btn" aria-label="Toggle">
@@ -1346,24 +1581,32 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
               <div class="collapsible">
                 <div class="focus-notes">
                   <span class="focus-dot"></span>
-                  HNP Safe <span class="sep">|</span> Recovery 90–120s
+                  Pull Focus <span class="sep">|</span> Recovery 90s
                 </div>
                 <div class="exercise-list">
-                  <div class="exercise-item" data-exercise="Lat Pulldown" data-group="Back" data-target="4 × 8–10">
+                  <div class="exercise-item" data-exercise="Cable Row" data-group="Back" data-target="3 × 8–12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Cable Row</div>
+                      <div class="exercise-sub">3 × 8–12</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">39</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Lat Pulldown" data-group="Back" data-target="4 × 8–10" data-note="Currently at 3 reps — build to 10">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Lat Pulldown</div>
                       <div class="exercise-sub">4 × 8–10</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">45</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">52</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Cable / Machine Row" data-group="Back" data-target="3 × 8–12">
+                  <div class="exercise-item" data-exercise="Machine Row" data-group="Back" data-target="3 × 8–12">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
-                      <div class="exercise-name">Cable / Machine Row</div>
+                      <div class="exercise-name">Machine Row</div>
                       <div class="exercise-sub">3 × 8–12</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">40</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">17.5</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                   <div class="exercise-item" data-exercise="Reverse Pec Deck" data-group="Back" data-target="3 × 12–15">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
@@ -1371,48 +1614,40 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
                       <div class="exercise-name">Reverse Pec Deck</div>
                       <div class="exercise-sub">3 × 12–15</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">30</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">32</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Standard Bicep Curl" data-group="Biceps" data-target="3 × 10–12">
+                  <div class="exercise-item" data-exercise="Bicep Curl" data-group="Biceps" data-target="3 × 10–12">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
-                      <div class="exercise-name">Standard Bicep Curl</div>
+                      <div class="exercise-name">Bicep Curl</div>
                       <div class="exercise-sub">3 × 10–12</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">10</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">15</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Hammer Curl" data-group="Biceps" data-target="3 × 10–12">
+                  <div class="exercise-item" data-exercise="Seated Opt. Curl" data-group="Biceps" data-target="2 × 12–15" data-note="Seated incline · optimal stretch">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
-                      <div class="exercise-name">Hammer Curl</div>
-                      <div class="exercise-sub">3 × 10–12</div>
-                    </div>
-                    <div class="exercise-weight"><span class="w-val">10</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-                  </div>
-                  <div class="exercise-item" data-exercise="Seated Opt. Bicep Curl" data-group="Biceps" data-target="2 × 12–15">
-                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
-                    <div class="exercise-info">
-                      <div class="exercise-name">Seated Opt. Bicep Curl</div>
+                      <div class="exercise-name">Seated Opt. Curl</div>
                       <div class="exercise-sub">2 × 12–15</div>
                     </div>
-                    <div class="exercise-weight"><span class="w-val">8</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">10</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Card 3: RECOVERY -->
-            <div class="workout-card" data-day="wed-sat">
+            <!-- Card 3: CHEST/BACK -->
+            <div class="workout-card" data-day="chest-back">
               <div class="card-head">
                 <div class="cat-icon">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    <path d="M6.5 6.5h11M6.5 6.5v11M17.5 6.5v11M6.5 17.5h11M9 12h6"/>
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days-row"><div class="card-days">Wed · Sat</div></div>
-                  <div class="card-title">Active Recovery</div>
-                  <div class="card-subtitle">Spine-Safe Legs + Treadmill</div>
+                  <div class="card-days-row"><div class="card-days">Wed</div></div>
+                  <div class="card-title">Chest / Back Day</div>
+                  <div class="card-subtitle">Back · Chest · Compound</div>
                 </div>
                 <button class="chevron-btn" aria-label="Toggle">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1423,48 +1658,119 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
               <div class="collapsible">
                 <div class="focus-notes">
                   <span class="focus-dot"></span>
-                  HNP Protection <span class="sep">|</span> Recovery 60s
+                  Full Upper Body <span class="sep">|</span> Recovery 90–120s
                 </div>
                 <div class="exercise-list">
-                  <div class="exercise-item" data-exercise="Glute Bridges · Mat" data-group="Legs" data-target="3 × 15–20" data-bw="1">
+                  <div class="exercise-item" data-exercise="Lat Pulldown · C/B" data-group="Back" data-target="4 × 8–10">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
-                      <div class="exercise-name">Glute Bridges · Mat</div>
-                      <div class="exercise-sub">3 × 15–20</div>
+                      <div class="exercise-name">Lat Pulldown · C/B</div>
+                      <div class="exercise-sub">4 × 8–10</div>
                     </div>
-                    <div class="exercise-weight bw"><span class="w-val">BW</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                    <div class="exercise-weight"><span class="w-val">45</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Bulgarian Split Squats" data-group="Legs" data-target="3 × 10–15 / leg" data-bw="1" data-note="Body weight · per leg">
+                  <div class="exercise-item" data-exercise="Incline DB Press · C/B" data-group="Chest" data-target="3–4 × 6–8" data-note="Currently at 6 reps — build to 8">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
-                      <div class="exercise-name">Bulgarian Split Squats</div>
-                      <div class="exercise-sub">3 × 10–15 / leg</div>
-                    </div>
-                    <div class="exercise-weight bw"><span class="w-val">BW</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-                  </div>
-                  <div class="exercise-item" data-exercise="Seated Leg Extension" data-group="Legs" data-target="3 × 12–15">
-                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
-                    <div class="exercise-info">
-                      <div class="exercise-name">Seated Leg Extension</div>
-                      <div class="exercise-sub">3 × 12–15</div>
-                    </div>
-                    <div class="exercise-weight"><span class="w-val">25</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
-                  </div>
-                  <div class="exercise-item" data-exercise="Lying Leg Curl" data-group="Legs" data-target="3 × 12–15">
-                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
-                    <div class="exercise-info">
-                      <div class="exercise-name">Lying Leg Curl</div>
-                      <div class="exercise-sub">3 × 12–15</div>
+                      <div class="exercise-name">Incline DB Press · C/B</div>
+                      <div class="exercise-sub">3–4 × 6–8</div>
                     </div>
                     <div class="exercise-weight"><span class="w-val">20</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item" data-exercise="Treadmill · Moderate Pace" data-group="Cardio" data-target="20–30 min" data-cardio="1">
+                  <div class="exercise-item" data-exercise="Cable Row · C/B" data-group="Back" data-target="3 × 8–12">
                     <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
-                      <div class="exercise-name">Treadmill · Moderate Pace</div>
-                      <div class="exercise-sub">Cardio</div>
+                      <div class="exercise-name">Cable Row · C/B</div>
+                      <div class="exercise-sub">3 × 8–12</div>
                     </div>
-                    <div class="exercise-weight cardio"><span class="w-val">20–30</span><span class="w-unit">min</span></div>
+                    <div class="exercise-weight"><span class="w-val">15</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Chest Press · C/B" data-group="Chest" data-target="3 × 8–10" data-note="Currently at 4 reps — build to 10">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Chest Press · C/B</div>
+                      <div class="exercise-sub">3 × 8–10</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">17.5</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: ARMS + SHOULDERS -->
+            <div class="workout-card" data-day="arms-shoulder">
+              <div class="card-head">
+                <div class="cat-icon dark">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 4v16M18 4v16"/>
+                    <path d="M6 8h12"/>
+                    <path d="M6 16h12"/>
+                  </svg>
+                </div>
+                <div class="card-title-area">
+                  <div class="card-days-row"><div class="card-days">Sat</div></div>
+                  <div class="card-title">Arms + Shoulders</div>
+                  <div class="card-subtitle">Biceps · Triceps · Shoulders</div>
+                </div>
+                <button class="chevron-btn" aria-label="Toggle">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="collapsible">
+                <div class="focus-notes">
+                  <span class="focus-dot"></span>
+                  Isolation Focus <span class="sep">|</span> Recovery 60–90s
+                </div>
+                <div class="exercise-list">
+                  <div class="exercise-item" data-exercise="Hammer Curl · Cable" data-group="Biceps" data-target="3 × 10–12" data-note="Cable attachment · rope">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Hammer Curl · Cable</div>
+                      <div class="exercise-sub">3 × 10–12</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">11.3</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Bicep Curl · Arms" data-group="Biceps" data-target="3 × 10–12" data-note="Currently at 5 reps — build to 12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Bicep Curl · Arms</div>
+                      <div class="exercise-sub">3 × 10–12</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">12.5</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Tricep Pushdown · Arms" data-group="Triceps" data-target="3 × 10–12" data-note="Currently at 6 reps — build to 12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Tricep Pushdown · Arms</div>
+                      <div class="exercise-sub">3 × 10–12</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">18</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Shoulder Press · Smith" data-group="Shoulders" data-target="3 × 8–10">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Shoulder Press · Smith</div>
+                      <div class="exercise-sub">3 × 8–10</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">7.5</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Lateral Raise · Arms" data-group="Shoulders" data-target="4 × 13–15" data-note="7.5kg × 13 reps currently">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Lateral Raise · Arms</div>
+                      <div class="exercise-sub">4 × 13–15</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">7.5</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+                  </div>
+                  <div class="exercise-item" data-exercise="Reverse Pec Deck · Arms" data-group="Back" data-target="3 × 12–15">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <div class="exercise-info">
+                      <div class="exercise-name">Reverse Pec Deck · Arms</div>
+                      <div class="exercise-sub">3 × 12–15</div>
+                    </div>
+                    <div class="exercise-weight"><span class="w-val">39</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                 </div>
               </div>
@@ -1784,6 +2090,119 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
           </div>
         </div>
 
+        <!-- Add Exercise Sheet -->
+        <div class="sheet" id="sheet-add" role="dialog" aria-modal="true">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header">
+            <div class="sheet-pretitle">EXERCISE</div>
+            <div class="sheet-title">Add Exercise</div>
+            <div class="sheet-subtitle" id="sheet-add-day"></div>
+          </div>
+          <div class="sheet-block">
+            <div class="sheet-block-label">Exercise Name</div>
+            <input id="add-name" type="text" class="text-input" placeholder="e.g. Cable Fly" autocomplete="off" autocorrect="off">
+          </div>
+          <div class="sheet-block" style="margin-top:18px;">
+            <div class="sheet-block-label">Muscle Group</div>
+            <div class="group-grid">
+              <button class="group-btn on" data-group="Chest">Chest</button>
+              <button class="group-btn" data-group="Back">Back</button>
+              <button class="group-btn" data-group="Shoulders">Shoulders</button>
+              <button class="group-btn" data-group="Biceps">Biceps</button>
+              <button class="group-btn" data-group="Triceps">Triceps</button>
+              <button class="group-btn" data-group="Cardio">Cardio</button>
+            </div>
+          </div>
+          <div class="sheet-row-2col">
+            <div>
+              <div class="sheet-block-label">Sets</div>
+              <input id="add-sets" type="text" class="text-input" placeholder="3">
+            </div>
+            <div>
+              <div class="sheet-block-label">Reps</div>
+              <input id="add-reps" type="text" class="text-input" placeholder="8–12">
+            </div>
+          </div>
+          <div class="sheet-block" style="margin-top:18px;">
+            <div class="sheet-block-label">Starting Weight (kg)</div>
+            <input id="add-weight" type="number" class="text-input" placeholder="0" min="0" step="0.5">
+          </div>
+          <div class="sheet-actions">
+            <button class="btn-secondary" id="add-cancel">Cancel</button>
+            <button class="btn-primary" id="add-confirm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Log Sheet -->
+        <div class="sheet" id="sheet-quick" role="dialog" aria-modal="true">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header">
+            <div class="sheet-pretitle">SESSION</div>
+            <div class="sheet-title">What did you train?</div>
+            <div class="sheet-subtitle">Log today's muscle groups</div>
+          </div>
+          <div class="quick-grid">
+            <button class="quick-btn" data-cat="push">
+              <div class="quick-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="9" width="2" height="6" rx="0.5"/>
+                  <rect x="4.5" y="6.5" width="2.5" height="11" rx="0.6"/>
+                  <rect x="8" y="11" width="8" height="2" rx="0.6"/>
+                  <rect x="17" y="6.5" width="2.5" height="11" rx="0.6"/>
+                  <rect x="20" y="9" width="2" height="6" rx="0.5"/>
+                </svg>
+              </div>
+              <div>
+                <div class="quick-name">Push</div>
+                <div class="quick-sub">Chest · Shoulders · Triceps</div>
+              </div>
+            </button>
+            <button class="quick-btn" data-cat="pull">
+              <div class="quick-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 4h18"/>
+                  <path d="M6 4v3"/><path d="M18 4v3"/>
+                  <circle cx="12" cy="9" r="2"/>
+                  <path d="M12 11v6"/>
+                  <path d="M9 20l3-3 3 3"/>
+                </svg>
+              </div>
+              <div>
+                <div class="quick-name">Pull</div>
+                <div class="quick-sub">Back · Biceps · Rear Delts</div>
+              </div>
+            </button>
+            <button class="quick-btn" data-cat="arms">
+              <div class="quick-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 3v18M18 3v18M6 8h12M6 16h12"/>
+                </svg>
+              </div>
+              <div>
+                <div class="quick-name">Arms + Shoulders</div>
+                <div class="quick-sub">Bi · Tri · Shoulders</div>
+              </div>
+            </button>
+            <button class="quick-btn" data-cat="cardio">
+              <div class="quick-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <div>
+                <div class="quick-name">Cardio</div>
+                <div class="quick-sub">Treadmill · HIIT · Run</div>
+              </div>
+            </button>
+          </div>
+          <div class="sheet-actions" style="margin-top:16px;">
+            <button class="btn-secondary" id="quick-cancel">Cancel</button>
+          </div>
+        </div>
+
         <div class="toast" id="toast">
           <span class="toast-dot"></span>
           <span id="toast-text">Saved</span>
@@ -1802,10 +2221,22 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   const STORAGE_KEY = 'gym-tracker-v1';
   const TARGETS = { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 2 };
   const GROUP_ORDER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Cardio'];
+  const QUICK_MAP = {
+    push:   { name: 'Push',             groups: ['Chest', 'Shoulders', 'Triceps'] },
+    pull:   { name: 'Pull',             groups: ['Back', 'Biceps'] },
+    arms:   { name: 'Arms + Shoulders', groups: ['Biceps', 'Triceps', 'Shoulders'] },
+    cardio: { name: 'Cardio',           groups: ['Cardio'] },
+  };
+
+  // ─── Data helpers ────────────────────────────────────────────────────────────
 
   function loadData() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { exercises: {}, sessions: [] }; }
-    catch { return { exercises: {}, sessions: [] }; }
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) ||
+        { exercises: {}, sessions: [], customExercises: {}, profileName: '' };
+    } catch {
+      return { exercises: {}, sessions: [], customExercises: {}, profileName: '' };
+    }
   }
   function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
   function todayISO() { return new Date().toISOString().split('T')[0]; }
@@ -1820,17 +2251,14 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     if (diff < 30) return Math.floor(diff / 7) + ' weeks ago';
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
   function getDefaultWeight(item) {
     const w = item.querySelector('.exercise-weight .w-val');
     const v = w ? w.textContent.trim() : '';
     const n = parseFloat(v);
     return isNaN(n) ? 0 : n;
-  }
-  function getLatestWeight(name, fallback) {
-    const data = loadData();
-    const arr = data.exercises[name]?.sessions || [];
-    if (arr.length === 0) return fallback;
-    return arr[arr.length - 1].weight;
   }
   function logWeight(name, weight, group) {
     const data = loadData();
@@ -1842,6 +2270,29 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   }
   function clearAllData() { localStorage.removeItem(STORAGE_KEY); }
 
+  // ─── Custom exercises ─────────────────────────────────────────────────────────
+  function getCustomExercises(day) {
+    return (loadData().customExercises || {})[day] || [];
+  }
+  function addCustomExercise(day, ex) {
+    const data = loadData();
+    if (!data.customExercises) data.customExercises = {};
+    if (!data.customExercises[day]) data.customExercises[day] = [];
+    ex.id = Date.now() + '-' + Math.random().toString(36).slice(2,7);
+    data.customExercises[day].push(ex);
+    saveData(data);
+    return ex;
+  }
+  function removeCustomExercise(id) {
+    const data = loadData();
+    if (!data.customExercises) return;
+    Object.keys(data.customExercises).forEach(day => {
+      data.customExercises[day] = (data.customExercises[day] || []).filter(e => e.id !== id);
+    });
+    saveData(data);
+  }
+
+  // ─── Toast & haptics ─────────────────────────────────────────────────────────
   const toast = document.getElementById('toast');
   const toastText = document.getElementById('toast-text');
   let toastTimer = null;
@@ -1853,6 +2304,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   }
   function tap() { if (window.navigator?.vibrate) navigator.vibrate(8); }
 
+  // ─── View switching ───────────────────────────────────────────────────────────
   const views = document.querySelectorAll('.view');
   const navItems = document.querySelectorAll('.nav-item');
   function switchView(name) {
@@ -1872,6 +2324,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     el.addEventListener('click', e => { e.stopPropagation(); switchView(el.dataset.go); });
   });
 
+  // ─── Workout card collapse ────────────────────────────────────────────────────
   document.querySelectorAll('.workout-card').forEach(card => {
     card.querySelector('.card-head').addEventListener('click', () => {
       card.classList.toggle('collapsed');
@@ -1879,8 +2332,13 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     });
   });
 
-  const dayMap = { 0: 'wed-sat', 1: 'mon-thu', 2: 'tue-fri', 3: 'wed-sat', 4: 'mon-thu', 5: 'tue-fri', 6: 'wed-sat' };
-  const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  // ─── Today highlight ──────────────────────────────────────────────────────────
+  // dayMap: 0=Sun … 6=Sat  →  card data-day value
+  const dayMap = {
+    0: 'arms-shoulder', 1: 'push', 2: 'pull',
+    3: 'chest-back',    4: 'push', 5: 'pull', 6: 'arms-shoulder'
+  };
+  const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   function applyTodayHighlight() {
     const day = new Date().getDay();
     const target = dayMap[day];
@@ -1901,53 +2359,130 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     });
   }
 
-  function renderExerciseWeights() {
-    document.querySelectorAll('.exercise-item').forEach(item => {
-      const name = item.dataset.exercise;
-      const isCardio = item.dataset.cardio === '1';
-      if (isCardio) return;
-      const isBW = item.dataset.bw === '1';
-      const badge = item.querySelector('.exercise-weight');
-      const wEl = badge.querySelector('.w-val');
-      const data = loadData();
-      const sessions = data.exercises[name]?.sessions || [];
-      if (sessions.length > 0) {
-        const latest = sessions[sessions.length - 1].weight;
-        badge.classList.remove('bw');
-        wEl.textContent = latest === 0 ? 'BW' : latest;
-        let unit = badge.querySelector('.w-unit');
-        if (latest === 0) {
-          if (unit) unit.style.display = 'none';
-        } else {
-          if (!unit) {
-            unit = document.createElement('span');
-            unit.className = 'w-unit';
-            unit.textContent = 'kg';
-            badge.insertBefore(unit, badge.querySelector('.chev'));
-          } else {
-            unit.style.display = '';
-            unit.textContent = 'kg';
-          }
-        }
-        const prev = sessions.length > 1 ? sessions[sessions.length - 2].weight : null;
-        let trend = badge.querySelector('.w-trend');
-        if (prev !== null && latest > prev) {
-          if (!trend) {
-            trend = document.createElement('span');
-            trend.className = 'w-trend';
-            trend.textContent = '↑';
-            const chev = badge.querySelector('.chev');
-            badge.insertBefore(trend, chev);
-          }
-        } else if (trend) {
-          trend.remove();
-        }
+  // ─── Exercise weight badge ────────────────────────────────────────────────────
+  function updateExerciseBadge(item) {
+    if (item.dataset.cardio === '1') return;
+    const badge = item.querySelector('.exercise-weight');
+    const wEl = badge && badge.querySelector('.w-val');
+    if (!wEl) return;
+    const name = item.dataset.exercise;
+    const sessions = (loadData().exercises[name]?.sessions) || [];
+    if (sessions.length === 0) return;
+    const latest = sessions[sessions.length - 1].weight;
+    badge.classList.remove('bw');
+    wEl.textContent = latest === 0 ? 'BW' : latest;
+    let unit = badge.querySelector('.w-unit');
+    if (latest === 0) {
+      if (unit) unit.style.display = 'none';
+    } else {
+      if (!unit) {
+        unit = document.createElement('span');
+        unit.className = 'w-unit';
+        unit.textContent = 'kg';
+        badge.insertBefore(unit, badge.querySelector('.chev'));
+      } else { unit.style.display = ''; unit.textContent = 'kg'; }
+    }
+    const prev = sessions.length > 1 ? sessions[sessions.length - 2].weight : null;
+    let trend = badge.querySelector('.w-trend');
+    if (prev !== null && latest > prev) {
+      if (!trend) {
+        trend = document.createElement('span');
+        trend.className = 'w-trend'; trend.textContent = '↑';
+        badge.insertBefore(trend, badge.querySelector('.chev'));
       }
+    } else if (trend) { trend.remove(); }
+  }
+  function renderExerciseWeights() {
+    document.querySelectorAll('.exercise-item').forEach(updateExerciseBadge);
+  }
+
+  // ─── Dynamic exercise DOM ─────────────────────────────────────────────────────
+  const chevSvg = `<svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+  const checkSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+  function attachExerciseHandlers(item) {
+    // Avoid double-binding
+    if (item._bound) return;
+    item._bound = true;
+    const check = item.querySelector('.ex-check');
+    check.addEventListener('click', e => {
+      e.stopPropagation();
+      item.classList.toggle('done'); tap();
+      if (item.classList.contains('done'))
+        showToast(item.querySelector('.exercise-name').textContent + ' · done');
+    });
+    item.addEventListener('click', () => {
+      if (item.dataset.cardio === '1') {
+        item.classList.toggle('done'); tap();
+        if (item.classList.contains('done')) {
+          const data = loadData();
+          data.sessions.push({ date: todayISO(), exercise: item.dataset.exercise, group: 'Cardio', weight: 0 });
+          saveData(data); renderFrequency(); showToast('Cardio · done');
+        }
+        return;
+      }
+      openSheet(item);
     });
   }
 
-  const sheet = document.getElementById('sheet');
+  function buildExerciseItem(ex, isCustom) {
+    const item = document.createElement('div');
+    item.className = 'exercise-item' + (isCustom ? ' custom' : '');
+    item.dataset.exercise = ex.name;
+    item.dataset.group = ex.group;
+    item.dataset.target = ex.target || '3 × 8–12';
+    if (isCustom) item.dataset.customId = ex.id;
+    const w = ex.weight || 0;
+    item.innerHTML = `
+      <button class="ex-check">${checkSvg}</button>
+      <div class="exercise-info">
+        <div class="exercise-name">${escapeHtml(ex.name)}</div>
+        <div class="exercise-sub">${escapeHtml(ex.target || '3 × 8–12')}</div>
+      </div>
+      <div class="exercise-weight">${w ? `<span class="w-val">${w}</span><span class="w-unit">kg</span>` : `<span class="w-val">BW</span>`}${chevSvg}</div>
+    `;
+    attachExerciseHandlers(item);
+    return item;
+  }
+
+  function buildAddButton(day) {
+    const btn = document.createElement('button');
+    btn.className = 'add-exercise-btn';
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add exercise`;
+    btn.addEventListener('click', e => { e.stopPropagation(); openAddSheet(day); });
+    return btn;
+  }
+
+  function renderExerciseLists() {
+    document.querySelectorAll('.workout-card').forEach(card => {
+      const day = card.dataset.day;
+      const list = card.querySelector('.exercise-list');
+      if (!list) return;
+      // Bind static items (once) and remove stale custom/add elements
+      list.querySelectorAll('.exercise-item.custom, .add-exercise-btn').forEach(el => el.remove());
+      list.querySelectorAll('.exercise-item:not(.custom)').forEach(attachExerciseHandlers);
+      // Inject saved custom exercises
+      getCustomExercises(day).forEach(ex => list.appendChild(buildExerciseItem(ex, true)));
+      list.appendChild(buildAddButton(day));
+    });
+    renderExerciseWeights();
+  }
+
+  // ─── Overlay / close all ──────────────────────────────────────────────────────
   const overlay = document.getElementById('sheet-overlay');
+  let currentItem = null;
+  let addDay = null;
+
+  function closeAllSheets() {
+    document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show'));
+    overlay.classList.remove('show');
+    currentItem = null;
+    addDay = null;
+  }
+  overlay.addEventListener('click', closeAllSheets);
+
+  // ─── Weight log sheet ─────────────────────────────────────────────────────────
+  const sheet = document.getElementById('sheet');
   const sheetPretitle = document.getElementById('sheet-pretitle');
   const sheetTitle = document.getElementById('sheet-title');
   const sheetSubtitle = document.getElementById('sheet-subtitle');
@@ -1962,7 +2497,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   const btnCancel = document.getElementById('btn-cancel');
   const btnLog = document.getElementById('btn-log');
 
-  let currentItem = null;
   let currentWeight = 0;
   let currentStep = 2.5;
   let currentIsBW = false;
@@ -1970,66 +2504,74 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   function openSheet(item) {
     currentItem = item;
     const name = item.dataset.exercise;
-    const group = item.dataset.group;
     const target = item.dataset.target;
     const note = item.dataset.note;
     currentIsBW = item.dataset.bw === '1';
     const card = item.closest('.workout-card');
     const days = card?.querySelector('.card-days')?.textContent || '';
+    const group = item.dataset.group || '';
 
-    sheetPretitle.textContent = (group || '') + ' · ' + days;
+    sheetPretitle.textContent = group + (days ? ' · ' + days : '');
     sheetTitle.textContent = name;
     sheetSubtitle.textContent = target;
 
     if (note) { sheetNoteText.textContent = note; sheetNote.style.display = ''; }
     else { sheetNote.style.display = 'none'; }
 
-    const data = loadData();
-    const sessions = data.exercises[name]?.sessions || [];
-    if (sessions.length > 0) {
-      currentWeight = sessions[sessions.length - 1].weight;
-    } else {
-      currentWeight = currentIsBW ? 0 : getDefaultWeight(item);
+    // Remove button for custom exercises
+    let removeBlock = sheet.querySelector('.remove-block');
+    if (item.dataset.customId) {
+      if (!removeBlock) {
+        removeBlock = document.createElement('div');
+        removeBlock.className = 'remove-block';
+        const btnR = document.createElement('button');
+        btnR.className = 'btn-remove';
+        btnR.textContent = 'Remove exercise';
+        btnR.addEventListener('click', () => {
+          removeCustomExercise(item.dataset.customId);
+          item.remove();
+          closeAllSheets();
+          showToast('Exercise removed');
+        });
+        removeBlock.appendChild(btnR);
+        sheet.querySelector('.sheet-actions').before(removeBlock);
+      }
+      removeBlock.style.display = '';
+    } else if (removeBlock) {
+      removeBlock.style.display = 'none';
     }
+
+    const sessions = (loadData().exercises[name]?.sessions) || [];
+    currentWeight = sessions.length > 0 ? sessions[sessions.length - 1].weight : (currentIsBW ? 0 : getDefaultWeight(item));
     updateWeightDisplay();
     renderHistory(name);
     sheet.classList.add('show');
     overlay.classList.add('show');
   }
 
-  function closeSheet() {
-    sheet.classList.remove('show');
-    overlay.classList.remove('show');
-    currentItem = null;
-  }
-
   function updateWeightDisplay() {
     if (currentIsBW && currentWeight === 0) {
-      weightValueEl.textContent = 'BW';
-      weightUnitLabel.textContent = '';
+      weightValueEl.textContent = 'BW'; weightUnitLabel.textContent = '';
     } else {
       weightValueEl.textContent = currentWeight % 1 === 0 ? currentWeight : currentWeight.toFixed(1);
       weightUnitLabel.textContent = 'kg';
     }
     currentStep = currentWeight < 5 ? 0.5 : (currentWeight < 20 ? 1 : 2.5);
-    weightHelper.textContent = currentIsBW && currentWeight === 0 ? 'Bodyweight · tap + to add load' : ('Step ' + currentStep + ' kg');
+    weightHelper.textContent = (currentIsBW && currentWeight === 0) ? 'Bodyweight · tap + to add load' : ('Step ' + currentStep + ' kg');
   }
 
   stepMinus.addEventListener('click', () => {
     currentWeight = Math.max(0, +(currentWeight - currentStep).toFixed(1));
     if (Math.abs(currentWeight) < 0.01) currentWeight = 0;
-    updateWeightDisplay();
-    tap();
+    updateWeightDisplay(); tap();
   });
   stepPlus.addEventListener('click', () => {
     currentWeight = +(currentWeight + currentStep).toFixed(1);
-    updateWeightDisplay();
-    tap();
+    updateWeightDisplay(); tap();
   });
 
   function renderHistory(name) {
-    const data = loadData();
-    const sessions = (data.exercises[name]?.sessions || []).slice().reverse();
+    const sessions = (loadData().exercises[name]?.sessions || []).slice().reverse();
     historyList.innerHTML = '';
     if (sessions.length === 0) {
       historyList.innerHTML = '<div class="history-empty">No sessions logged yet.<br>Tap "Log session" to start tracking.</div>';
@@ -2040,16 +2582,14 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       let trend = null, delta = 0;
       if (next) {
         delta = +(s.weight - next.weight).toFixed(1);
-        if (delta > 0) trend = 'up';
-        else if (delta < 0) trend = 'down';
-        else trend = 'same';
+        trend = delta > 0 ? 'up' : delta < 0 ? 'down' : 'same';
       }
       const row = document.createElement('div');
       row.className = 'history-row';
       const isToday = s.date === todayISO();
-      const trendHtml = trend === 'up' ? `<div class="history-trend up">↑ +${delta}</div>`
-                     : trend === 'down' ? `<div class="history-trend down">↓ ${delta}</div>`
-                     : trend === 'same' ? `<div class="history-trend same">=</div>` : '';
+      const trendHtml = trend === 'up'   ? `<div class="history-trend up">↑ +${delta}</div>`
+                      : trend === 'down' ? `<div class="history-trend down">↓ ${delta}</div>`
+                      : trend === 'same' ? `<div class="history-trend same">=</div>` : '';
       row.innerHTML = `
         <div class="history-date ${isToday ? 'today' : ''}">${formatDate(s.date)}</div>
         <div class="history-right">
@@ -2061,57 +2601,178 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     });
   }
 
-  btnCancel.addEventListener('click', () => { closeSheet(); tap(); });
+  btnCancel.addEventListener('click', () => { closeAllSheets(); tap(); });
   btnLog.addEventListener('click', () => {
     if (!currentItem) return;
     const name = currentItem.dataset.exercise;
     const group = currentItem.dataset.group;
     logWeight(name, currentWeight, group);
     currentItem.classList.add('done');
-    renderExerciseWeights();
+    updateExerciseBadge(currentItem);
     renderFrequency();
     showToast(name + ' · ' + (currentWeight === 0 ? 'BW' : currentWeight + ' kg') + ' logged');
     tap();
-    closeSheet();
+    closeAllSheets();
   });
-  overlay.addEventListener('click', closeSheet);
 
-  document.querySelectorAll('.exercise-item').forEach(item => {
-    const check = item.querySelector('.ex-check');
-    const isCardio = item.dataset.cardio === '1';
+  // ─── Add exercise sheet ───────────────────────────────────────────────────────
+  const sheetAdd = document.getElementById('sheet-add');
+  const addNameInput = document.getElementById('add-name');
+  const addSetsInput = document.getElementById('add-sets');
+  const addRepsInput = document.getElementById('add-reps');
+  const addWeightInput = document.getElementById('add-weight');
+  let addGroup = 'Chest';
 
-    check.addEventListener('click', e => {
-      e.stopPropagation();
-      item.classList.toggle('done');
-      tap();
-      const name = item.querySelector('.exercise-name').textContent;
-      if (item.classList.contains('done')) showToast(name + ' · done');
-    });
+  function openAddSheet(day) {
+    addDay = day;
+    addGroup = 'Chest';
+    addNameInput.value = '';
+    addSetsInput.value = '3';
+    addRepsInput.value = '8–12';
+    addWeightInput.value = '';
+    const dayLabel = { push: 'Push Day', pull: 'Pull Day', 'chest-back': 'Chest / Back', 'arms-shoulder': 'Arms + Shoulders' };
+    const sub = document.getElementById('sheet-add-day');
+    if (sub) sub.textContent = dayLabel[day] || '';
+    sheetAdd.querySelectorAll('.group-btn').forEach(b => b.classList.toggle('on', b.dataset.group === addGroup));
+    sheetAdd.classList.add('show');
+    overlay.classList.add('show');
+    setTimeout(() => addNameInput.focus(), 300);
+  }
 
-    item.addEventListener('click', () => {
-      if (isCardio) {
-        item.classList.toggle('done');
+  if (sheetAdd) {
+    sheetAdd.querySelectorAll('.group-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        addGroup = btn.dataset.group;
+        sheetAdd.querySelectorAll('.group-btn').forEach(b => b.classList.toggle('on', b === btn));
         tap();
-        if (item.classList.contains('done')) {
-          // Log cardio session for frequency tracking
-          const data = loadData();
-          data.sessions.push({ date: todayISO(), exercise: item.dataset.exercise, group: 'Cardio', weight: 0 });
-          saveData(data);
-          renderFrequency();
-          showToast('Cardio · done');
-        }
-        return;
-      }
-      openSheet(item);
+      });
     });
-  });
+    document.getElementById('add-cancel').addEventListener('click', () => { closeAllSheets(); tap(); });
+    document.getElementById('add-confirm').addEventListener('click', () => {
+      const name = addNameInput.value.trim();
+      if (!name) { addNameInput.focus(); return; }
+      const sets = addSetsInput.value.trim() || '3';
+      const reps = addRepsInput.value.trim() || '8–12';
+      const weight = parseFloat(addWeightInput.value) || 0;
+      const ex = addCustomExercise(addDay, { name, group: addGroup, target: sets + ' × ' + reps, weight });
+      const card = document.querySelector(`.workout-card[data-day="${addDay}"]`);
+      if (card) {
+        const list = card.querySelector('.exercise-list');
+        const addBtn = list.querySelector('.add-exercise-btn');
+        const newItem = buildExerciseItem(ex, true);
+        list.insertBefore(newItem, addBtn);
+        updateExerciseBadge(newItem);
+      }
+      closeAllSheets();
+      showToast(escapeHtml(name) + ' added');
+      tap();
+    });
+  }
 
+  // ─── Quick log sheet ──────────────────────────────────────────────────────────
+  const sheetQuick = document.getElementById('sheet-quick');
+
+  function openQuickLog() {
+    if (sheetQuick) { sheetQuick.classList.add('show'); overlay.classList.add('show'); }
+  }
+
+  if (sheetQuick) {
+    sheetQuick.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const info = QUICK_MAP[btn.dataset.cat];
+        if (!info) return;
+        const data = loadData();
+        const date = todayISO();
+        info.groups.forEach(group => data.sessions.push({ date, exercise: 'Quick: ' + info.name, group, weight: 0 }));
+        saveData(data);
+        renderFrequency();
+        closeAllSheets();
+        resetSwipe();
+        showToast(info.name + ' session logged ✓');
+        tap();
+      });
+    });
+    document.getElementById('quick-cancel')?.addEventListener('click', () => {
+      closeAllSheets(); resetSwipe(); tap();
+    });
+  }
+
+  // ─── Swipe-to-log ─────────────────────────────────────────────────────────────
+  let swipeActive = false;
+  let swipeStartX = 0;
+
+  function resetSwipe() {
+    const track = document.getElementById('swipe-track');
+    const fill  = document.getElementById('swipe-fill');
+    const thumb = document.getElementById('swipe-thumb');
+    const label = document.getElementById('swipe-label');
+    if (!track) return;
+    swipeActive = false;
+    thumb.style.transform = '';
+    fill.style.width = '0';
+    label.style.opacity = '1';
+    track.classList.remove('armed');
+  }
+
+  function initSwipeLog() {
+    const track = document.getElementById('swipe-track');
+    const fill  = document.getElementById('swipe-fill');
+    const thumb = document.getElementById('swipe-thumb');
+    const label = document.getElementById('swipe-label');
+    if (!track) return;
+
+    function getMax() { return track.clientWidth - 56; }
+    function applyDrag(clientX) {
+      const max = getMax();
+      const dx  = Math.min(max, Math.max(0, clientX - swipeStartX));
+      const pct = dx / max;
+      thumb.style.transform = `translateX(${dx}px)`;
+      fill.style.width = (dx + 56) + 'px';
+      label.style.opacity = pct > 0.3 ? 0 : 1;
+      track.classList.toggle('armed', pct > 0.5);
+      if (pct >= 0.70) {
+        swipeActive = false;
+        thumb.style.transform = `translateX(${max}px)`;
+        fill.style.width = '100%';
+        tap();
+        setTimeout(openQuickLog, 120);
+      }
+    }
+
+    // Touch
+    thumb.addEventListener('touchstart', e => {
+      swipeActive = true;
+      swipeStartX = e.touches[0].clientX;
+      track.classList.add('armed');
+      e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('touchmove', e => {
+      if (!swipeActive) return;
+      applyDrag(e.touches[0].clientX);
+    }, { passive: true });
+    window.addEventListener('touchend', () => {
+      if (!swipeActive) return;
+      swipeActive = false; resetSwipe();
+    });
+
+    // Mouse (desktop)
+    thumb.addEventListener('mousedown', e => {
+      swipeActive = true; swipeStartX = e.clientX; e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!swipeActive) return; applyDrag(e.clientX);
+    });
+    window.addEventListener('mouseup', () => {
+      if (!swipeActive) return; swipeActive = false; resetSwipe();
+    });
+  }
+
+  // ─── Settings interactions ────────────────────────────────────────────────────
   document.querySelectorAll('.toggle').forEach(t => {
     t.addEventListener('click', e => {
       e.stopPropagation();
       const on = t.classList.toggle('on');
-      t.setAttribute('aria-checked', on ? 'true' : 'false');
-      tap();
+      t.setAttribute('aria-checked', on ? 'true' : 'false'); tap();
     });
   });
   document.querySelectorAll('[data-toggle-row]').forEach(row => {
@@ -2120,19 +2781,16 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       row.querySelector('.toggle')?.click();
     });
   });
-
   document.querySelectorAll('[data-segmented]').forEach(seg => {
     seg.querySelectorAll('.seg-option').forEach(opt => {
       opt.addEventListener('click', e => {
         e.stopPropagation();
         seg.querySelectorAll('.seg-option').forEach(o => o.classList.remove('on'));
-        opt.classList.add('on');
-        tap();
+        opt.classList.add('on'); tap();
         showToast('Units · ' + opt.textContent);
       });
     });
   });
-
   document.querySelectorAll('.setting-row:not([data-toggle-row])').forEach(row => {
     row.addEventListener('click', e => {
       if (e.target.closest('.toggle') || e.target.closest('.segmented') || e.target.closest('.edit-pill')) return;
@@ -2142,7 +2800,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
         if (confirm('Reset all logged weights and history? This cannot be undone.')) {
           clearAllData();
           document.querySelectorAll('.exercise-item').forEach(i => i.classList.remove('done'));
-          renderExerciseWeights();
+          renderExerciseLists();
           renderFrequency();
           showToast('Progress reset');
         }
@@ -2153,20 +2811,16 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       tap();
     });
   });
-
   document.querySelectorAll('.edit-pill').forEach(b => b.addEventListener('click', e => {
     e.stopPropagation();
     const name = prompt('Your name', document.getElementById('profile-name').textContent);
     if (name && name.trim()) {
       document.getElementById('profile-name').textContent = name.trim();
       document.getElementById('greeting').textContent = 'Hi, ' + name.trim() + ' 👋';
-      const d = loadData();
-      d.profileName = name.trim();
-      saveData(d);
+      const d = loadData(); d.profileName = name.trim(); saveData(d);
     }
     tap();
   }));
-
   document.querySelectorAll('.timeline-card, .steps-card').forEach(el => {
     el.addEventListener('click', () => switchView('stats'));
   });
@@ -2177,39 +2831,32 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     });
   });
 
+  // ─── Frequency tracker ────────────────────────────────────────────────────────
   function getThisWeekCounts() {
     const data = loadData();
     const now = new Date();
-    const day = now.getDay();
-    const diffToMon = day === 0 ? -6 : 1 - day;
+    const diffToMon = now.getDay() === 0 ? -6 : 1 - now.getDay();
     const monday = new Date(now);
     monday.setDate(now.getDate() + diffToMon);
     monday.setHours(0, 0, 0, 0);
-
     const counts = {};
     GROUP_ORDER.forEach(g => counts[g] = 0);
     const seen = new Set();
-
     (data.sessions || []).forEach(s => {
       const d = new Date(s.date + 'T00:00:00');
       if (d >= monday) {
         const key = s.date + '|' + s.group;
-        if (!seen.has(key)) {
-          seen.add(key);
-          if (counts[s.group] !== undefined) counts[s.group]++;
-        }
+        if (!seen.has(key)) { seen.add(key); if (counts[s.group] !== undefined) counts[s.group]++; }
       }
     });
     return counts;
   }
-
   function getSeededCounts() {
     const real = getThisWeekCounts();
     const anyReal = Object.values(real).some(v => v > 0);
     if (anyReal) return real;
     return { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 1 };
   }
-
   function renderFrequency() {
     const list = document.getElementById('freq-list');
     if (!list) return;
@@ -2220,14 +2867,13 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       const target = TARGETS[group] || 2;
       const count = Math.min(counts[group] || 0, target);
       const pct = Math.min(100, (count / target) * 100);
-      totalDone += count;
-      totalTarget += target;
+      totalDone += count; totalTarget += target;
       const isComplete = count >= target;
       const row = document.createElement('div');
       row.className = 'freq-row';
       row.innerHTML = `
         <div class="freq-name">${group}</div>
-        <div class="freq-bar-wrap"><div class="freq-fill ${isComplete ? 'complete' : ''}" style="width: ${pct}%"></div></div>
+        <div class="freq-bar-wrap"><div class="freq-fill ${isComplete ? 'complete' : ''}" style="width:${pct}%"></div></div>
         <div class="freq-count">${count}<span class="of-target">/ ${target}</span>${isComplete ? '<span class="freq-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>' : ''}</div>
       `;
       list.appendChild(row);
@@ -2235,6 +2881,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     document.getElementById('freq-total-num').innerHTML = totalDone + '<span class="of"> / ' + totalTarget + '</span>';
   }
 
+  // ─── Boot ─────────────────────────────────────────────────────────────────────
   function boot() {
     const d = loadData();
     if (d.profileName) {
@@ -2242,8 +2889,9 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
       document.getElementById('greeting').textContent = 'Hi, ' + d.profileName + ' 👋';
     }
     applyTodayHighlight();
-    renderExerciseWeights();
+    renderExerciseLists();
     renderFrequency();
+    initSwipeLog();
   }
   boot();
 
