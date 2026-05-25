@@ -6,7 +6,8 @@
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>The 5-Month Jawline Blueprint · Tracker</title>
+<meta name="apple-mobile-web-app-title" content="Gym Tracker">
+<title>Gym Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -49,13 +50,7 @@ html, body {
   overscroll-behavior: none;
 }
 
-button {
-  font-family: inherit;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: inherit;
-}
+button { font-family: inherit; border: none; background: none; cursor: pointer; color: inherit; }
 
 .stage {
   min-height: 100vh;
@@ -66,7 +61,6 @@ button {
   padding: 48px 20px;
 }
 
-/* ===== Phone frame (desktop preview) ===== */
 .phone-frame {
   width: 390px;
   height: 844px;
@@ -118,19 +112,9 @@ button {
   position: relative;
   z-index: 10;
 }
+.status-bar .right { display: flex; align-items: center; gap: 5px; }
 
-.status-bar .right {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-/* ===== Views container ===== */
-.views {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
+.views { flex: 1; position: relative; overflow: hidden; }
 
 .view {
   position: absolute;
@@ -145,14 +129,12 @@ button {
   scrollbar-width: none;
 }
 .view::-webkit-scrollbar { display: none; }
-
 .view.active {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
 }
 
-/* ===== App bar (top) ===== */
 .app-bar {
   display: flex;
   justify-content: space-between;
@@ -170,7 +152,7 @@ button {
   border-radius: 100px;
   font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.6px;
   text-transform: uppercase;
 }
 
@@ -179,9 +161,6 @@ button {
   height: 14px;
   border-radius: 50%;
   background: var(--accent);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: 0 0 10px var(--accent-glow);
 }
 
@@ -198,47 +177,20 @@ button {
 }
 .icon-btn:active { transform: scale(0.92); background: var(--grey-150); }
 
-/* ===== Page header (used by Stats + Settings) ===== */
-.page-head {
-  margin: 18px 0 6px;
-}
-
-.page-head h2 {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.7px;
-  line-height: 1.05;
-}
-
-.page-head .sub {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 2.5px;
-  color: var(--grey-400);
-  text-transform: uppercase;
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page-head .sub .divider {
-  width: 16px;
-  height: 1px;
-  background: var(--grey-300);
-}
-
-/* ===== DASHBOARD ===== */
-
-.hero {
+.greeting {
   margin-top: 22px;
+  font-size: 13px;
+  color: var(--grey-500);
+  font-weight: 600;
+  letter-spacing: -0.1px;
 }
 
 .hero-title {
-  font-size: 32px;
+  margin-top: 4px;
+  font-size: 28px;
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.9px;
+  line-height: 1.08;
+  letter-spacing: -0.7px;
   color: var(--charcoal);
 }
 
@@ -258,26 +210,31 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 2.5px;
   color: var(--grey-400);
   text-transform: uppercase;
 }
+.hero-meta .divider { width: 16px; height: 1px; background: var(--grey-300); }
 
-.hero-meta .divider {
-  width: 16px;
-  height: 1px;
-  background: var(--grey-300);
+.page-head { margin: 18px 0 6px; }
+.page-head h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.7px; line-height: 1.05; }
+.page-head .sub {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: var(--grey-400);
+  text-transform: uppercase;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+.page-head .sub .divider { width: 16px; height: 1px; background: var(--grey-300); }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1.65fr 1fr;
-  gap: 10px;
-  margin-top: 22px;
-}
+.stats-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: 10px; margin-top: 18px; }
 
 .timeline-card {
   background: linear-gradient(135deg, #131318 0%, #0B0B0E 100%);
@@ -293,7 +250,6 @@ button {
   transition: transform 0.12s ease;
 }
 .timeline-card:active { transform: scale(0.985); }
-
 .timeline-card::before {
   content: '';
   position: absolute;
@@ -306,15 +262,7 @@ button {
   opacity: 0.6;
   filter: blur(8px);
 }
-
-.timeline-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
-  z-index: 2;
-}
-
+.timeline-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
 .face-icon {
   width: 38px;
   height: 38px;
@@ -326,7 +274,6 @@ button {
   justify-content: center;
   color: var(--accent);
 }
-
 .timeline-tag {
   font-size: 9px;
   font-weight: 700;
@@ -337,9 +284,7 @@ button {
   padding: 5px 9px;
   border-radius: 100px;
 }
-
 .timeline-body { position: relative; z-index: 2; }
-
 .timeline-label {
   font-size: 9.5px;
   font-weight: 600;
@@ -348,19 +293,8 @@ button {
   color: rgba(255, 255, 255, 0.45);
   margin-bottom: 4px;
 }
-
-.timeline-value {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1;
-}
-
-.timeline-value .of {
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 600;
-}
-
+.timeline-value { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+.timeline-value .of { color: rgba(255, 255, 255, 0.4); font-weight: 600; }
 .progress-track {
   width: 100%;
   height: 5px;
@@ -370,7 +304,6 @@ button {
   position: relative;
   overflow: hidden;
 }
-
 .progress-fill {
   width: 22%;
   height: 100%;
@@ -379,7 +312,6 @@ button {
   box-shadow: 0 0 14px var(--accent-glow);
   position: relative;
 }
-
 .progress-fill::after {
   content: '';
   position: absolute;
@@ -392,7 +324,6 @@ button {
   border-radius: 50%;
   box-shadow: 0 0 0 3px var(--accent), 0 0 12px var(--accent-glow);
 }
-
 .timeline-target {
   display: flex;
   justify-content: space-between;
@@ -403,12 +334,7 @@ button {
   font-weight: 500;
   letter-spacing: 0.2px;
 }
-
-.timeline-target b {
-  color: var(--white);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
+.timeline-target b { color: var(--white); font-weight: 700; letter-spacing: 0.5px; }
 
 .steps-card {
   background: var(--white);
@@ -423,30 +349,9 @@ button {
   transition: transform 0.12s ease;
 }
 .steps-card:active { transform: scale(0.985); }
-
-.steps-ring-wrap {
-  position: relative;
-  width: 78px;
-  height: 78px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.steps-ring-wrap svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.ring-track {
-  fill: none;
-  stroke: var(--grey-150);
-  stroke-width: 7;
-}
-
+.steps-ring-wrap { position: relative; width: 78px; height: 78px; display: flex; align-items: center; justify-content: center; }
+.steps-ring-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--grey-150); stroke-width: 7; }
 .ring-fill {
   fill: none;
   stroke: var(--accent);
@@ -454,7 +359,6 @@ button {
   stroke-linecap: round;
   filter: drop-shadow(0 0 6px var(--accent-glow));
 }
-
 .steps-check {
   width: 30px;
   height: 30px;
@@ -466,22 +370,9 @@ button {
   color: var(--white);
   box-shadow: 0 4px 12px var(--accent-glow);
 }
-
 .steps-info { text-align: center; margin-top: 4px; }
-
-.steps-value {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--charcoal);
-  letter-spacing: -0.2px;
-  font-variant-numeric: tabular-nums;
-}
-
-.steps-value .of {
-  color: var(--grey-400);
-  font-weight: 600;
-}
-
+.steps-value { font-size: 13px; font-weight: 700; color: var(--charcoal); letter-spacing: -0.2px; font-variant-numeric: tabular-nums; }
+.steps-value .of { color: var(--grey-400); font-weight: 600; }
 .steps-label {
   font-size: 8.5px;
   font-weight: 700;
@@ -491,15 +382,13 @@ button {
   margin-top: 2px;
 }
 
-/* Section head */
 .section-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 28px 0 12px;
+  margin: 26px 0 12px;
   padding: 0 2px;
 }
-
 .section-title {
   font-size: 11px;
   font-weight: 700;
@@ -510,24 +399,9 @@ button {
   align-items: center;
   gap: 8px;
 }
+.section-title::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.section-action { font-size: 11px; font-weight: 600; color: var(--grey-400); letter-spacing: -0.1px; }
 
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-  display: inline-block;
-}
-
-.section-action {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--grey-400);
-  letter-spacing: -0.1px;
-}
-
-/* Workout cards */
 .workout-card {
   background: var(--white);
   border: 1px solid var(--grey-150);
@@ -537,9 +411,12 @@ button {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.workout-card.collapsed {
-  padding-bottom: 16px;
+.workout-card.today {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-pale), 0 10px 30px -15px var(--accent-glow);
 }
+
+.workout-card.collapsed { padding-bottom: 16px; }
 
 .card-head {
   display: flex;
@@ -561,20 +438,12 @@ button {
   flex-shrink: 0;
   color: var(--charcoal);
 }
-
-.cat-icon.accent {
-  background: var(--accent);
-  color: var(--white);
-  box-shadow: 0 8px 20px -6px var(--accent-glow);
-}
-
+.cat-icon.accent { background: var(--accent); color: var(--white); box-shadow: 0 8px 20px -6px var(--accent-glow); }
 .cat-icon.dark { background: var(--charcoal); color: var(--white); }
 
-.card-title-area {
-  flex: 1;
-  min-width: 0;
-  padding-top: 2px;
-}
+.card-title-area { flex: 1; min-width: 0; padding-top: 2px; }
+
+.card-days-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
 
 .card-days {
   font-size: 9.5px;
@@ -582,30 +451,27 @@ button {
   letter-spacing: 1.8px;
   color: var(--grey-400);
   text-transform: uppercase;
-  margin-bottom: 2px;
 }
 
-.card-title {
-  font-size: 16px;
+.today-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 100px;
+  font-size: 8.5px;
   font-weight: 700;
-  color: var(--charcoal);
-  letter-spacing: -0.3px;
-  line-height: 1.15;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  box-shadow: 0 0 8px var(--accent-glow);
 }
+.today-pill::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: white; }
 
-.card-title .pipe {
-  color: var(--grey-300);
-  font-weight: 500;
-  margin: 0 2px;
-}
-
-.card-subtitle {
-  font-size: 11.5px;
-  color: var(--grey-500);
-  font-weight: 500;
-  margin-top: 4px;
-  letter-spacing: -0.1px;
-}
+.card-title { font-size: 16px; font-weight: 700; color: var(--charcoal); letter-spacing: -0.3px; line-height: 1.15; }
+.card-title .pipe { color: var(--grey-300); font-weight: 500; margin: 0 2px; }
+.card-subtitle { font-size: 11.5px; color: var(--grey-500); font-weight: 500; margin-top: 4px; letter-spacing: -0.1px; }
 
 .chevron-btn {
   width: 30px;
@@ -620,26 +486,16 @@ button {
   margin-left: 4px;
   transition: background 0.15s ease;
 }
-
-.chevron-btn svg {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.workout-card.collapsed .chevron-btn svg {
-  transform: rotate(180deg);
-}
+.chevron-btn svg { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.workout-card.collapsed .chevron-btn svg { transform: rotate(180deg); }
 
 .collapsible {
-  max-height: 1200px;
+  max-height: 1600px;
   overflow: hidden;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
   opacity: 1;
 }
-
-.workout-card.collapsed .collapsible {
-  max-height: 0;
-  opacity: 0;
-}
+.workout-card.collapsed .collapsible { max-height: 0; opacity: 0; }
 
 .focus-notes {
   display: inline-flex;
@@ -652,28 +508,16 @@ button {
   font-size: 10.5px;
   color: var(--grey-500);
   font-weight: 600;
-  letter-spacing: -0.05px;
 }
-
-.focus-notes .focus-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent-glow);
-}
-
+.focus-notes .focus-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
 .focus-notes .sep { color: var(--grey-300); }
 
-.exercise-list {
-  margin-top: 12px;
-  padding-top: 6px;
-}
+.exercise-list { margin-top: 12px; padding-top: 6px; }
 
 .exercise-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   padding: 11px 4px;
   margin: 0 -4px;
   border-radius: 10px;
@@ -681,18 +525,8 @@ button {
   transition: background 0.15s ease;
   user-select: none;
 }
-
 .exercise-item:active { background: var(--grey-50); }
-
-.exercise-item + .exercise-item {
-  border-top: 1px solid var(--grey-100);
-  border-radius: 0 0 10px 10px;
-}
-
-.exercise-item.done + .exercise-item,
-.exercise-item + .exercise-item.done {
-  border-top-color: var(--grey-100);
-}
+.exercise-item + .exercise-item { border-top: 1px solid var(--grey-100); }
 
 .ex-check {
   width: 22px;
@@ -707,12 +541,7 @@ button {
   align-items: center;
   justify-content: center;
 }
-
-.exercise-item.done .ex-check {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 0 var(--accent-glow);
-}
+.exercise-item.done .ex-check { background: var(--accent); border-color: var(--accent); }
 
 .ex-check svg {
   opacity: 0;
@@ -720,14 +549,9 @@ button {
   transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   color: white;
 }
-
-.exercise-item.done .ex-check svg {
-  opacity: 1;
-  transform: scale(1);
-}
+.exercise-item.done .ex-check svg { opacity: 1; transform: scale(1); }
 
 .exercise-info { flex: 1; min-width: 0; }
-
 .exercise-name {
   font-size: 13.5px;
   font-weight: 600;
@@ -736,42 +560,184 @@ button {
   line-height: 1.2;
   transition: color 0.18s, text-decoration-color 0.18s;
 }
-
 .exercise-item.done .exercise-name {
   color: var(--grey-400);
   text-decoration: line-through;
   text-decoration-color: var(--grey-300);
   text-decoration-thickness: 1.5px;
 }
-
-.exercise-tag {
+.exercise-sub {
   font-size: 10.5px;
   color: var(--grey-400);
-  font-weight: 500;
+  font-weight: 600;
   margin-top: 3px;
-  letter-spacing: -0.05px;
-}
-
-.exercise-reps {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--charcoal);
-  background: var(--grey-100);
-  padding: 5px 10px;
-  border-radius: 8px;
-  white-space: nowrap;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.1px;
-  transition: background 0.18s, color 0.18s;
 }
 
-.exercise-item.done .exercise-reps {
+.exercise-weight {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 10px 7px 12px;
+  background: var(--charcoal);
+  color: white;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.1s, background 0.15s;
+  flex-shrink: 0;
+}
+.exercise-weight:active { transform: scale(0.95); background: var(--accent-strong); }
+.exercise-weight .w-unit { font-size: 10px; font-weight: 600; opacity: 0.7; margin-left: 1px; }
+.exercise-weight .w-trend { font-size: 9px; color: #A78BFA; margin-left: 2px; }
+.exercise-weight .chev { opacity: 0.5; margin-left: 4px; margin-right: -3px; }
+.exercise-weight.cardio { background: var(--grey-100); color: var(--charcoal); }
+.exercise-weight.cardio .chev { opacity: 0; }
+.exercise-weight.bw { background: var(--grey-100); color: var(--charcoal); }
+
+/* Weight logging sheet */
+.sheet-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.sheet-overlay.show { opacity: 1; pointer-events: auto; }
+
+.sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 28px 28px 0 0;
+  padding: 14px 22px calc(28px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  transform: translateY(110%);
+  transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 85%;
+  overflow-y: auto;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.2);
+  scrollbar-width: none;
+}
+.sheet::-webkit-scrollbar { display: none; }
+.sheet.show { transform: translateY(0); }
+
+.sheet-handle { width: 40px; height: 5px; background: var(--grey-200); border-radius: 3px; margin: 0 auto 14px; }
+.sheet-header { text-align: left; margin-bottom: 18px; }
+.sheet-pretitle {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--grey-400);
+  margin-bottom: 4px;
+}
+.sheet-title { font-size: 22px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.5px; line-height: 1.1; }
+.sheet-subtitle { font-size: 12px; color: var(--grey-500); font-weight: 500; margin-top: 4px; }
+
+.sheet-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
   background: var(--accent-pale);
+  border-radius: 12px;
+  font-size: 11.5px;
   color: var(--accent-strong);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.sheet-note svg { flex-shrink: 0; margin-top: 1px; }
+
+.sheet-block { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--grey-100); }
+.sheet-block:first-of-type { margin-top: 14px; padding-top: 0; border-top: none; }
+.sheet-block-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  color: var(--grey-400);
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 
-/* ===== STATS VIEW ===== */
+.stepper { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.step-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--grey-100);
+  color: var(--charcoal);
+  font-size: 26px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+  flex-shrink: 0;
+}
+.step-btn:active { background: var(--grey-200); transform: scale(0.9); }
 
+.weight-display { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.weight-number {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--charcoal);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.weight-number .unit { font-size: 18px; font-weight: 600; color: var(--grey-400); margin-left: 4px; letter-spacing: -0.3px; }
+.weight-helper { font-size: 10.5px; color: var(--grey-400); font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
+
+.history-empty {
+  text-align: center;
+  padding: 16px 0;
+  font-size: 12px;
+  color: var(--grey-400);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.history-list .history-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; }
+.history-list .history-row + .history-row { border-top: 1px solid var(--grey-100); }
+.history-date { font-size: 12.5px; color: var(--grey-500); font-weight: 600; }
+.history-date.today { color: var(--accent-strong); }
+.history-right { display: flex; align-items: center; gap: 8px; }
+.history-weight { font-size: 13px; font-weight: 700; color: var(--charcoal); font-variant-numeric: tabular-nums; }
+.history-trend { font-size: 10.5px; font-weight: 700; padding: 3px 7px; border-radius: 100px; font-variant-numeric: tabular-nums; }
+.history-trend.up { background: var(--accent-pale); color: var(--accent-strong); }
+.history-trend.down { background: var(--grey-100); color: var(--grey-500); }
+.history-trend.same { background: var(--grey-100); color: var(--grey-500); }
+
+.sheet-actions { margin-top: 22px; display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; }
+.btn-primary, .btn-secondary {
+  height: 50px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  transition: transform 0.1s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-primary { background: var(--charcoal); color: white; }
+.btn-primary:active { transform: scale(0.97); background: var(--charcoal-soft); }
+.btn-secondary { background: var(--grey-100); color: var(--charcoal); }
+.btn-secondary:active { transform: scale(0.97); background: var(--grey-150); }
+
+/* Stats */
 .streak-card {
   margin-top: 18px;
   background: linear-gradient(135deg, #131318 0%, #0B0B0E 100%);
@@ -784,7 +750,6 @@ button {
   align-items: center;
   gap: 16px;
 }
-
 .streak-card::before {
   content: '';
   position: absolute;
@@ -797,7 +762,6 @@ button {
   opacity: 0.5;
   filter: blur(10px);
 }
-
 .streak-flame {
   width: 50px;
   height: 50px;
@@ -811,13 +775,7 @@ button {
   position: relative;
   z-index: 2;
 }
-
-.streak-text {
-  position: relative;
-  z-index: 2;
-  flex: 1;
-}
-
+.streak-text { position: relative; z-index: 2; flex: 1; }
 .streak-label {
   font-size: 9.5px;
   font-weight: 700;
@@ -826,28 +784,10 @@ button {
   color: rgba(255, 255, 255, 0.55);
   margin-bottom: 4px;
 }
+.streak-value { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
+.streak-value .unit { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.55); margin-left: 4px; }
 
-.streak-value {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  line-height: 1;
-}
-
-.streak-value .unit {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
-  margin-left: 4px;
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-}
-
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .metric-card {
   background: white;
   border: 1px solid var(--grey-150);
@@ -856,7 +796,6 @@ button {
   transition: transform 0.12s ease;
 }
 .metric-card:active { transform: scale(0.97); }
-
 .metric-label {
   font-size: 9.5px;
   font-weight: 700;
@@ -865,7 +804,6 @@ button {
   text-transform: uppercase;
   margin-bottom: 8px;
 }
-
 .metric-value {
   font-size: 22px;
   font-weight: 800;
@@ -874,14 +812,7 @@ button {
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-
-.metric-value .unit {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--grey-400);
-  margin-left: 3px;
-}
-
+.metric-value .unit { font-size: 12px; font-weight: 600; color: var(--grey-400); margin-left: 3px; }
 .metric-trend {
   display: inline-flex;
   align-items: center;
@@ -891,7 +822,6 @@ button {
   color: var(--accent);
   margin-top: 6px;
 }
-
 .metric-trend.down { color: var(--grey-500); }
 
 .chart-card {
@@ -901,50 +831,63 @@ button {
   padding: 18px;
   margin-top: 10px;
 }
+.chart-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 12px; }
+.chart-title { font-size: 13px; font-weight: 700; color: var(--charcoal); letter-spacing: -0.2px; }
+.chart-sub { font-size: 10.5px; color: var(--grey-400); font-weight: 500; margin-top: 2px; }
+.chart-now { display: inline-flex; align-items: baseline; gap: 3px; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.5px; }
+.chart-now .unit { font-size: 11px; color: var(--grey-400); font-weight: 600; }
 
-.chart-head {
+.freq-summary {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 4px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--grey-100);
 }
-
-.chart-title {
-  font-size: 13px;
+.freq-summary-num { font-size: 18px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.4px; font-variant-numeric: tabular-nums; }
+.freq-summary-num .of { color: var(--grey-400); font-weight: 600; font-size: 13px; }
+.freq-summary-label { font-size: 10px; color: var(--grey-500); font-weight: 600; letter-spacing: 0.2px; line-height: 1.2; }
+.freq-list { margin-top: 4px; }
+.freq-row { display: grid; grid-template-columns: 78px 1fr auto; align-items: center; gap: 12px; padding: 10px 0; }
+.freq-row + .freq-row { border-top: 1px solid var(--grey-100); }
+.freq-name { font-size: 12.5px; font-weight: 600; color: var(--charcoal); letter-spacing: -0.1px; }
+.freq-bar-wrap { position: relative; height: 10px; background: var(--grey-100); border-radius: 100px; overflow: hidden; }
+.freq-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent) 0%, #A78BFA 100%);
+  border-radius: 100px;
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.freq-fill.complete {
+  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+.freq-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--charcoal);
-  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
-
-.chart-sub {
-  font-size: 10.5px;
-  color: var(--grey-400);
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-.chart-now {
+.freq-count .of-target { color: var(--grey-400); font-weight: 600; }
+.freq-check {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--success);
   display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--charcoal);
-  letter-spacing: -0.5px;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
-.chart-now .unit {
-  font-size: 11px;
-  color: var(--grey-400);
-  font-weight: 600;
-}
-
-.line-chart {
-  width: 100%;
-  height: 130px;
-  margin-top: 10px;
-}
-
+.line-chart { width: 100%; height: 130px; margin-top: 10px; }
 .chart-x-axis {
   display: flex;
   justify-content: space-between;
@@ -955,95 +898,7 @@ button {
   color: var(--grey-400);
   text-transform: uppercase;
 }
-
 .chart-x-axis span.current { color: var(--accent); font-weight: 700; }
-
-.volume-list {
-  margin-top: 12px;
-}
-
-.vol-row {
-  display: grid;
-  grid-template-columns: 78px 1fr 44px;
-  align-items: center;
-  gap: 12px;
-  padding: 9px 0;
-}
-
-.vol-row + .vol-row {
-  border-top: 1px solid var(--grey-100);
-}
-
-.vol-name {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--charcoal);
-  letter-spacing: -0.1px;
-}
-
-.vol-bar {
-  height: 8px;
-  background: var(--grey-100);
-  border-radius: 100px;
-  overflow: hidden;
-  position: relative;
-}
-
-.vol-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent) 0%, #A78BFA 100%);
-  border-radius: 100px;
-  box-shadow: 0 0 8px var(--accent-glow);
-}
-
-.vol-val {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--charcoal);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.week-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  margin-top: 12px;
-}
-
-.week-grid .col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.week-grid .day-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--grey-400);
-  text-transform: uppercase;
-}
-
-.dot-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-}
-
-.day-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 4px;
-  background: var(--grey-150);
-}
-
-.day-dot.done { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
-.day-dot.half { background: var(--accent-pale); }
-
-/* ===== SETTINGS VIEW ===== */
 
 .profile-card {
   margin-top: 18px;
@@ -1055,7 +910,6 @@ button {
   border: 1px solid var(--grey-150);
   border-radius: 22px;
 }
-
 .avatar {
   width: 52px;
   height: 52px;
@@ -1068,20 +922,8 @@ button {
   flex-shrink: 0;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
 }
-
-.profile-name {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-  color: var(--charcoal);
-}
-
-.profile-meta {
-  font-size: 11px;
-  color: var(--grey-500);
-  font-weight: 500;
-  margin-top: 2px;
-}
+.profile-name { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; color: var(--charcoal); }
+.profile-meta { font-size: 11px; color: var(--grey-500); font-weight: 500; margin-top: 2px; }
 
 .edit-pill {
   font-size: 10.5px;
@@ -1095,10 +937,7 @@ button {
 }
 .edit-pill:active { background: var(--grey-200); }
 
-.settings-section {
-  margin-top: 22px;
-}
-
+.settings-section { margin-top: 22px; }
 .settings-label {
   font-size: 10.5px;
   font-weight: 700;
@@ -1107,13 +946,7 @@ button {
   text-transform: uppercase;
   margin: 0 4px 10px;
 }
-
-.settings-group {
-  background: white;
-  border: 1px solid var(--grey-150);
-  border-radius: 18px;
-  overflow: hidden;
-}
+.settings-group { background: white; border: 1px solid var(--grey-150); border-radius: 18px; overflow: hidden; }
 
 .setting-row {
   display: flex;
@@ -1125,45 +958,14 @@ button {
   transition: background 0.12s;
   user-select: none;
 }
-
 .setting-row:active { background: var(--grey-50); }
-
-.setting-row + .setting-row {
-  border-top: 1px solid var(--grey-100);
-}
-
-.setting-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.setting-name {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--charcoal);
-  letter-spacing: -0.1px;
-  line-height: 1.2;
-}
-
-.setting-desc {
-  font-size: 11px;
-  color: var(--grey-400);
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-.setting-value {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--grey-500);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
+.setting-row + .setting-row { border-top: 1px solid var(--grey-100); }
+.setting-info { flex: 1; min-width: 0; }
+.setting-name { font-size: 13.5px; font-weight: 600; color: var(--charcoal); letter-spacing: -0.1px; line-height: 1.2; }
+.setting-desc { font-size: 11px; color: var(--grey-400); font-weight: 500; margin-top: 2px; }
+.setting-value { font-size: 12.5px; font-weight: 600; color: var(--grey-500); display: flex; align-items: center; gap: 4px; }
 .setting-value svg { color: var(--grey-300); }
 
-/* Toggle switch */
 .toggle {
   width: 46px;
   height: 28px;
@@ -1177,9 +979,7 @@ button {
   transition: background 0.2s ease;
   flex-shrink: 0;
 }
-
-.toggle.on { background: var(--accent); box-shadow: inset 0 0 0 0 transparent; }
-
+.toggle.on { background: var(--accent); }
 .toggle-thumb {
   width: 24px;
   height: 24px;
@@ -1189,19 +989,9 @@ button {
   transform: translateX(0);
   transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.toggle.on .toggle-thumb { transform: translateX(18px); }
 
-.toggle.on .toggle-thumb {
-  transform: translateX(18px);
-}
-
-/* Segmented control */
-.segmented {
-  display: inline-flex;
-  background: var(--grey-100);
-  border-radius: 9px;
-  padding: 2px;
-}
-
+.segmented { display: inline-flex; background: var(--grey-100); border-radius: 9px; padding: 2px; }
 .seg-option {
   font-size: 11.5px;
   font-weight: 700;
@@ -1211,44 +1001,18 @@ button {
   transition: all 0.18s ease;
   letter-spacing: 0.3px;
 }
-
 .seg-option.on {
   background: white;
   color: var(--charcoal);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
-/* Danger row */
 .setting-row.danger .setting-name { color: var(--danger); }
+.signout-row { margin-top: 20px; background: white; border: 1px solid var(--grey-150); border-radius: 18px; overflow: hidden; }
+.signout-row .setting-row { justify-content: center; }
+.signout-row .setting-name { color: var(--danger); text-align: center; width: 100%; }
+.version-info { text-align: center; margin-top: 18px; font-size: 10.5px; color: var(--grey-400); font-weight: 500; letter-spacing: 0.3px; }
 
-.signout-row {
-  margin-top: 20px;
-  background: white;
-  border: 1px solid var(--grey-150);
-  border-radius: 18px;
-  overflow: hidden;
-}
-
-.signout-row .setting-row {
-  justify-content: center;
-}
-
-.signout-row .setting-name {
-  color: var(--danger);
-  text-align: center;
-  width: 100%;
-}
-
-.version-info {
-  text-align: center;
-  margin-top: 18px;
-  font-size: 10.5px;
-  color: var(--grey-400);
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
-
-/* ===== Bottom nav ===== */
 .bottom-nav {
   position: absolute;
   bottom: 0;
@@ -1265,7 +1029,6 @@ button {
   padding: 14px 32px 28px;
   z-index: 20;
 }
-
 .nav-item {
   display: flex;
   flex-direction: column;
@@ -1279,11 +1042,8 @@ button {
   transition: color 0.18s ease, background 0.12s ease;
   min-width: 60px;
 }
-
 .nav-item:active { background: var(--grey-100); }
-
 .nav-item.active { color: var(--charcoal); }
-
 .nav-item.active::before {
   content: '';
   position: absolute;
@@ -1296,12 +1056,7 @@ button {
   border-radius: 0 0 4px 4px;
   box-shadow: 0 0 10px var(--accent-glow);
 }
-
-.nav-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-}
+.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
 
 .home-indicator {
   position: absolute;
@@ -1317,7 +1072,6 @@ button {
   pointer-events: none;
 }
 
-/* Toast (small confirmation) */
 .toast {
   position: absolute;
   bottom: 110px;
@@ -1339,31 +1093,21 @@ button {
   align-items: center;
   gap: 8px;
   box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.3);
+  max-width: 80%;
 }
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast .toast-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 6px var(--accent-glow);
+  flex-shrink: 0;
 }
 
-/* ===== RESPONSIVE: real mobile devices ===== */
 @media (max-width: 480px) {
-  body {
-    background: var(--white);
-  }
-  .stage {
-    padding: 0;
-    min-height: 100dvh;
-    align-items: stretch;
-  }
+  body { background: var(--white); }
+  .stage { padding: 0; min-height: 100dvh; align-items: stretch; }
   .phone-frame {
     width: 100%;
     height: 100dvh;
@@ -1372,18 +1116,10 @@ button {
     box-shadow: none;
     background: var(--white);
   }
-  .phone-screen {
-    border-radius: 0;
-  }
-  .dynamic-island {
-    display: none;
-  }
-  .status-bar {
-    display: none;
-  }
-  .home-indicator {
-    display: none;
-  }
+  .phone-screen { border-radius: 0; }
+  .dynamic-island { display: none; }
+  .status-bar { display: none; }
+  .home-indicator { display: none; }
   .view {
     padding: calc(env(safe-area-inset-top, 0px) + 14px) 22px calc(env(safe-area-inset-bottom, 0px) + 110px);
   }
@@ -1391,15 +1127,15 @@ button {
     height: auto;
     padding: 12px 22px calc(env(safe-area-inset-bottom, 12px) + 12px);
   }
-  .toast {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
-  }
+  .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 110px); }
+  .sheet { border-radius: 28px 28px 0 0; }
 }
 
 @media (max-width: 380px) {
-  .hero-title { font-size: 28px; }
+  .hero-title { font-size: 24px; }
   .timeline-value { font-size: 20px; }
   .card-title { font-size: 15px; }
+  .weight-number { font-size: 44px; }
 }
 </style>
 </head>
@@ -1409,7 +1145,6 @@ button {
       <div class="dynamic-island"></div>
       <div class="phone-screen">
 
-        <!-- Status bar (hidden on real mobile) -->
         <div class="status-bar">
           <span>9:41</span>
           <div class="right">
@@ -1434,15 +1169,15 @@ button {
 
         <div class="views">
 
-          <!-- ============ DASHBOARD VIEW ============ -->
+          <!-- DASHBOARD -->
           <section class="view active" data-view="dashboard">
 
             <div class="app-bar">
               <div class="brand-pill">
                 <span class="brand-dot"></span>
-                Blueprint
+                Gym Tracker
               </div>
-              <button class="icon-btn" data-go="settings" aria-label="Open settings">
+              <button class="icon-btn" data-go="settings" aria-label="Settings">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3"/>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -1450,32 +1185,28 @@ button {
               </button>
             </div>
 
-            <div class="hero">
-              <h1 class="hero-title">The 5-Month<br>Jawline Blueprint<span class="accent-mark"></span></h1>
-              <div class="hero-meta">
-                <span>Tracker</span>
-                <span class="divider"></span>
-                <span>Month 01 / 05</span>
-              </div>
+            <div class="greeting" id="greeting">Hi, Bimo 👋</div>
+            <h1 class="hero-title">What do you want to<br>work on today?<span class="accent-mark"></span></h1>
+            <div class="hero-meta">
+              <span id="today-label">Saturday</span>
+              <span class="divider"></span>
+              <span>Week 04 · Cycle 04</span>
             </div>
 
             <div class="stats-grid">
               <div class="timeline-card">
                 <div class="timeline-top">
-                  <div class="face-icon" aria-label="Defined face profile">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M9 3.2c2-1.4 5.4-1.3 6.8 0.6 1.1 1.5 1 3.6 1 5.2v1.6L18.4 12 17 12.6v1.5c0 1.3-0.8 2.5-2 2.9l-0.5 2v2"/>
-                      <circle cx="14.8" cy="9" r="0.45" fill="currentColor"/>
+                  <div class="face-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6.5 6.5h11M6.5 6.5v11M17.5 6.5v11M6.5 17.5h11M9 12h6"/>
                     </svg>
                   </div>
-                  <div class="timeline-tag">Timeline</div>
+                  <div class="timeline-tag">Plan</div>
                 </div>
                 <div class="timeline-body">
-                  <div class="timeline-label">Current Phase</div>
+                  <div class="timeline-label">Strength Cycle</div>
                   <div class="timeline-value">Month 1 <span class="of">of 5</span></div>
-                  <div class="progress-track">
-                    <div class="progress-fill"></div>
-                  </div>
+                  <div class="progress-track"><div class="progress-fill"></div></div>
                   <div class="timeline-target">
                     <span>Target</span>
                     <b>OCT 2026</b>
@@ -1503,30 +1234,28 @@ button {
             </div>
 
             <div class="section-head">
-              <div class="section-title">This Week · Cycle 04</div>
-              <div class="section-action">3 sessions</div>
+              <div class="section-title">This Week's Sessions</div>
+              <div class="section-action">3 routines</div>
             </div>
 
             <!-- Card 1: PUSH -->
-            <div class="workout-card">
+            <div class="workout-card" data-day="mon-thu">
               <div class="card-head">
-                <div class="cat-icon accent" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6.5 6.5l11 11"/>
-                    <path d="M21 21l-1-1"/>
-                    <path d="M3 3l1 1"/>
-                    <path d="M18 22l4-4"/>
-                    <path d="M2 6l4-4"/>
-                    <path d="M3 10l7-7"/>
-                    <path d="M14 21l7-7"/>
+                <div class="cat-icon accent">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="9" width="2.5" height="6" rx="0.6"/>
+                    <rect x="5.5" y="6.5" width="3" height="11" rx="0.8"/>
+                    <rect x="9.5" y="11" width="5" height="2" rx="0.8"/>
+                    <rect x="15.5" y="6.5" width="3" height="11" rx="0.8"/>
+                    <rect x="19.5" y="9" width="2.5" height="6" rx="0.6"/>
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days">Mon / Thu</div>
+                  <div class="card-days-row"><div class="card-days">Mon · Thu</div></div>
                   <div class="card-title">Workout A <span class="pipe">|</span> Push</div>
                   <div class="card-subtitle">Chest · Shoulders · Triceps</div>
                 </div>
-                <button class="chevron-btn" aria-label="Toggle exercises">
+                <button class="chevron-btn" aria-label="Toggle">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="18 15 12 9 6 15"/>
                   </svg>
@@ -1538,58 +1267,62 @@ button {
                   HNP Safe <span class="sep">|</span> Recovery 90–120s
                 </div>
                 <div class="exercise-list">
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Incline DB Press" data-group="Chest" data-target="3–4 × 6–8" data-note="Hold 20kg for 3×8 before progressing">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Incline DB Press</div>
-                      <div class="exercise-tag">Hold 20kg for 3×8 before progressing</div>
+                      <div class="exercise-sub">3–4 × 6–8</div>
                     </div>
-                    <div class="exercise-reps">3–4 × 6–8</div>
+                    <div class="exercise-weight"><span class="w-val">20</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Chest Press · Machine" data-group="Chest" data-target="3 × 8–10">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Chest Press · Machine</div>
+                      <div class="exercise-sub">3 × 8–10</div>
                     </div>
-                    <div class="exercise-reps">3 × 8–10</div>
+                    <div class="exercise-weight"><span class="w-val">40</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="DB Shoulder Press" data-group="Shoulders" data-target="3 × 8–10">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">DB Shoulder Press</div>
+                      <div class="exercise-sub">3 × 8–10</div>
                     </div>
-                    <div class="exercise-reps">3 × 8–10</div>
+                    <div class="exercise-weight"><span class="w-val">12</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Pec Deck Fly" data-group="Chest" data-target="3 × 10–15">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Pec Deck Fly</div>
+                      <div class="exercise-sub">3 × 10–15</div>
                     </div>
-                    <div class="exercise-reps">3 × 10–15</div>
+                    <div class="exercise-weight"><span class="w-val">35</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Lateral Raise" data-group="Shoulders" data-target="4 × 15–20" data-note="Spam 7kg">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Lateral Raise</div>
-                      <div class="exercise-tag">Spam 7kg</div>
+                      <div class="exercise-sub">4 × 15–20</div>
                     </div>
-                    <div class="exercise-reps">4 × 15–20</div>
+                    <div class="exercise-weight"><span class="w-val">7</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Tricep Pushdown" data-group="Triceps" data-target="3 × 10–12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Tricep Pushdown</div>
+                      <div class="exercise-sub">3 × 10–12</div>
                     </div>
-                    <div class="exercise-reps">3 × 10–12</div>
+                    <div class="exercise-weight"><span class="w-val">25</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Card 2: PULL -->
-            <div class="workout-card">
+            <div class="workout-card" data-day="tue-fri">
               <div class="card-head">
-                <div class="cat-icon dark" aria-hidden="true">
+                <div class="cat-icon dark">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 4h18"/>
                     <path d="M6 4v3"/>
@@ -1600,11 +1333,11 @@ button {
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days">Tue / Fri</div>
+                  <div class="card-days-row"><div class="card-days">Tue · Fri</div></div>
                   <div class="card-title">Workout B <span class="pipe">|</span> Pull</div>
                   <div class="card-subtitle">Back · Biceps · Rear Delts</div>
                 </div>
-                <button class="chevron-btn" aria-label="Toggle exercises">
+                <button class="chevron-btn" aria-label="Toggle">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="18 15 12 9 6 15"/>
                   </svg>
@@ -1616,66 +1349,72 @@ button {
                   HNP Safe <span class="sep">|</span> Recovery 90–120s
                 </div>
                 <div class="exercise-list">
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Lat Pulldown" data-group="Back" data-target="4 × 8–10">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Lat Pulldown</div>
+                      <div class="exercise-sub">4 × 8–10</div>
                     </div>
-                    <div class="exercise-reps">4 × 8–10</div>
+                    <div class="exercise-weight"><span class="w-val">45</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Cable / Machine Row" data-group="Back" data-target="3 × 8–12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Cable / Machine Row</div>
+                      <div class="exercise-sub">3 × 8–12</div>
                     </div>
-                    <div class="exercise-reps">3 × 8–12</div>
+                    <div class="exercise-weight"><span class="w-val">40</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Reverse Pec Deck" data-group="Back" data-target="3 × 12–15">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Reverse Pec Deck</div>
+                      <div class="exercise-sub">3 × 12–15</div>
                     </div>
-                    <div class="exercise-reps">3 × 12–15</div>
+                    <div class="exercise-weight"><span class="w-val">30</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Standard Bicep Curl" data-group="Biceps" data-target="3 × 10–12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Standard Bicep Curl</div>
+                      <div class="exercise-sub">3 × 10–12</div>
                     </div>
-                    <div class="exercise-reps">3 × 10–12</div>
+                    <div class="exercise-weight"><span class="w-val">10</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Hammer Curl" data-group="Biceps" data-target="3 × 10–12">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Hammer Curl</div>
+                      <div class="exercise-sub">3 × 10–12</div>
                     </div>
-                    <div class="exercise-reps">3 × 10–12</div>
+                    <div class="exercise-weight"><span class="w-val">10</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Seated Opt. Bicep Curl" data-group="Biceps" data-target="2 × 12–15">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Seated Opt. Bicep Curl</div>
+                      <div class="exercise-sub">2 × 12–15</div>
                     </div>
-                    <div class="exercise-reps">2 × 12–15</div>
+                    <div class="exercise-weight"><span class="w-val">8</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Card 3: RECOVERY -->
-            <div class="workout-card">
+            <div class="workout-card" data-day="wed-sat">
               <div class="card-head">
-                <div class="cat-icon" aria-hidden="true">
+                <div class="cat-icon">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days">Wed / Sat</div>
+                  <div class="card-days-row"><div class="card-days">Wed · Sat</div></div>
                   <div class="card-title">Active Recovery</div>
                   <div class="card-subtitle">Spine-Safe Legs + Treadmill</div>
                 </div>
-                <button class="chevron-btn" aria-label="Toggle exercises">
+                <button class="chevron-btn" aria-label="Toggle">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="18 15 12 9 6 15"/>
                   </svg>
@@ -1687,41 +1426,45 @@ button {
                   HNP Protection <span class="sep">|</span> Recovery 60s
                 </div>
                 <div class="exercise-list">
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Glute Bridges · Mat" data-group="Legs" data-target="3 × 15–20" data-bw="1">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Glute Bridges · Mat</div>
+                      <div class="exercise-sub">3 × 15–20</div>
                     </div>
-                    <div class="exercise-reps">3 × 15–20</div>
+                    <div class="exercise-weight bw"><span class="w-val">BW</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Bulgarian Split Squats" data-group="Legs" data-target="3 × 10–15 / leg" data-bw="1" data-note="Body weight · per leg">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Bulgarian Split Squats</div>
-                      <div class="exercise-tag">Body weight · per leg</div>
+                      <div class="exercise-sub">3 × 10–15 / leg</div>
                     </div>
-                    <div class="exercise-reps">3 × 10–15</div>
+                    <div class="exercise-weight bw"><span class="w-val">BW</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Seated Leg Extension" data-group="Legs" data-target="3 × 12–15">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Seated Leg Extension</div>
+                      <div class="exercise-sub">3 × 12–15</div>
                     </div>
-                    <div class="exercise-reps">3 × 12–15</div>
+                    <div class="exercise-weight"><span class="w-val">25</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Lying Leg Curl" data-group="Legs" data-target="3 × 12–15">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Lying Leg Curl</div>
+                      <div class="exercise-sub">3 × 12–15</div>
                     </div>
-                    <div class="exercise-reps">3 × 12–15</div>
+                    <div class="exercise-weight"><span class="w-val">20</span><span class="w-unit">kg</span><svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                   </div>
-                  <div class="exercise-item">
-                    <button class="ex-check" aria-label="Mark complete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+                  <div class="exercise-item" data-exercise="Treadmill · Moderate Pace" data-group="Cardio" data-target="20–30 min" data-cardio="1">
+                    <button class="ex-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
                     <div class="exercise-info">
                       <div class="exercise-name">Treadmill · Moderate Pace</div>
+                      <div class="exercise-sub">Cardio</div>
                     </div>
-                    <div class="exercise-reps">20–30 min</div>
+                    <div class="exercise-weight cardio"><span class="w-val">20–30</span><span class="w-unit">min</span></div>
                   </div>
                 </div>
               </div>
@@ -1729,15 +1472,14 @@ button {
 
           </section>
 
-          <!-- ============ STATISTICS VIEW ============ -->
+          <!-- STATISTICS -->
           <section class="view" data-view="stats">
-
             <div class="app-bar">
               <div class="brand-pill">
                 <span class="brand-dot"></span>
-                Blueprint
+                Gym Tracker
               </div>
-              <button class="icon-btn" data-go="settings" aria-label="Open settings">
+              <button class="icon-btn" data-go="settings" aria-label="Settings">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3"/>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -1754,7 +1496,6 @@ button {
               </div>
             </div>
 
-            <!-- Streak hero -->
             <div class="streak-card">
               <div class="streak-flame">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -1767,56 +1508,49 @@ button {
               </div>
             </div>
 
-            <!-- Metric grid -->
             <div class="metric-grid">
               <div class="metric-card">
                 <div class="metric-label">Sessions</div>
                 <div class="metric-value">28<span class="unit">/ 32</span></div>
-                <div class="metric-trend">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/>
-                  </svg>
-                  +14% vs prev
-                </div>
+                <div class="metric-trend"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/></svg>+14% vs prev</div>
               </div>
               <div class="metric-card">
                 <div class="metric-label">Volume</div>
                 <div class="metric-value">48.2<span class="unit">k kg</span></div>
-                <div class="metric-trend">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/>
-                  </svg>
-                  +22%
-                </div>
+                <div class="metric-trend"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/></svg>+22%</div>
               </div>
               <div class="metric-card">
                 <div class="metric-label">Avg Steps</div>
                 <div class="metric-value">11.4<span class="unit">k</span></div>
-                <div class="metric-trend">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/>
-                  </svg>
-                  +6%
-                </div>
+                <div class="metric-trend"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/></svg>+6%</div>
               </div>
               <div class="metric-card">
                 <div class="metric-label">Body Fat</div>
                 <div class="metric-value">14.2<span class="unit">%</span></div>
-                <div class="metric-trend down">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
-                  -1.8% this mo.
-                </div>
+                <div class="metric-trend down"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>-1.8% this mo.</div>
               </div>
             </div>
 
-            <!-- Line chart -->
+            <!-- Weekly Frequency Tracker -->
             <div class="chart-card">
               <div class="chart-head">
                 <div>
-                  <div class="chart-title">Jawline Definition</div>
-                  <div class="chart-sub">Score · weekly average</div>
+                  <div class="chart-title">Weekly Frequency</div>
+                  <div class="chart-sub">Sessions per muscle group · this week</div>
+                </div>
+              </div>
+              <div class="freq-summary">
+                <div class="freq-summary-num" id="freq-total-num">11<span class="of"> / 12</span></div>
+                <div class="freq-summary-label">total<br>sessions hit</div>
+              </div>
+              <div class="freq-list" id="freq-list"></div>
+            </div>
+
+            <div class="chart-card" style="margin-top:10px;">
+              <div class="chart-head">
+                <div>
+                  <div class="chart-title">Strength Progress</div>
+                  <div class="chart-sub">Avg weight · last 5 weeks</div>
                 </div>
                 <div class="chart-now">68<span class="unit">/100</span></div>
               </div>
@@ -1827,93 +1561,33 @@ button {
                     <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
                   </linearGradient>
                 </defs>
-                <line x1="0" y1="30" x2="320" y2="30" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
-                <line x1="0" y1="65" x2="320" y2="65" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
-                <line x1="0" y1="100" x2="320" y2="100" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
-
+                <line x1="0" y1="30" x2="320" y2="30" stroke="rgba(0,0,0,0.04)"/>
+                <line x1="0" y1="65" x2="320" y2="65" stroke="rgba(0,0,0,0.04)"/>
+                <line x1="0" y1="100" x2="320" y2="100" stroke="rgba(0,0,0,0.04)"/>
                 <path d="M 0 95 C 30 92, 50 85, 80 78 C 110 72, 130 68, 160 60 C 190 55, 210 45, 240 40 C 270 38, 290 28, 320 22 L 320 130 L 0 130 Z" fill="url(#areaGrad)"/>
                 <path d="M 0 95 C 30 92, 50 85, 80 78 C 110 72, 130 68, 160 60 C 190 55, 210 45, 240 40 C 270 38, 290 28, 320 22" stroke="#8B5CF6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-
                 <circle cx="80" cy="78" r="5" fill="#fff" stroke="#8B5CF6" stroke-width="2.5"/>
                 <circle cx="80" cy="78" r="2" fill="#8B5CF6"/>
               </svg>
               <div class="chart-x-axis">
-                <span>M1</span>
-                <span class="current">· M1 ·</span>
-                <span>M2</span>
-                <span>M3</span>
-                <span>M4</span>
-                <span>M5</span>
-              </div>
-            </div>
-
-            <!-- Volume by muscle group -->
-            <div class="chart-card" style="margin-top:10px;">
-              <div class="chart-head">
-                <div>
-                  <div class="chart-title">Volume by Group</div>
-                  <div class="chart-sub">Sets · last 7 days</div>
-                </div>
-              </div>
-              <div class="volume-list">
-                <div class="vol-row">
-                  <div class="vol-name">Chest</div>
-                  <div class="vol-bar"><div class="vol-fill" style="width:82%"></div></div>
-                  <div class="vol-val">14</div>
-                </div>
-                <div class="vol-row">
-                  <div class="vol-name">Back</div>
-                  <div class="vol-bar"><div class="vol-fill" style="width:74%"></div></div>
-                  <div class="vol-val">13</div>
-                </div>
-                <div class="vol-row">
-                  <div class="vol-name">Shoulders</div>
-                  <div class="vol-bar"><div class="vol-fill" style="width:58%"></div></div>
-                  <div class="vol-val">10</div>
-                </div>
-                <div class="vol-row">
-                  <div class="vol-name">Arms</div>
-                  <div class="vol-bar"><div class="vol-fill" style="width:64%"></div></div>
-                  <div class="vol-val">11</div>
-                </div>
-                <div class="vol-row">
-                  <div class="vol-name">Legs</div>
-                  <div class="vol-bar"><div class="vol-fill" style="width:45%"></div></div>
-                  <div class="vol-val">8</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Weekly activity grid -->
-            <div class="chart-card" style="margin-top:10px;">
-              <div class="chart-head">
-                <div>
-                  <div class="chart-title">Activity</div>
-                  <div class="chart-sub">Last 4 weeks · per day</div>
-                </div>
-              </div>
-              <div class="week-grid">
-                <div class="col"><div class="day-label">M</div><div class="dot-stack"><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div></div></div>
-                <div class="col"><div class="day-label">T</div><div class="dot-stack"><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div></div></div>
-                <div class="col"><div class="day-label">W</div><div class="dot-stack"><div class="day-dot done"></div><div class="day-dot half"></div><div class="day-dot done"></div><div class="day-dot done"></div></div></div>
-                <div class="col"><div class="day-label">T</div><div class="dot-stack"><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div></div></div>
-                <div class="col"><div class="day-label">F</div><div class="dot-stack"><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot"></div><div class="day-dot done"></div></div></div>
-                <div class="col"><div class="day-label">S</div><div class="dot-stack"><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div><div class="day-dot done"></div></div></div>
-                <div class="col"><div class="day-label">S</div><div class="dot-stack"><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div></div></div>
+                <span>W1</span>
+                <span class="current">· W2 ·</span>
+                <span>W3</span>
+                <span>W4</span>
+                <span>W5</span>
               </div>
             </div>
 
           </section>
 
-          <!-- ============ SETTINGS VIEW ============ -->
+          <!-- SETTINGS -->
           <section class="view" data-view="settings">
-
             <div class="app-bar">
               <div class="brand-pill">
                 <span class="brand-dot"></span>
-                Blueprint
+                Gym Tracker
               </div>
-              <button class="icon-btn" data-go="dashboard" aria-label="Back to dashboard">
+              <button class="icon-btn" data-go="dashboard" aria-label="Back">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"/>
                   <line x1="6" y1="6" x2="18" y2="18"/>
@@ -1930,62 +1604,47 @@ button {
               </div>
             </div>
 
-            <!-- Profile -->
             <div class="profile-card">
               <div class="avatar">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 3.2c2-1.4 5.4-1.3 6.8 0.6 1.1 1.5 1 3.6 1 5.2v1.6L18.4 12 17 12.6v1.5c0 1.3-0.8 2.5-2 2.9l-0.5 2v2"/>
-                  <circle cx="14.8" cy="9" r="0.45" fill="currentColor"/>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>
                 </svg>
               </div>
               <div class="setting-info">
-                <div class="profile-name">Bimo</div>
-                <div class="profile-meta">Spring Cohort · Day 12</div>
+                <div class="profile-name" id="profile-name">Bimo</div>
+                <div class="profile-meta">Strength Cycle · Day 12</div>
               </div>
               <button class="edit-pill">Edit</button>
             </div>
 
-            <!-- Goal section -->
             <div class="settings-section">
               <div class="settings-label">Your Goal</div>
               <div class="settings-group">
                 <div class="setting-row">
                   <div class="setting-info">
                     <div class="setting-name">Plan</div>
-                    <div class="setting-desc">5-Month Jawline Blueprint</div>
+                    <div class="setting-desc">5-Month Strength Cycle</div>
                   </div>
-                  <div class="setting-value">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
+                  <div class="setting-value"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </div>
                 <div class="setting-row">
                   <div class="setting-info">
                     <div class="setting-name">Target Date</div>
                     <div class="setting-desc">Plan completion</div>
                   </div>
-                  <div class="setting-value">OCT 2026
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
+                  <div class="setting-value">OCT 2026<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </div>
                 <div class="setting-row">
                   <div class="setting-info">
                     <div class="setting-name">Daily Step Goal</div>
                     <div class="setting-desc">Active recovery baseline</div>
                   </div>
-                  <div class="setting-value">10,000
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
+                  <div class="setting-value">10,000<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </div>
               </div>
             </div>
 
-            <!-- Preferences -->
             <div class="settings-section">
               <div class="settings-label">Preferences</div>
               <div class="settings-group">
@@ -1994,27 +1653,21 @@ button {
                     <div class="setting-name">Daily Reminders</div>
                     <div class="setting-desc">Notify before each session</div>
                   </div>
-                  <button class="toggle on" role="switch" aria-checked="true" aria-label="Daily Reminders">
-                    <span class="toggle-thumb"></span>
-                  </button>
+                  <button class="toggle on" role="switch" aria-checked="true"><span class="toggle-thumb"></span></button>
                 </div>
                 <div class="setting-row" data-toggle-row>
                   <div class="setting-info">
                     <div class="setting-name">Rest Timer Auto-Start</div>
                     <div class="setting-desc">Begin timer on set complete</div>
                   </div>
-                  <button class="toggle on" role="switch" aria-checked="true" aria-label="Rest timer auto-start">
-                    <span class="toggle-thumb"></span>
-                  </button>
+                  <button class="toggle on" role="switch" aria-checked="true"><span class="toggle-thumb"></span></button>
                 </div>
                 <div class="setting-row" data-toggle-row>
                   <div class="setting-info">
                     <div class="setting-name">Haptic Feedback</div>
                     <div class="setting-desc">Subtle vibration on tap</div>
                   </div>
-                  <button class="toggle on" role="switch" aria-checked="true" aria-label="Haptic Feedback">
-                    <span class="toggle-thumb"></span>
-                  </button>
+                  <button class="toggle on" role="switch" aria-checked="true"><span class="toggle-thumb"></span></button>
                 </div>
                 <div class="setting-row">
                   <div class="setting-info">
@@ -2029,34 +1682,6 @@ button {
               </div>
             </div>
 
-            <!-- Appearance -->
-            <div class="settings-section">
-              <div class="settings-label">Appearance</div>
-              <div class="settings-group">
-                <div class="setting-row" data-toggle-row>
-                  <div class="setting-info">
-                    <div class="setting-name">Reduce Motion</div>
-                    <div class="setting-desc">Minimize animations</div>
-                  </div>
-                  <button class="toggle" role="switch" aria-checked="false" aria-label="Reduce Motion">
-                    <span class="toggle-thumb"></span>
-                  </button>
-                </div>
-                <div class="setting-row">
-                  <div class="setting-info">
-                    <div class="setting-name">Accent Color</div>
-                    <div class="setting-desc">Highlight tone</div>
-                  </div>
-                  <div class="setting-value">Violet
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Data -->
             <div class="settings-section">
               <div class="settings-label">Data</div>
               <div class="settings-group">
@@ -2065,42 +1690,31 @@ button {
                     <div class="setting-name">Export Progress</div>
                     <div class="setting-desc">Download as CSV</div>
                   </div>
-                  <div class="setting-value">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
+                  <div class="setting-value"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </div>
-                <div class="setting-row danger">
+                <div class="setting-row danger" id="reset-row">
                   <div class="setting-info">
                     <div class="setting-name">Reset All Progress</div>
-                    <div class="setting-desc">Cannot be undone</div>
+                    <div class="setting-desc">Clears weights & history</div>
                   </div>
-                  <div class="setting-value">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
+                  <div class="setting-value"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </div>
               </div>
             </div>
 
-            <!-- Sign out -->
             <div class="signout-row">
               <div class="setting-row">
                 <div class="setting-name">Sign Out</div>
               </div>
             </div>
 
-            <div class="version-info">Blueprint · v1.0.0</div>
-
+            <div class="version-info">Gym Tracker · v1.1.0</div>
           </section>
 
         </div>
 
-        <!-- Bottom nav -->
         <nav class="bottom-nav" role="tablist">
-          <button class="nav-item active" data-target="dashboard" role="tab" aria-selected="true">
+          <button class="nav-item active" data-target="dashboard" role="tab">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="9" rx="2"/>
               <rect x="14" y="3" width="7" height="5" rx="2"/>
@@ -2109,14 +1723,14 @@ button {
             </svg>
             <span class="nav-label">Dashboard</span>
           </button>
-          <button class="nav-item" data-target="stats" role="tab" aria-selected="false">
+          <button class="nav-item" data-target="stats" role="tab">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 3v18h18"/>
               <path d="M7 14l4-4 4 4 5-7"/>
             </svg>
             <span class="nav-label">Statistics</span>
           </button>
-          <button class="nav-item" data-target="settings" role="tab" aria-selected="false">
+          <button class="nav-item" data-target="settings" role="tab">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -2125,7 +1739,51 @@ button {
           </button>
         </nav>
 
-        <!-- Toast for feedback -->
+        <div class="sheet-overlay" id="sheet-overlay"></div>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header">
+            <div class="sheet-pretitle" id="sheet-pretitle">EXERCISE</div>
+            <div class="sheet-title" id="sheet-title">Exercise</div>
+            <div class="sheet-subtitle" id="sheet-subtitle">3 × 8</div>
+            <div class="sheet-note" id="sheet-note" style="display:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 9v4"/>
+                <path d="M12 17h.01"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span id="sheet-note-text"></span>
+            </div>
+          </div>
+
+          <div class="sheet-block">
+            <div class="sheet-block-label">Today's Weight</div>
+            <div class="stepper">
+              <button class="step-btn" id="step-minus" aria-label="Decrease">−</button>
+              <div class="weight-display">
+                <div class="weight-number"><span id="weight-value">20</span><span class="unit" id="weight-unit-label">kg</span></div>
+                <div class="weight-helper" id="weight-helper">Tap + / − to adjust</div>
+              </div>
+              <button class="step-btn" id="step-plus" aria-label="Increase">+</button>
+            </div>
+          </div>
+
+          <div class="sheet-block">
+            <div class="sheet-block-label">Recent Sessions</div>
+            <div class="history-list" id="history-list">
+              <div class="history-empty">No sessions logged yet.<br>Tap "Log session" to start tracking.</div>
+            </div>
+          </div>
+
+          <div class="sheet-actions">
+            <button class="btn-secondary" id="btn-cancel">Cancel</button>
+            <button class="btn-primary" id="btn-log">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Log session
+            </button>
+          </div>
+        </div>
+
         <div class="toast" id="toast">
           <span class="toast-dot"></span>
           <span id="toast-text">Saved</span>
@@ -2141,101 +1799,331 @@ button {
 (function() {
   'use strict';
 
-  // ---------- Toast ----------
+  const STORAGE_KEY = 'gym-tracker-v1';
+  const TARGETS = { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 2 };
+  const GROUP_ORDER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Cardio'];
+
+  function loadData() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { exercises: {}, sessions: [] }; }
+    catch { return { exercises: {}, sessions: [] }; }
+  }
+  function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+  function todayISO() { return new Date().toISOString().split('T')[0]; }
+  function formatDate(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    const t = new Date(); t.setHours(0,0,0,0);
+    const diff = Math.round((t - d) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Yesterday';
+    if (diff < 7) return diff + ' days ago';
+    if (diff < 14) return '1 week ago';
+    if (diff < 30) return Math.floor(diff / 7) + ' weeks ago';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+  function getDefaultWeight(item) {
+    const w = item.querySelector('.exercise-weight .w-val');
+    const v = w ? w.textContent.trim() : '';
+    const n = parseFloat(v);
+    return isNaN(n) ? 0 : n;
+  }
+  function getLatestWeight(name, fallback) {
+    const data = loadData();
+    const arr = data.exercises[name]?.sessions || [];
+    if (arr.length === 0) return fallback;
+    return arr[arr.length - 1].weight;
+  }
+  function logWeight(name, weight, group) {
+    const data = loadData();
+    if (!data.exercises[name]) data.exercises[name] = { sessions: [] };
+    const date = todayISO();
+    data.exercises[name].sessions.push({ date, weight });
+    data.sessions.push({ date, exercise: name, group, weight });
+    saveData(data);
+  }
+  function clearAllData() { localStorage.removeItem(STORAGE_KEY); }
+
   const toast = document.getElementById('toast');
   const toastText = document.getElementById('toast-text');
   let toastTimer = null;
-
-  function showToast(message) {
-    toastText.textContent = message;
+  function showToast(msg) {
+    toastText.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
   }
+  function tap() { if (window.navigator?.vibrate) navigator.vibrate(8); }
 
-  // ---------- Haptic helper ----------
-  function tap() {
-    if (window.navigator && navigator.vibrate) navigator.vibrate(8);
-  }
-
-  // ---------- View switching ----------
   const views = document.querySelectorAll('.view');
   const navItems = document.querySelectorAll('.nav-item');
-
   function switchView(name) {
-    let switched = false;
-    views.forEach(v => {
-      const active = v.dataset.view === name;
-      v.classList.toggle('active', active);
-      if (active) switched = true;
-    });
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === name));
     navItems.forEach(n => {
-      const active = n.dataset.target === name;
-      n.classList.toggle('active', active);
-      n.setAttribute('aria-selected', active ? 'true' : 'false');
+      const a = n.dataset.target === name;
+      n.classList.toggle('active', a);
+      n.setAttribute('aria-selected', a ? 'true' : 'false');
     });
-    if (switched) {
-      const active = document.querySelector('.view.active');
-      if (active) active.scrollTop = 0;
-      tap();
-    }
+    const active = document.querySelector('.view.active');
+    if (active) active.scrollTop = 0;
+    if (name === 'stats') renderFrequency();
+    tap();
   }
-
-  navItems.forEach(item => {
-    item.addEventListener('click', () => switchView(item.dataset.target));
-  });
-
+  navItems.forEach(item => item.addEventListener('click', () => switchView(item.dataset.target)));
   document.querySelectorAll('[data-go]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      switchView(el.dataset.go);
-    });
+    el.addEventListener('click', e => { e.stopPropagation(); switchView(el.dataset.go); });
   });
 
-  // ---------- Card expand/collapse ----------
   document.querySelectorAll('.workout-card').forEach(card => {
-    const head = card.querySelector('.card-head');
-    head.addEventListener('click', () => {
+    card.querySelector('.card-head').addEventListener('click', () => {
       card.classList.toggle('collapsed');
       tap();
     });
   });
 
-  // ---------- Exercise check-off ----------
+  const dayMap = { 0: 'wed-sat', 1: 'mon-thu', 2: 'tue-fri', 3: 'wed-sat', 4: 'mon-thu', 5: 'tue-fri', 6: 'wed-sat' };
+  const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  function applyTodayHighlight() {
+    const day = new Date().getDay();
+    const target = dayMap[day];
+    document.getElementById('today-label').textContent = dayName[day];
+    document.querySelectorAll('.workout-card').forEach(card => {
+      const isToday = card.dataset.day === target;
+      card.classList.toggle('today', isToday);
+      const row = card.querySelector('.card-days-row');
+      const existing = row.querySelector('.today-pill');
+      if (isToday && !existing) {
+        const pill = document.createElement('span');
+        pill.className = 'today-pill';
+        pill.textContent = 'Today';
+        row.appendChild(pill);
+      } else if (!isToday && existing) {
+        existing.remove();
+      }
+    });
+  }
+
+  function renderExerciseWeights() {
+    document.querySelectorAll('.exercise-item').forEach(item => {
+      const name = item.dataset.exercise;
+      const isCardio = item.dataset.cardio === '1';
+      if (isCardio) return;
+      const isBW = item.dataset.bw === '1';
+      const badge = item.querySelector('.exercise-weight');
+      const wEl = badge.querySelector('.w-val');
+      const data = loadData();
+      const sessions = data.exercises[name]?.sessions || [];
+      if (sessions.length > 0) {
+        const latest = sessions[sessions.length - 1].weight;
+        badge.classList.remove('bw');
+        wEl.textContent = latest === 0 ? 'BW' : latest;
+        let unit = badge.querySelector('.w-unit');
+        if (latest === 0) {
+          if (unit) unit.style.display = 'none';
+        } else {
+          if (!unit) {
+            unit = document.createElement('span');
+            unit.className = 'w-unit';
+            unit.textContent = 'kg';
+            badge.insertBefore(unit, badge.querySelector('.chev'));
+          } else {
+            unit.style.display = '';
+            unit.textContent = 'kg';
+          }
+        }
+        const prev = sessions.length > 1 ? sessions[sessions.length - 2].weight : null;
+        let trend = badge.querySelector('.w-trend');
+        if (prev !== null && latest > prev) {
+          if (!trend) {
+            trend = document.createElement('span');
+            trend.className = 'w-trend';
+            trend.textContent = '↑';
+            const chev = badge.querySelector('.chev');
+            badge.insertBefore(trend, chev);
+          }
+        } else if (trend) {
+          trend.remove();
+        }
+      }
+    });
+  }
+
+  const sheet = document.getElementById('sheet');
+  const overlay = document.getElementById('sheet-overlay');
+  const sheetPretitle = document.getElementById('sheet-pretitle');
+  const sheetTitle = document.getElementById('sheet-title');
+  const sheetSubtitle = document.getElementById('sheet-subtitle');
+  const sheetNote = document.getElementById('sheet-note');
+  const sheetNoteText = document.getElementById('sheet-note-text');
+  const weightValueEl = document.getElementById('weight-value');
+  const weightUnitLabel = document.getElementById('weight-unit-label');
+  const weightHelper = document.getElementById('weight-helper');
+  const stepMinus = document.getElementById('step-minus');
+  const stepPlus = document.getElementById('step-plus');
+  const historyList = document.getElementById('history-list');
+  const btnCancel = document.getElementById('btn-cancel');
+  const btnLog = document.getElementById('btn-log');
+
+  let currentItem = null;
+  let currentWeight = 0;
+  let currentStep = 2.5;
+  let currentIsBW = false;
+
+  function openSheet(item) {
+    currentItem = item;
+    const name = item.dataset.exercise;
+    const group = item.dataset.group;
+    const target = item.dataset.target;
+    const note = item.dataset.note;
+    currentIsBW = item.dataset.bw === '1';
+    const card = item.closest('.workout-card');
+    const days = card?.querySelector('.card-days')?.textContent || '';
+
+    sheetPretitle.textContent = (group || '') + ' · ' + days;
+    sheetTitle.textContent = name;
+    sheetSubtitle.textContent = target;
+
+    if (note) { sheetNoteText.textContent = note; sheetNote.style.display = ''; }
+    else { sheetNote.style.display = 'none'; }
+
+    const data = loadData();
+    const sessions = data.exercises[name]?.sessions || [];
+    if (sessions.length > 0) {
+      currentWeight = sessions[sessions.length - 1].weight;
+    } else {
+      currentWeight = currentIsBW ? 0 : getDefaultWeight(item);
+    }
+    updateWeightDisplay();
+    renderHistory(name);
+    sheet.classList.add('show');
+    overlay.classList.add('show');
+  }
+
+  function closeSheet() {
+    sheet.classList.remove('show');
+    overlay.classList.remove('show');
+    currentItem = null;
+  }
+
+  function updateWeightDisplay() {
+    if (currentIsBW && currentWeight === 0) {
+      weightValueEl.textContent = 'BW';
+      weightUnitLabel.textContent = '';
+    } else {
+      weightValueEl.textContent = currentWeight % 1 === 0 ? currentWeight : currentWeight.toFixed(1);
+      weightUnitLabel.textContent = 'kg';
+    }
+    currentStep = currentWeight < 5 ? 0.5 : (currentWeight < 20 ? 1 : 2.5);
+    weightHelper.textContent = currentIsBW && currentWeight === 0 ? 'Bodyweight · tap + to add load' : ('Step ' + currentStep + ' kg');
+  }
+
+  stepMinus.addEventListener('click', () => {
+    currentWeight = Math.max(0, +(currentWeight - currentStep).toFixed(1));
+    if (Math.abs(currentWeight) < 0.01) currentWeight = 0;
+    updateWeightDisplay();
+    tap();
+  });
+  stepPlus.addEventListener('click', () => {
+    currentWeight = +(currentWeight + currentStep).toFixed(1);
+    updateWeightDisplay();
+    tap();
+  });
+
+  function renderHistory(name) {
+    const data = loadData();
+    const sessions = (data.exercises[name]?.sessions || []).slice().reverse();
+    historyList.innerHTML = '';
+    if (sessions.length === 0) {
+      historyList.innerHTML = '<div class="history-empty">No sessions logged yet.<br>Tap "Log session" to start tracking.</div>';
+      return;
+    }
+    sessions.slice(0, 6).forEach((s, i) => {
+      const next = sessions[i + 1];
+      let trend = null, delta = 0;
+      if (next) {
+        delta = +(s.weight - next.weight).toFixed(1);
+        if (delta > 0) trend = 'up';
+        else if (delta < 0) trend = 'down';
+        else trend = 'same';
+      }
+      const row = document.createElement('div');
+      row.className = 'history-row';
+      const isToday = s.date === todayISO();
+      const trendHtml = trend === 'up' ? `<div class="history-trend up">↑ +${delta}</div>`
+                     : trend === 'down' ? `<div class="history-trend down">↓ ${delta}</div>`
+                     : trend === 'same' ? `<div class="history-trend same">=</div>` : '';
+      row.innerHTML = `
+        <div class="history-date ${isToday ? 'today' : ''}">${formatDate(s.date)}</div>
+        <div class="history-right">
+          <div class="history-weight">${s.weight === 0 ? 'BW' : s.weight + ' kg'}</div>
+          ${trendHtml}
+        </div>
+      `;
+      historyList.appendChild(row);
+    });
+  }
+
+  btnCancel.addEventListener('click', () => { closeSheet(); tap(); });
+  btnLog.addEventListener('click', () => {
+    if (!currentItem) return;
+    const name = currentItem.dataset.exercise;
+    const group = currentItem.dataset.group;
+    logWeight(name, currentWeight, group);
+    currentItem.classList.add('done');
+    renderExerciseWeights();
+    renderFrequency();
+    showToast(name + ' · ' + (currentWeight === 0 ? 'BW' : currentWeight + ' kg') + ' logged');
+    tap();
+    closeSheet();
+  });
+  overlay.addEventListener('click', closeSheet);
+
   document.querySelectorAll('.exercise-item').forEach(item => {
-    item.addEventListener('click', (e) => {
+    const check = item.querySelector('.ex-check');
+    const isCardio = item.dataset.cardio === '1';
+
+    check.addEventListener('click', e => {
+      e.stopPropagation();
       item.classList.toggle('done');
       tap();
-      const name = item.querySelector('.exercise-name')?.textContent || 'Exercise';
-      if (item.classList.contains('done')) {
-        showToast(name + ' · done');
+      const name = item.querySelector('.exercise-name').textContent;
+      if (item.classList.contains('done')) showToast(name + ' · done');
+    });
+
+    item.addEventListener('click', () => {
+      if (isCardio) {
+        item.classList.toggle('done');
+        tap();
+        if (item.classList.contains('done')) {
+          // Log cardio session for frequency tracking
+          const data = loadData();
+          data.sessions.push({ date: todayISO(), exercise: item.dataset.exercise, group: 'Cardio', weight: 0 });
+          saveData(data);
+          renderFrequency();
+          showToast('Cardio · done');
+        }
+        return;
       }
+      openSheet(item);
     });
   });
 
-  // ---------- Toggle switches ----------
   document.querySelectorAll('.toggle').forEach(t => {
-    t.addEventListener('click', (e) => {
+    t.addEventListener('click', e => {
       e.stopPropagation();
       const on = t.classList.toggle('on');
       t.setAttribute('aria-checked', on ? 'true' : 'false');
       tap();
     });
   });
-
-  // Allow whole row to toggle
   document.querySelectorAll('[data-toggle-row]').forEach(row => {
-    row.addEventListener('click', (e) => {
+    row.addEventListener('click', e => {
       if (e.target.closest('.toggle')) return;
-      const t = row.querySelector('.toggle');
-      if (t) t.click();
+      row.querySelector('.toggle')?.click();
     });
   });
 
-  // ---------- Segmented control ----------
   document.querySelectorAll('[data-segmented]').forEach(seg => {
     seg.querySelectorAll('.seg-option').forEach(opt => {
-      opt.addEventListener('click', (e) => {
+      opt.addEventListener('click', e => {
         e.stopPropagation();
         seg.querySelectorAll('.seg-option').forEach(o => o.classList.remove('on'));
         opt.classList.add('on');
@@ -2245,48 +2133,119 @@ button {
     });
   });
 
-  // ---------- Settings rows feedback ----------
   document.querySelectorAll('.setting-row:not([data-toggle-row])').forEach(row => {
-    row.addEventListener('click', (e) => {
+    row.addEventListener('click', e => {
       if (e.target.closest('.toggle') || e.target.closest('.segmented') || e.target.closest('.edit-pill')) return;
       const name = row.querySelector('.setting-name')?.textContent;
       if (!name) return;
-      if (row.classList.contains('danger')) {
-        showToast('Hold to confirm reset');
-      } else if (name === 'Sign Out') {
-        showToast('Signed out');
-      } else {
-        showToast(name);
+      if (row.id === 'reset-row') {
+        if (confirm('Reset all logged weights and history? This cannot be undone.')) {
+          clearAllData();
+          document.querySelectorAll('.exercise-item').forEach(i => i.classList.remove('done'));
+          renderExerciseWeights();
+          renderFrequency();
+          showToast('Progress reset');
+        }
+        return;
       }
+      if (name === 'Sign Out') showToast('Signed out');
+      else showToast(name);
       tap();
     });
   });
 
-  document.querySelectorAll('.edit-pill').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      showToast('Edit profile');
-      tap();
-    });
-  });
+  document.querySelectorAll('.edit-pill').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const name = prompt('Your name', document.getElementById('profile-name').textContent);
+    if (name && name.trim()) {
+      document.getElementById('profile-name').textContent = name.trim();
+      document.getElementById('greeting').textContent = 'Hi, ' + name.trim() + ' 👋';
+      const d = loadData();
+      d.profileName = name.trim();
+      saveData(d);
+    }
+    tap();
+  }));
 
-  // ---------- Dashboard interactive cards ----------
   document.querySelectorAll('.timeline-card, .steps-card').forEach(el => {
+    el.addEventListener('click', () => switchView('stats'));
+  });
+  document.querySelectorAll('.metric-card').forEach(el => {
     el.addEventListener('click', () => {
-      switchView('stats');
+      const t = el.querySelector('.metric-label')?.textContent;
+      if (t) { showToast(t); tap(); }
     });
   });
 
-  // ---------- Metric cards & chart cards ----------
-  document.querySelectorAll('.metric-card, .chart-card').forEach(el => {
-    el.addEventListener('click', () => {
-      const title = el.querySelector('.metric-label, .chart-title')?.textContent;
-      if (title) {
-        showToast(title);
-        tap();
+  function getThisWeekCounts() {
+    const data = loadData();
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMon = day === 0 ? -6 : 1 - day;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMon);
+    monday.setHours(0, 0, 0, 0);
+
+    const counts = {};
+    GROUP_ORDER.forEach(g => counts[g] = 0);
+    const seen = new Set();
+
+    (data.sessions || []).forEach(s => {
+      const d = new Date(s.date + 'T00:00:00');
+      if (d >= monday) {
+        const key = s.date + '|' + s.group;
+        if (!seen.has(key)) {
+          seen.add(key);
+          if (counts[s.group] !== undefined) counts[s.group]++;
+        }
       }
     });
-  });
+    return counts;
+  }
+
+  function getSeededCounts() {
+    const real = getThisWeekCounts();
+    const anyReal = Object.values(real).some(v => v > 0);
+    if (anyReal) return real;
+    return { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 1 };
+  }
+
+  function renderFrequency() {
+    const list = document.getElementById('freq-list');
+    if (!list) return;
+    const counts = getSeededCounts();
+    let totalDone = 0, totalTarget = 0;
+    list.innerHTML = '';
+    GROUP_ORDER.forEach(group => {
+      const target = TARGETS[group] || 2;
+      const count = Math.min(counts[group] || 0, target);
+      const pct = Math.min(100, (count / target) * 100);
+      totalDone += count;
+      totalTarget += target;
+      const isComplete = count >= target;
+      const row = document.createElement('div');
+      row.className = 'freq-row';
+      row.innerHTML = `
+        <div class="freq-name">${group}</div>
+        <div class="freq-bar-wrap"><div class="freq-fill ${isComplete ? 'complete' : ''}" style="width: ${pct}%"></div></div>
+        <div class="freq-count">${count}<span class="of-target">/ ${target}</span>${isComplete ? '<span class="freq-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>' : ''}</div>
+      `;
+      list.appendChild(row);
+    });
+    document.getElementById('freq-total-num').innerHTML = totalDone + '<span class="of"> / ' + totalTarget + '</span>';
+  }
+
+  function boot() {
+    const d = loadData();
+    if (d.profileName) {
+      document.getElementById('profile-name').textContent = d.profileName;
+      document.getElementById('greeting').textContent = 'Hi, ' + d.profileName + ' 👋';
+    }
+    applyTodayHighlight();
+    renderExerciseWeights();
+    renderFrequency();
+  }
+  boot();
 
 })();
 </script>
