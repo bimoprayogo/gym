@@ -2524,7 +2524,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
         if (item.classList.contains('done')) {
           const data = loadData();
           data.sessions.push({ date: todayISO(), exercise: item.dataset.exercise, group: 'Cardio', weight: 0 });
-          saveData(data); renderFrequency(); showToast('Cardio · done');
+          saveData(data); renderFrequency(); renderSessionLog(); showToast('Cardio · done');
         }
         return;
       }
@@ -2717,6 +2717,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     currentItem.classList.add('done');
     updateExerciseBadge(currentItem);
     renderFrequency();
+    renderSessionLog();
     showToast(name + ' · ' + (currentWeight === 0 ? 'BW' : currentWeight + ' kg') + ' logged');
     tap();
     closeAllSheets();
@@ -2793,6 +2794,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
         info.groups.forEach(group => data.sessions.push({ date, exercise: 'Quick: ' + info.name, group, weight: 0 }));
         saveData(data);
         renderFrequency();
+        renderSessionLog();
         closeAllSheets();
         resetSwipe();
         showToast(info.name + ' session logged ✓');
@@ -2909,6 +2911,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
           document.querySelectorAll('.exercise-item').forEach(i => i.classList.remove('done'));
           renderExerciseLists();
           renderFrequency();
+          renderSessionLog();
           showToast('Progress reset');
         }
         return;
