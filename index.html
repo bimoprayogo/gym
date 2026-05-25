@@ -1341,58 +1341,95 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   font-weight: 700;
 }
 
-/* ===== Session history (per-date log) ===== */
-.session-log-list { margin-top: 4px; }
-.session-day-group { margin-bottom: 14px; }
-.session-day-header {
+/* ===== Session timeline ===== */
+.session-tl { margin-top: 4px; }
+.session-tl-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 16px;
 }
-.session-day-date {
-  font-size: 10px;
+.session-tl-item:last-child { padding-bottom: 0; }
+
+/* Left date column */
+.session-tl-left {
+  width: 34px;
+  flex-shrink: 0;
+  text-align: center;
+  padding-top: 3px;
+}
+.session-tl-daynum {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--charcoal);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+.session-tl-weekday {
+  font-size: 8.5px;
   font-weight: 700;
-  letter-spacing: 1.8px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--grey-400);
+  margin-top: 2px;
 }
-.session-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.session-day-line { flex: 1; height: 1px; background: var(--grey-150); }
-.session-entry {
+
+/* Center spine: dot + line */
+.session-tl-spine {
+  flex-shrink: 0;
+  width: 14px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  background: var(--grey-50);
-  border-radius: 12px;
-  margin-bottom: 6px;
+  padding-top: 7px;
 }
-.session-entry-icon {
-  width: 30px; height: 30px; border-radius: 9px;
-  background: var(--charcoal); color: white;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-size: 13px;
+.session-tl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
 }
-.session-entry-icon.chest   { background: #3B82F6; }
-.session-entry-icon.back    { background: #10B981; }
-.session-entry-icon.shoulders { background: #F59E0B; }
-.session-entry-icon.biceps  { background: #8B5CF6; }
-.session-entry-icon.triceps { background: #EC4899; }
-.session-entry-icon.cardio  { background: #EF4444; }
-.session-entry-body { flex: 1; min-width: 0; }
-.session-entry-name {
-  font-size: 12px; font-weight: 700; color: var(--charcoal);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.session-tl-line {
+  width: 2px;
+  flex: 1;
+  min-height: 28px;
+  background: var(--grey-150);
+  margin-top: 5px;
+  border-radius: 1px;
 }
-.session-entry-meta {
-  font-size: 10px; font-weight: 600; color: var(--grey-400);
-  margin-top: 1px; letter-spacing: 0.2px;
+.session-tl-item:last-child .session-tl-line { opacity: 0; }
+
+/* Right: dark session card */
+.session-tl-card {
+  flex: 1;
+  min-width: 0;
+  background: var(--charcoal-soft);
+  border-radius: 14px;
+  padding: 11px 14px 12px;
 }
-.session-entry-weight {
-  font-size: 11px; font-weight: 700; color: var(--charcoal);
-  background: var(--grey-150); padding: 3px 8px; border-radius: 100px;
-  flex-shrink: 0; letter-spacing: -0.2px;
+.session-tl-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+.session-tl-groups {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  margin-top: 3px;
+  letter-spacing: 0.2px;
+}
+.session-tl-date-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 7px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  opacity: 0.85;
 }
 .session-log-empty {
   text-align: center; padding: 24px 0;
@@ -1946,7 +1983,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
               <div class="chart-head">
                 <div>
                   <div class="chart-title">Session Log</div>
-                  <div class="chart-sub">Every logged weight · by date</div>
+                  <div class="chart-sub">One card per session · most recent first</div>
                 </div>
               </div>
               <div class="session-log-list" id="session-log-list">
@@ -2961,6 +2998,26 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     Cardio: { emoji: '🏃', cls: 'cardio' },
   };
 
+  function inferSessionName(entries) {
+    // Quick-logged sessions take priority
+    const quick = entries.find(s => s.exercise.startsWith('Quick:'));
+    if (quick) {
+      const raw = quick.exercise.replace('Quick: ', '').trim();
+      // Add "Day" suffix where it makes sense
+      if (raw === 'Push') return 'Push Day';
+      if (raw === 'Pull') return 'Pull Day';
+      return raw; // "Arms + Shoulders", "Cardio", custom
+    }
+    // Infer from logged muscle groups
+    const gs = new Set(entries.map(s => (s.group || '').toLowerCase()));
+    if (gs.has('cardio')) return 'Cardio';
+    if (gs.has('chest') && gs.has('back')) return 'Chest / Back';
+    if (gs.has('chest')) return 'Push Day';
+    if (gs.has('back') && !gs.has('chest')) return 'Pull Day';
+    if (gs.has('biceps') || gs.has('triceps')) return 'Arms + Shoulders';
+    return entries[0]?.group || 'Workout';
+  }
+
   function renderSessionLog() {
     const container = document.getElementById('session-log-list');
     if (!container) return;
@@ -2981,51 +3038,49 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     const sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
 
     container.innerHTML = '';
-    sortedDates.slice(0, 14).forEach(date => {
+    const tl = document.createElement('div');
+    tl.className = 'session-tl';
+
+    sortedDates.slice(0, 20).forEach(date => {
       const entries = byDate[date];
-      const group = document.createElement('div');
-      group.className = 'session-day-group';
+      const d = new Date(date + 'T00:00:00');
 
-      // Header row: dot · date label · line
-      const header = document.createElement('div');
-      header.className = 'session-day-header';
-      const formattedDate = formatDate(date);
-      const rawDate = new Date(date + 'T00:00:00');
-      const fullLabel = rawDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-      header.innerHTML = `
-        <span class="session-day-dot"></span>
-        <span class="session-day-date">${formattedDate === 'Today' || formattedDate === 'Yesterday' ? formattedDate + ' · ' + fullLabel : fullLabel}</span>
-        <span class="session-day-line"></span>
+      // Session name
+      const sessionName = inferSessionName(entries);
+
+      // Unique muscle groups for subtitle (exclude cardio duplicates, keep readable)
+      const groupSet = new Set();
+      entries.forEach(s => { if (s.group) groupSet.add(s.group); });
+      const groupList = [...groupSet];
+
+      // Date parts
+      const dayNum  = d.getDate();
+      const weekday = d.toLocaleDateString(undefined, { weekday: 'short' });
+      const relLabel = formatDate(date); // "Today", "Yesterday", "3 days ago", etc.
+      const absLabel = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+      const dateLabel = (relLabel === 'Today' || relLabel === 'Yesterday') ? relLabel : absLabel;
+
+      const item = document.createElement('div');
+      item.className = 'session-tl-item';
+      item.innerHTML = `
+        <div class="session-tl-left">
+          <div class="session-tl-daynum">${dayNum}</div>
+          <div class="session-tl-weekday">${weekday}</div>
+        </div>
+        <div class="session-tl-spine">
+          <div class="session-tl-dot"></div>
+          <div class="session-tl-line"></div>
+        </div>
+        <div class="session-tl-card">
+          <div class="session-tl-name">${escapeHtml(sessionName)}</div>
+          ${groupList.length ? `<div class="session-tl-groups">${groupList.map(escapeHtml).join(' · ')}</div>` : ''}
+          <div class="session-tl-date-label">${escapeHtml(dateLabel)}</div>
+        </div>
       `;
-      group.appendChild(header);
-
-      // One row per logged exercise (deduplicated by exercise name within date)
-      const seen = new Set();
-      entries.forEach(s => {
-        const key = s.exercise + '|' + s.date;
-        if (seen.has(key)) return;
-        seen.add(key);
-
-        const info = GROUP_ICON[s.group] || { emoji: '🏋', cls: 'back' };
-        const isQuick = s.exercise.startsWith('Quick:');
-        const displayName = isQuick ? s.exercise.replace('Quick: ', '') + ' Session' : s.exercise;
-        const weightLabel = s.weight > 0 ? s.weight + ' kg' : s.group;
-
-        const entry = document.createElement('div');
-        entry.className = 'session-entry';
-        entry.innerHTML = `
-          <div class="session-entry-icon ${info.cls}">${info.emoji}</div>
-          <div class="session-entry-body">
-            <div class="session-entry-name">${escapeHtml(displayName)}</div>
-            <div class="session-entry-meta">${s.group}</div>
-          </div>
-          ${!isQuick ? `<div class="session-entry-weight">${weightLabel}</div>` : ''}
-        `;
-        group.appendChild(entry);
-      });
-
-      container.appendChild(group);
+      tl.appendChild(item);
     });
+
+    container.appendChild(tl);
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────────
