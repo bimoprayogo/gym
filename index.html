@@ -2978,7 +2978,8 @@ body.in-session #end-session-dashboard { display: flex; }
         const dayKeys     = { Push: 'push', Pull: 'pull', 'Arms + Shoulders': 'arms-shoulder', Cardio: null };
         const displayName = displayNames[info.name] || info.name;
         const dayKey      = dayKeys[info.name] ?? null;
-        data.activeSession = { name: info.name, displayName, dayKey };
+        const exerciseKey = 'Quick: ' + info.name;
+        data.activeSession = { cat: btn.dataset.cat, name: info.name, displayName, dayKey, exerciseKey };
         saveData(data);
         renderFrequency();
         renderSessionLog();
@@ -3271,7 +3272,7 @@ body.in-session #end-session-dashboard { display: flex; }
 
   function inferSessionName(entries) {
     // Quick-logged sessions take priority
-    const quick = entries.find(s => s.exercise.startsWith('Quick:'));
+    const quick = entries.find(s => s.exercise && s.exercise.startsWith('Quick:'));
     if (quick) {
       const raw = quick.exercise.replace('Quick: ', '').trim();
       // Add "Day" suffix where it makes sense
@@ -3309,7 +3310,18 @@ body.in-session #end-session-dashboard { display: flex; }
     const logged = entries.filter(s => s.weight > 0);
 
     if (logged.length === 0) {
-      list.innerHTML = '<div class="detail-empty">No individual exercises logged.<br>Session was quick-logged.</div>';
+      // For quick-logged sessions, show the muscle groups that were targeted
+      const quick = entries.find(s => s.exercise && s.exercise.startsWith('Quick:'));
+      if (quick) {
+        const groups = [...new Set(entries.filter(s => s.group).map(s => s.group))];
+        list.innerHTML = `
+          <div class="detail-empty">
+            <div style="font-weight:600;color:var(--charcoal);margin-bottom:6px">Quick-logged session</div>
+            ${groups.length ? `<div style="color:var(--grey-500);font-size:14px">${groups.map(escapeHtml).join(' &middot; ')}</div>` : ''}
+          </div>`;
+      } else {
+        list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
+      }
     } else {
       // Deduplicate by exercise (keep highest weight if dupes)
       const best = {};
@@ -3342,7 +3354,9 @@ body.in-session #end-session-dashboard { display: flex; }
     if (!container) return;
     const data = loadData();
     const active = data.activeSession || null;
-    const allSessions = (data.sessions || []).filter(s => s.weight > 0 || s.exercise.startsWith('Quick:'));
+    const allSessions = (data.sessions || []).filter(s =>
+      s && s.exercise && s.date &&
+      (s.weight > 0 || s.exercise.startsWith('Quick:')));
 
     container.innerHTML = '';
 
@@ -3374,9 +3388,9 @@ body.in-session #end-session-dashboard { display: flex; }
     });
     let sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
 
-    // Filter to active session type — match by exact exercise name (reliable)
+    // Filter to active session type — use stored exerciseKey (reliable) with fallback
     if (active) {
-      const target = 'Quick: ' + active.name;
+      const target = active.exerciseKey || ('Quick: ' + active.name);
       sortedDates = sortedDates.filter(date => byDate[date].some(s => s.exercise === target));
     }
 
