@@ -3041,11 +3041,12 @@ body.in-session #end-session-dashboard { display: flex; }
     track.classList.add('session-on');
     document.body.classList.add('in-session');
     // Show only the matching workout card, hide the rest
+    // dayKey === null means Cardio (no dedicated card) → hide all cards
     document.querySelectorAll('.workout-card').forEach(card => {
-      const match = !dayKey || card.dataset.day === dayKey;
+      const match = dayKey != null && card.dataset.day === dayKey;
       card.style.display = match ? '' : 'none';
       // Ensure the active card is expanded
-      if (match && dayKey) card.classList.remove('collapsed');
+      if (match) card.classList.remove('collapsed');
     });
   }
 
