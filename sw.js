@@ -1,6 +1,6 @@
 // Gym Tracker — Service Worker
 // Bump CACHE_NAME whenever you need to force a full re-cache on all devices.
-const CACHE_NAME = 'gym-v1';
+const CACHE_NAME = 'gym-v2';
 
 const PRECACHE_ASSETS = [
   './',
@@ -12,9 +12,6 @@ const PRECACHE_ASSETS = [
 ];
 
 // ── Install ──────────────────────────────────────────────────────────────────
-// Pre-cache all local assets so the app works fully offline.
-// skipWaiting() makes the new SW take control right after install
-// (no waiting for tabs to close).
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -24,8 +21,7 @@ self.addEventListener('install', event => {
 });
 
 // ── Activate ─────────────────────────────────────────────────────────────────
-// Delete any old cache versions so stale assets don't accumulate.
-// clients.claim() lets this SW handle pages opened before registration.
+// Delete old caches and immediately take control of all open pages.
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -37,21 +33,38 @@ self.addEventListener('activate', event => {
 });
 
 // ── Fetch ─────────────────────────────────────────────────────────────────────
-// Strategy: stale-while-revalidate (same-origin only).
-//   1. Serve the cached version immediately (fast, works offline).
-//   2. Fetch the network copy in the background and refresh the cache.
-//   3. Next launch the user gets the updated version automatically.
+// HTML pages: network-first (always gets the latest code), falls back to
+// cache when offline.
+// Everything else: stale-while-revalidate (fast from cache, updated in bg).
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
-  // Let external requests (Google Fonts, CDNs, etc.) pass through untouched.
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
+  const isHTML = event.request.headers.get('accept')?.includes('text/html')
+    || url.pathname.endsWith('.html')
+    || url.pathname.endsWith('/');
+
+  if (isHTML) {
+    // Network-first for HTML so every open reflects the latest deploy.
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then(response => {
+          if (response && response.status === 200) {
+            caches.open(CACHE_NAME).then(c => c.put(event.request, response.clone()));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request)) // offline fallback
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for other assets.
   event.respondWith(
     caches.open(CACHE_NAME).then(cache =>
       cache.match(event.request).then(cached => {
-        // Always kick off a background network fetch to keep cache fresh.
         const networkFetch = fetch(event.request)
           .then(response => {
             if (response && response.status === 200) {
@@ -60,9 +73,6 @@ self.addEventListener('fetch', event => {
             return response;
           })
           .catch(() => null);
-
-        // Return the cached copy straight away; fall back to network if
-        // nothing is cached yet (first visit).
         return cached || networkFetch;
       })
     )

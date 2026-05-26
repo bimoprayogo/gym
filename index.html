@@ -3255,6 +3255,8 @@ body.in-session #end-session-dashboard { display: flex; }
     d.activeSession = null;
     saveData(d);
     setSwipeIdle();
+    // Clear all check-done state so exercise items reset visually
+    document.querySelectorAll('.exercise-item.done').forEach(el => el.classList.remove('done'));
     renderSessionLog();
     showToast('Session ended');
     tap();
