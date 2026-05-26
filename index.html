@@ -353,30 +353,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   transition: transform 0.12s ease;
 }
 .steps-card:active { transform: scale(0.985); }
-.steps-ring-wrap { position: relative; width: 78px; height: 78px; display: flex; align-items: center; justify-content: center; }
-.steps-ring-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-.ring-track { fill: none; stroke: var(--grey-150); stroke-width: 7; }
-.ring-fill {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 7;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 6px var(--accent-glow));
-}
-.steps-check {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  box-shadow: 0 4px 12px var(--accent-glow);
-}
-.steps-info { text-align: center; margin-top: 4px; }
-.steps-value { font-size: 13px; font-weight: 700; color: var(--charcoal); letter-spacing: -0.2px; font-variant-numeric: tabular-nums; }
-.steps-value .of { color: var(--grey-400); font-weight: 600; }
+.steps-info { text-align: center; }
 .steps-label {
   font-size: 8.5px;
   font-weight: 700;
@@ -384,6 +361,37 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   color: var(--grey-400);
   text-transform: uppercase;
   margin-top: 2px;
+}
+/* This Month counter */
+.month-counter-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 2px;
+}
+.month-big-num {
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -3px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.month-count-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--grey-400);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.month-month-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--charcoal);
+  letter-spacing: -0.1px;
 }
 
 .section-head {
@@ -1669,45 +1677,35 @@ body.in-session #end-session-dashboard { display: flex; }
             <div class="hero-meta">
               <span id="today-label">Saturday</span>
               <span class="divider"></span>
-              <span>Week 04 · Cycle 04</span>
+              <span id="week-label">Week —</span>
             </div>
 
             <div class="stats-grid">
+              <!-- Last Session card — filled by renderDashboardStats() -->
               <div class="timeline-card">
                 <div class="timeline-top">
                   <div class="face-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6.5 6.5h11M6.5 6.5v11M17.5 6.5v11M6.5 17.5h11M9 12h6"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                     </svg>
                   </div>
-                  <div class="timeline-tag">Plan</div>
+                  <div class="timeline-tag">Last Session</div>
                 </div>
-                <div class="timeline-body">
-                  <div class="timeline-label">Strength Cycle</div>
-                  <div class="timeline-value">Month 1 <span class="of">of 5</span></div>
-                  <div class="progress-track"><div class="progress-fill"></div></div>
-                  <div class="timeline-target">
-                    <span>Target</span>
-                    <b>OCT 2026</b>
-                  </div>
+                <div class="timeline-body" id="last-session-body">
+                  <div class="timeline-value" style="font-size:17px;line-height:1.2;opacity:0.4">No sessions yet</div>
+                  <div class="timeline-label" style="margin-top:8px;text-transform:none;letter-spacing:0;font-size:11px">Swipe below to start</div>
                 </div>
               </div>
 
+              <!-- This Month counter — filled by renderDashboardStats() -->
               <div class="steps-card">
-                <div class="steps-ring-wrap">
-                  <svg viewBox="0 0 100 100">
-                    <circle class="ring-track" cx="50" cy="50" r="42"/>
-                    <circle class="ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
-                  </svg>
-                  <div class="steps-check">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
+                <div class="month-counter-wrap">
+                  <div class="month-big-num" id="month-count">0</div>
+                  <div class="month-count-label">sessions</div>
                 </div>
                 <div class="steps-info">
-                  <div class="steps-value">10,000<span class="of"> / 10,000</span></div>
-                  <div class="steps-label">Daily Steps</div>
+                  <div class="month-month-name" id="month-name-label">—</div>
+                  <div class="steps-label">This Month</div>
                 </div>
               </div>
             </div>
@@ -2060,7 +2058,7 @@ body.in-session #end-session-dashboard { display: flex; }
               <div class="sub">
                 <span>Last 30 Days</span>
                 <span class="divider"></span>
-                <span>Cycle 04</span>
+                <span id="stats-week-label">This Week</span>
               </div>
             </div>
 
@@ -2211,7 +2209,7 @@ body.in-session #end-session-dashboard { display: flex; }
               </div>
               <div class="setting-info">
                 <div class="profile-name" id="profile-name">Bimo</div>
-                <div class="profile-meta">Strength Cycle · Day 12</div>
+                <div class="profile-meta" id="profile-meta">0 sessions logged</div>
               </div>
               <button class="edit-pill">Edit</button>
             </div>
@@ -2651,10 +2649,22 @@ body.in-session #end-session-dashboard { display: flex; }
     3: 'chest-back',    4: 'push', 5: 'pull', 6: 'arms-shoulder'
   };
   const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function isoWeekNumber(d) {
+    const date = new Date(d.valueOf());
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    const w1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date - w1) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
+  }
+
   function applyTodayHighlight() {
-    const day = new Date().getDay();
+    const now = new Date();
+    const day = now.getDay();
     const target = dayMap[day];
     document.getElementById('today-label').textContent = dayName[day];
+    const wk = isoWeekNumber(now);
+    const wkEl = document.getElementById('week-label');
+    if (wkEl) wkEl.textContent = 'Week ' + String(wk).padStart(2, '0');
     document.querySelectorAll('.workout-card').forEach(card => {
       const isToday = card.dataset.day === target;
       card.classList.toggle('today', isToday);
@@ -3282,6 +3292,57 @@ body.in-session #end-session-dashboard { display: flex; }
       list.appendChild(row);
     });
     document.getElementById('freq-total-num').innerHTML = totalDone + '<span class="of"> / ' + totalTarget + '</span>';
+    renderDashboardStats();
+  }
+
+  function renderDashboardStats() {
+    const data = loadData();
+    const sessions = (data.sessions || []).filter(s => s && s.exercise && s.date);
+    const now = new Date();
+
+    // ── Last Session card ───────────────────────────────────────────────────
+    const body = document.getElementById('last-session-body');
+    if (body) {
+      const dates = [...new Set(sessions.map(s => s.date))].sort((a, b) => b.localeCompare(a));
+      if (dates.length === 0) {
+        body.innerHTML = `
+          <div class="timeline-value" style="font-size:17px;line-height:1.2;opacity:0.45">No sessions yet</div>
+          <div class="timeline-label" style="margin-top:8px;text-transform:none;letter-spacing:0;font-size:11px">Swipe below to start</div>`;
+      } else {
+        const lastDate = dates[0];
+        const lastEntries = sessions.filter(s => s.date === lastDate);
+        const name = inferSessionName(lastEntries);
+        const dateLabel = formatDate(lastDate);
+        const topWeight = lastEntries
+          .filter(s => typeof s.exercise === 'string' && !s.exercise.startsWith('Quick:') && s.weight > 0)
+          .sort((a, b) => b.weight - a.weight)[0];
+        body.innerHTML = `
+          <div class="timeline-value" style="font-size:20px;line-height:1.2">${escapeHtml(name)}</div>
+          <div class="timeline-label" style="margin-top:5px;text-transform:none;letter-spacing:0.1px;font-size:11px;color:rgba(255,255,255,0.45)">${escapeHtml(dateLabel)}</div>
+          ${topWeight ? `<div class="timeline-target" style="margin-top:12px">
+            <span style="color:rgba(255,255,255,0.5);font-size:11px">${escapeHtml(topWeight.exercise)}</span>
+            <b style="font-size:12px">${topWeight.weight} kg</b>
+          </div>` : ''}`;
+      }
+    }
+
+    // ── This Month count ────────────────────────────────────────────────────
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      .toISOString().split('T')[0];
+    const monthCount = new Set(sessions.filter(s => s.date >= monthStart).map(s => s.date)).size;
+    const monthNumEl = document.getElementById('month-count');
+    if (monthNumEl) monthNumEl.textContent = monthCount;
+    const monthNameEl = document.getElementById('month-name-label');
+    if (monthNameEl) monthNameEl.textContent =
+      now.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+
+    // ── Profile meta (total sessions) ───────────────────────────────────────
+    const meta = document.getElementById('profile-meta');
+    if (meta) {
+      const total = new Set(sessions.map(s => s.date)).size;
+      meta.textContent = total === 0 ? 'No sessions yet'
+        : total + (total === 1 ? ' session logged' : ' sessions logged');
+    }
   }
 
   // ─── Session log (per-date) ───────────────────────────────────────────────────
