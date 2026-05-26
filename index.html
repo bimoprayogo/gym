@@ -3541,14 +3541,6 @@ body.in-session #end-session-dashboard { display: flex; }
   }
 
   // ─── Session log (per-date) ───────────────────────────────────────────────────
-  const GROUP_ICON = {
-    Chest: { emoji: '💪', cls: 'chest' },
-    Back: { emoji: '🏋', cls: 'back' },
-    Shoulders: { emoji: '🔺', cls: 'shoulders' },
-    Biceps: { emoji: '💪', cls: 'biceps' },
-    Triceps: { emoji: '💪', cls: 'triceps' },
-    Cardio: { emoji: '🏃', cls: 'cardio' },
-  };
 
   function inferSessionName(entries) {
     if (!Array.isArray(entries) || entries.length === 0) return 'Workout';
