@@ -1605,13 +1605,19 @@ body.in-session #end-session-dashboard { display: flex; }
 }
 .session-tl-item:last-child .session-tl-line { opacity: 0; }
 
-/* Right: dark session card */
-.session-tl-card {
+/* Right: stack of dark session cards (one per session on this date) */
+.session-tl-cards {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.session-tl-card {
   background: var(--charcoal-soft);
   border-radius: 16px;
   padding: 14px 18px 15px;
+  cursor: pointer;
 }
 .session-tl-name {
   font-size: 15px;
@@ -1705,7 +1711,6 @@ body.in-session #end-session-dashboard { display: flex; }
   color: var(--accent);
   margin-top: 3px;
 }
-.session-tl-item { cursor: pointer; }
 .session-tl-card:active { opacity: 0.75; }
 
 /* Active session banner */
@@ -3822,30 +3827,29 @@ body.in-session #end-session-dashboard { display: flex; }
     }
 
     // ── Build timeline ─────────────────────────────────────────────────────────
+    // Group slots by date so each date appears once with N stacked session cards.
     const tl = document.createElement('div');
     tl.className = 'session-tl';
 
-    visibleSlots.slice(0, 30).forEach(slot => {
-      const { date, allEntries: entries, loggedEntries: lEntries } = slot;
+    const slotsByDate = new Map();
+    visibleSlots.slice(0, 60).forEach(slot => {
+      if (!slotsByDate.has(slot.date)) slotsByDate.set(slot.date, []);
+      slotsByDate.get(slot.date).push(slot);
+    });
+
+    // Cap at ~30 date groups for performance.
+    const dateGroups = [...slotsByDate.entries()].slice(0, 30);
+
+    dateGroups.forEach(([date, dateSlots]) => {
       const d = new Date(date + 'T00:00:00');
-      const sessionName = inferSessionName(entries);
-
-      const groupSet = new Set();
-      entries.forEach(s => { if (s.group) groupSet.add(s.group); });
-      const groupList = [...groupSet];
-
       const dayNum   = d.getDate();
       const weekday  = d.toLocaleDateString(undefined, { weekday: 'short' });
       const relLabel = formatDate(date);
-      const absLabel = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-      const dateLabel = (relLabel === 'Today' || relLabel === 'Yesterday') ? relLabel : absLabel;
-
-      // Exercise pill: unique exercise count + top weight
-      const uniqueNames = new Set((lEntries || []).map(s => s.exercise));
-      const topW = (lEntries || []).reduce((max, s) => s.weight > max ? s.weight : max, 0);
-      const weightPill = uniqueNames.size > 0
-        ? `<div class="session-tl-weights">${uniqueNames.size} exercise${uniqueNames.size !== 1 ? 's' : ''}${topW > 0 ? ' · top ' + topW + ' kg' : ''}</div>`
-        : '';
+      // Use TODAY / YESTERDAY in place of weekday when relevant — keeps left
+      // column expressive without repeating a date label inside every card.
+      const leftLabel = (relLabel === 'Today' || relLabel === 'Yesterday')
+        ? relLabel.toUpperCase()
+        : weekday.toUpperCase();
 
       const item = document.createElement('div');
       item.className = 'session-tl-item';
@@ -3853,19 +3857,36 @@ body.in-session #end-session-dashboard { display: flex; }
       item.innerHTML = `
         <div class="session-tl-left">
           <div class="session-tl-daynum">${dayNum}</div>
-          <div class="session-tl-weekday">${weekday}</div>
+          <div class="session-tl-weekday">${escapeHtml(leftLabel)}</div>
         </div>
         <div class="session-tl-spine">
           <div class="session-tl-dot"></div>
           <div class="session-tl-line"></div>
         </div>
-        <div class="session-tl-card">
+        <div class="session-tl-cards"></div>
+      `;
+
+      const cardsWrap = item.querySelector('.session-tl-cards');
+      dateSlots.forEach(slot => {
+        const { allEntries: entries, loggedEntries: lEntries } = slot;
+        const sessionName = inferSessionName(entries);
+
+        const uniqueNames = new Set((lEntries || []).map(s => s.exercise));
+        const topW = (lEntries || []).reduce((max, s) => s.weight > max ? s.weight : max, 0);
+        const weightPill = uniqueNames.size > 0
+          ? `<div class="session-tl-weights">${uniqueNames.size} exercise${uniqueNames.size !== 1 ? 's' : ''}${topW > 0 ? ' · top ' + topW + ' kg' : ''}</div>`
+          : '';
+
+        const card = document.createElement('div');
+        card.className = 'session-tl-card';
+        card.innerHTML = `
           <div class="session-tl-name">${escapeHtml(sessionName)}</div>
           ${weightPill}
-          <div class="session-tl-date-label">${escapeHtml(dateLabel)}</div>
-        </div>
-      `;
-      item.addEventListener('click', () => openSessionDetail(slot, sessionName));
+        `;
+        card.addEventListener('click', () => openSessionDetail(slot, sessionName));
+        cardsWrap.appendChild(card);
+      });
+
       tl.appendChild(item);
     });
 
