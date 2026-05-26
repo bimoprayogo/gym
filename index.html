@@ -607,9 +607,6 @@ body.in-session .ex-check { display: flex; }
 }
 .exercise-item.done .exercise-name {
   color: var(--grey-400);
-  text-decoration: line-through;
-  text-decoration-color: var(--grey-300);
-  text-decoration-thickness: 1.5px;
 }
 .exercise-sub {
   font-size: 10.5px;
@@ -3234,6 +3231,27 @@ body.in-session #end-session-dashboard { display: flex; }
 
   function endSession() {
     const d = loadData();
+    // Auto-log any exercises on the active card not yet captured for today.
+    // This handles sessions started before the auto-log-on-start fix.
+    const active = d.activeSession;
+    if (active && active.dayKey) {
+      const date = todayISO();
+      const alreadyLogged = new Set(
+        (d.sessions || [])
+          .filter(s => s.date === date && s.exercise && !s.exercise.startsWith('Quick:'))
+          .map(s => s.exercise)
+      );
+      const card = document.querySelector(`.workout-card[data-day="${active.dayKey}"]`);
+      if (card) {
+        card.querySelectorAll('.exercise-item').forEach(item => {
+          if (item.dataset.cardio === '1') return;
+          const exName = item.dataset.exercise;
+          const exGroup = item.dataset.group;
+          if (!exName || !exGroup || alreadyLogged.has(exName)) return;
+          d.sessions.push({ date, exercise: exName, group: exGroup, weight: getDefaultWeight(item) });
+        });
+      }
+    }
     d.activeSession = null;
     saveData(d);
     setSwipeIdle();
@@ -3541,28 +3559,42 @@ body.in-session #end-session-dashboard { display: flex; }
     const list = document.getElementById('detail-list');
     list.innerHTML = '';
 
-    if (!loggedEntries || loggedEntries.length === 0) {
-      // Quick-logged only — show targeted muscle groups as a summary
-      const quick = entries.find(s => s.exercise && s.exercise.startsWith('Quick:'));
-      if (quick) {
-        const groups = [...new Set(entries.filter(s => s.group).map(s => s.group))];
-        list.innerHTML = `
-          <div class="detail-empty">
-            <div style="font-weight:600;color:var(--charcoal);margin-bottom:6px">Quick-logged session</div>
-            ${groups.length ? `<div style="color:var(--grey-500);font-size:14px">${groups.map(escapeHtml).join(' &middot; ')}</div>` : ''}
-          </div>`;
-      } else {
-        list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
+    // Build best-weight map from explicitly logged entries
+    const best = {};
+    (loggedEntries || []).forEach(s => {
+      if (!best[s.exercise] || s.weight > best[s.exercise].weight) best[s.exercise] = s;
+    });
+
+    // For Quick sessions, supplement with all exercises on the matching card so
+    // the detail is always complete — even for sessions started before the auto-log
+    // fix. Priority: logged entry > per-exercise history for that date > badge default.
+    const quickToDay = {
+      'Quick: Push': 'push', 'Quick: Pull': 'pull',
+      'Quick: Arms + Shoulders': 'arms-shoulder'
+    };
+    const suppDayKey = quickKey ? quickToDay[quickKey] : null;
+    if (suppDayKey) {
+      const d2 = loadData();
+      const suppCard = document.querySelector(`.workout-card[data-day="${suppDayKey}"]`);
+      if (suppCard) {
+        suppCard.querySelectorAll('.exercise-item').forEach(item => {
+          if (item.dataset.cardio === '1') return;
+          const exName = item.dataset.exercise;
+          const exGroup = item.dataset.group;
+          if (!exName || !exGroup || best[exName]) return; // already has a logged entry
+          // Try per-exercise history for this exact date first, then badge default
+          const exHistory = (d2.exercises?.[exName]?.sessions || []).filter(es => es.date === date);
+          const w = exHistory.length > 0 ? exHistory[exHistory.length - 1].weight : getDefaultWeight(item);
+          best[exName] = { exercise: exName, group: exGroup, weight: w };
+        });
       }
+    }
+
+    if (Object.keys(best).length === 0) {
+      list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
     } else {
-      // Show all logged exercises — deduplicate by name, keep highest weight
-      const best = {};
-      loggedEntries.forEach(s => {
-        if (!best[s.exercise] || s.weight > best[s.exercise].weight) best[s.exercise] = s;
-      });
       Object.values(best).forEach(s => {
         const emoji = GROUP_EMOJI[s.group] || '🏋';
-        // Label: Cardio entries → "Done"; weight 0 → "BW"; otherwise the weight
         const isCardio = (s.group || '').toLowerCase() === 'cardio';
         let weightLabel;
         if (isCardio) weightLabel = 'Done';
