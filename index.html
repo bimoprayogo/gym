@@ -170,8 +170,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--grey-100);
   display: flex;
@@ -518,8 +518,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .card-subtitle { font-size: 11.5px; color: var(--grey-500); font-weight: 500; margin-top: 4px; letter-spacing: -0.1px; }
 
 .chevron-btn {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--grey-100);
   display: flex;
@@ -584,6 +584,14 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   display: none; /* hidden until a session is active */
   align-items: center;
   justify-content: center;
+}
+/* Expand tap area to 44×44px without changing visual size */
+.ex-check::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px; height: 44px;
 }
 body.in-session .ex-check { display: flex; }
 .exercise-item.done .ex-check { background: var(--accent); border-color: var(--accent); }
@@ -1222,6 +1230,26 @@ body.in-session .view { padding-bottom: 176px; }
   flex-shrink: 0;
 }
 
+/* ── Focus rings (keyboard / accessibility) ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+button:focus-visible { border-radius: 8px; }
+.nav-item:focus-visible { border-radius: 14px; }
+.ex-check:focus-visible { border-radius: 50%; }
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .snackbar-dot { animation: none !important; }
+}
+
 @media (max-width: 480px) {
   /* Lock the entire page so only the inner .view scrolls */
   html, body {
@@ -1631,11 +1659,12 @@ body.in-session #end-session-dashboard { display: flex; }
 }
 .detail-row:last-child { border-bottom: none; }
 .detail-row-icon {
-  width: 32px; height: 32px;
+  width: 36px; height: 36px;
   border-radius: 10px;
   background: var(--charcoal-soft);
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-size: 14px;
+  flex-shrink: 0;
+  color: var(--grey-400);
 }
 .detail-row-info { flex: 1; min-width: 0; }
 .detail-row-name {
@@ -2420,8 +2449,8 @@ body.in-session #end-session-dashboard { display: flex; }
         </div>
 
         <nav class="bottom-nav" role="tablist">
-          <button class="nav-item active" data-target="dashboard" role="tab">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="nav-item active" data-target="dashboard" role="tab" aria-label="Dashboard">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="3" y="3" width="7" height="9" rx="2"/>
               <rect x="14" y="3" width="7" height="5" rx="2"/>
               <rect x="14" y="12" width="7" height="9" rx="2"/>
@@ -2429,21 +2458,21 @@ body.in-session #end-session-dashboard { display: flex; }
             </svg>
             <span class="nav-label">Dashboard</span>
           </button>
-          <button class="nav-item" data-target="stats" role="tab">
+          <button class="nav-item" data-target="stats" role="tab" aria-label="Statistics">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 3v18h18"/>
               <path d="M7 14l4-4 4 4 5-7"/>
             </svg>
             <span class="nav-label">Statistics</span>
           </button>
-          <button class="nav-item" data-target="log" role="tab">
+          <button class="nav-item" data-target="log" role="tab" aria-label="Session Log">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"/>
               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
             </svg>
             <span class="nav-label">Log</span>
           </button>
-          <button class="nav-item" data-target="settings" role="tab">
+          <button class="nav-item" data-target="settings" role="tab" aria-label="Settings">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -2632,7 +2661,7 @@ body.in-session #end-session-dashboard { display: flex; }
           <button id="detail-delete-btn" class="detail-delete-btn">Delete session</button>
         </div>
 
-        <div class="toast" id="toast">
+        <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
           <span class="toast-dot"></span>
           <span id="toast-text">Saved</span>
         </div>
@@ -2729,7 +2758,7 @@ body.in-session #end-session-dashboard { display: flex; }
     toastText.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
   }
   function tap() { if (window.navigator?.vibrate) navigator.vibrate(8); }
 
@@ -3542,7 +3571,13 @@ body.in-session #end-session-dashboard { display: flex; }
     return (entries[0] && entries[0].group) || 'Workout';
   }
 
-  const GROUP_EMOJI = { Chest: '💪', Back: '🏋', Shoulders: '🔺', Biceps: '💪', Triceps: '💪', Cardio: '🏃' };
+  // SVG icons per muscle group — rendered as inline HTML in session detail rows
+  const _dumbbellSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="5" width="3" height="14" rx="1.5"/><rect x="19" y="5" width="3" height="14" rx="1.5"/><rect x="5" y="9" width="2" height="6" rx="1"/><rect x="17" y="9" width="2" height="6" rx="1"/></svg>`;
+  const _cardioSvg  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`;
+  const GROUP_ICON = {
+    Chest: _dumbbellSvg, Back: _dumbbellSvg, Shoulders: _dumbbellSvg,
+    Biceps: _dumbbellSvg, Triceps: _dumbbellSvg, Cardio: _cardioSvg
+  };
 
   function openSessionDetail(slot, sessionName) {
     const { date, quickKey, allEntries: entries, loggedEntries } = slot;
@@ -3596,7 +3631,7 @@ body.in-session #end-session-dashboard { display: flex; }
       list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
     } else {
       Object.values(best).forEach(s => {
-        const emoji = GROUP_EMOJI[s.group] || '🏋';
+        const icon = GROUP_ICON[s.group] || _dumbbellSvg;
         const isCardio = (s.group || '').toLowerCase() === 'cardio';
         let weightLabel;
         if (isCardio) weightLabel = 'Done';
@@ -3605,7 +3640,7 @@ body.in-session #end-session-dashboard { display: flex; }
         const row = document.createElement('div');
         row.className = 'detail-row';
         row.innerHTML = `
-          <div class="detail-row-icon">${emoji}</div>
+          <div class="detail-row-icon" aria-hidden="true">${icon}</div>
           <div class="detail-row-info">
             <div class="detail-row-name">${escapeHtml(s.exercise)}</div>
             <div class="detail-row-group">${escapeHtml(s.group || '')}</div>
@@ -3621,7 +3656,23 @@ body.in-session #end-session-dashboard { display: flex; }
     if (oldBtn) {
       const btn = oldBtn.cloneNode(true);
       oldBtn.replaceWith(btn);
+      // Two-tap confirmation: first tap arms, second tap within 3s confirms
+      let deleteArmed = false;
+      let deleteArmTimer = null;
       btn.addEventListener('click', () => {
+        if (!deleteArmed) {
+          deleteArmed = true;
+          btn.textContent = 'Tap again to confirm delete';
+          btn.style.background = 'rgba(239,68,68,0.18)';
+          deleteArmTimer = setTimeout(() => {
+            deleteArmed = false;
+            btn.textContent = 'Delete session';
+            btn.style.background = '';
+          }, 3000);
+          tap();
+          return;
+        }
+        clearTimeout(deleteArmTimer);
         const d2 = loadData();
         const toRemove = new Set();
         if (quickKey) toRemove.add(quickKey);
@@ -3646,7 +3697,6 @@ body.in-session #end-session-dashboard { display: flex; }
         saveData(d2);
         closeAllSheets();
         if (deletedActiveSession) {
-          // Fully reset dashboard out of in-session mode
           setSwipeIdle();
         }
         renderSessionLog();
