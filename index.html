@@ -3136,12 +3136,29 @@ body.in-session #end-session-dashboard { display: flex; }
         if (!info) return;
         const data = loadData();
         const date = todayISO();
-        info.groups.forEach(group => data.sessions.push({ date, exercise: 'Quick: ' + info.name, group, weight: 0 }));
         const displayNames = { Push: 'Push Day', Pull: 'Pull Day', 'Arms + Shoulders': 'Arms + Shoulders', Cardio: 'Cardio' };
         const dayKeys     = { Push: 'push', Pull: 'pull', 'Arms + Shoulders': 'arms-shoulder', Cardio: null };
         const displayName = displayNames[info.name] || info.name;
         const dayKey      = dayKeys[info.name] ?? null;
         const exerciseKey = 'Quick: ' + info.name;
+        // Save Quick: session markers (one per muscle group)
+        info.groups.forEach(group => data.sessions.push({ date, exercise: exerciseKey, group, weight: 0 }));
+        // Auto-log every exercise on the matching card with its current badge weight.
+        // Only written to data.sessions (not data.exercises history) so the exercise
+        // weight history stays clean. If the user manually taps an exercise during
+        // the session, the detail view keeps the highest weight per exercise.
+        if (dayKey) {
+          const card = document.querySelector(`.workout-card[data-day="${dayKey}"]`);
+          if (card) {
+            card.querySelectorAll('.exercise-item').forEach(item => {
+              if (item.dataset.cardio === '1') return;
+              const exName = item.dataset.exercise;
+              const exGroup = item.dataset.group;
+              if (!exName || !exGroup) return;
+              data.sessions.push({ date, exercise: exName, group: exGroup, weight: getDefaultWeight(item) });
+            });
+          }
+        }
         data.activeSession = { cat: btn.dataset.cat, name: info.name, displayName, dayKey, exerciseKey };
         saveData(data);
         renderFrequency();
@@ -3728,9 +3745,11 @@ body.in-session #end-session-dashboard { display: flex; }
       const absLabel = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
       const dateLabel = (relLabel === 'Today' || relLabel === 'Yesterday') ? relLabel : absLabel;
 
-      // Exercise pill: shows count of individually logged exercises
-      const weightPill = lEntries && lEntries.length > 0
-        ? `<div class="session-tl-weights">${lEntries.length} exercise${lEntries.length !== 1 ? 's' : ''} logged</div>`
+      // Exercise pill: unique exercise count + top weight
+      const uniqueNames = new Set((lEntries || []).map(s => s.exercise));
+      const topW = (lEntries || []).reduce((max, s) => s.weight > max ? s.weight : max, 0);
+      const weightPill = uniqueNames.size > 0
+        ? `<div class="session-tl-weights">${uniqueNames.size} exercise${uniqueNames.size !== 1 ? 's' : ''}${topW > 0 ? ' · top ' + topW + ' kg' : ''}</div>`
         : '';
 
       const item = document.createElement('div');
