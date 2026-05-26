@@ -3789,5 +3789,13 @@ body.in-session #end-session-dashboard { display: flex; }
 
 })();
 </script>
+<script>
+  // Register service worker for offline support + reliable auto-updates on iPhone.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>
