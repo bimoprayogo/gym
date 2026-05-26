@@ -1518,6 +1518,8 @@ body.in-session #end-session-dashboard { display: flex; }
   transition: all 0.15s;
   min-height: 130px;
 }
+.quick-btn--wide { grid-column: 1 / -1; flex-direction: row; align-items: center; min-height: unset; padding: 14px 16px; gap: 14px; }
+.quick-btn--wide .quick-icon { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; }
 .quick-btn:active {
   transform: scale(0.97);
   background: var(--accent-pale);
@@ -2656,7 +2658,19 @@ body.in-session #end-session-dashboard { display: flex; }
                 <div class="quick-sub">Bi · Tri · Shoulders</div>
               </div>
             </button>
-            <button class="quick-btn" data-cat="cardio">
+            <button class="quick-btn" data-cat="chestback">
+              <div class="quick-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6z"/>
+                  <path d="M18 4h-4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="quick-name">Chest + Back</div>
+                <div class="quick-sub">Chest · Back</div>
+              </div>
+            </button>
+            <button class="quick-btn quick-btn--wide" data-cat="cardio">
               <div class="quick-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
@@ -2701,10 +2715,11 @@ body.in-session #end-session-dashboard { display: flex; }
   const TARGETS = { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 2 };
   const GROUP_ORDER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Cardio'];
   const QUICK_MAP = {
-    push:   { name: 'Push',             groups: ['Chest', 'Shoulders', 'Triceps'] },
-    pull:   { name: 'Pull',             groups: ['Back', 'Biceps'] },
-    arms:   { name: 'Arms + Shoulders', groups: ['Biceps', 'Triceps', 'Shoulders'] },
-    cardio: { name: 'Cardio',           groups: ['Cardio'] },
+    push:       { name: 'Push',             groups: ['Chest', 'Shoulders', 'Triceps'] },
+    pull:       { name: 'Pull',             groups: ['Back', 'Biceps'] },
+    arms:       { name: 'Arms + Shoulders', groups: ['Biceps', 'Triceps', 'Shoulders'] },
+    chestback:  { name: 'Chest + Back',     groups: ['Chest', 'Back'] },
+    cardio:     { name: 'Cardio',           groups: ['Cardio'] },
   };
 
   // ─── Data helpers ────────────────────────────────────────────────────────────
@@ -3178,8 +3193,8 @@ body.in-session #end-session-dashboard { display: flex; }
         if (!info) return;
         const data = loadData();
         const date = todayISO();
-        const displayNames = { Push: 'Push Day', Pull: 'Pull Day', 'Arms + Shoulders': 'Arms + Shoulders', Cardio: 'Cardio' };
-        const dayKeys     = { Push: 'push', Pull: 'pull', 'Arms + Shoulders': 'arms-shoulder', Cardio: null };
+        const displayNames = { Push: 'Push Day', Pull: 'Pull Day', 'Arms + Shoulders': 'Arms + Shoulders', 'Chest + Back': 'Chest + Back', Cardio: 'Cardio' };
+        const dayKeys     = { Push: 'push', Pull: 'pull', 'Arms + Shoulders': 'arms-shoulder', 'Chest + Back': 'chest-back', Cardio: null };
         const displayName = displayNames[info.name] || info.name;
         const dayKey      = dayKeys[info.name] ?? null;
         const exerciseKey = 'Quick: ' + info.name;
@@ -3728,7 +3743,8 @@ body.in-session #end-session-dashboard { display: flex; }
     // fix. Priority: logged entry > per-exercise history for that date > badge default.
     const quickToDay = {
       'Quick: Push': 'push', 'Quick: Pull': 'pull',
-      'Quick: Arms + Shoulders': 'arms-shoulder'
+      'Quick: Arms + Shoulders': 'arms-shoulder',
+      'Quick: Chest + Back': 'chest-back'
     };
     const suppDayKey = quickKey ? quickToDay[quickKey] : null;
     if (suppDayKey) {
