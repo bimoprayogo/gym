@@ -3418,18 +3418,43 @@ body.in-session #end-session-dashboard { display: flex; }
           .slice()
           .sort((a, b) => a.date.localeCompare(b.date))
           .forEach(s => rows.push([s.date, s.exercise, s.group || '', s.weight ?? '']));
-        const csv = rows.map(r => r.map(escape).join(',')).join('\r\n');
+        const csv = '﻿' + rows.map(r => r.map(escape).join(',')).join('\r\n');
+        const filename = 'gym-progress-' + new Date().toISOString().slice(0, 10) + '.csv';
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'gym-progress-' + new Date().toISOString().slice(0, 10) + '.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('CSV downloaded');
-        tap();
+
+        // iOS PWA / mobile: <a download> is unreliable. Prefer the Web Share
+        // API with a File so users get the native share sheet → Save to Files.
+        let file = null;
+        try { file = new File([blob], filename, { type: 'text/csv' }); } catch (e) { /* older Safari */ }
+
+        const canShareFile = file && navigator.canShare && navigator.canShare({ files: [file] });
+
+        if (canShareFile && navigator.share) {
+          navigator.share({ files: [file], title: 'Gym Progress', text: 'Gym progress export' })
+            .then(() => { showToast('Exported'); tap(); })
+            .catch(err => {
+              if (err && err.name === 'AbortError') return; // user cancelled
+              // Fallback to anchor download
+              triggerAnchorDownload();
+            });
+        } else {
+          triggerAnchorDownload();
+        }
+
+        function triggerAnchorDownload() {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.rel = 'noopener';
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          showToast('CSV downloaded');
+          tap();
+        }
         return;
       }
       if (row.id === 'reset-row') {
