@@ -1680,36 +1680,6 @@ body.in-session #end-session-dashboard { display: flex; }
               <span id="week-label">Week —</span>
             </div>
 
-            <div class="stats-grid">
-              <!-- Last Session card — filled by renderDashboardStats() -->
-              <div class="timeline-card">
-                <div class="timeline-top">
-                  <div class="face-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                    </svg>
-                  </div>
-                  <div class="timeline-tag">Last Session</div>
-                </div>
-                <div class="timeline-body" id="last-session-body">
-                  <div class="timeline-value" style="font-size:17px;line-height:1.2;opacity:0.4">No sessions yet</div>
-                  <div class="timeline-label" style="margin-top:8px;text-transform:none;letter-spacing:0;font-size:11px">Swipe below to start</div>
-                </div>
-              </div>
-
-              <!-- This Month counter — filled by renderDashboardStats() -->
-              <div class="steps-card">
-                <div class="month-counter-wrap">
-                  <div class="month-big-num" id="month-count">0</div>
-                  <div class="month-count-label">sessions</div>
-                </div>
-                <div class="steps-info">
-                  <div class="month-month-name" id="month-name-label">—</div>
-                  <div class="steps-label">This Month</div>
-                </div>
-              </div>
-            </div>
-
             <div class="quick-log-card">
               <div class="swipe-track" id="swipe-track">
                 <div class="swipe-fill" id="swipe-fill"></div>
@@ -1726,7 +1696,7 @@ body.in-session #end-session-dashboard { display: flex; }
             </div>
 
             <!-- Card 1: PUSH -->
-            <div class="workout-card" data-day="push">
+            <div class="workout-card collapsed" data-day="push">
               <div class="card-head">
                 <div class="cat-icon accent">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1807,7 +1777,7 @@ body.in-session #end-session-dashboard { display: flex; }
             </div>
 
             <!-- Card 2: PULL -->
-            <div class="workout-card" data-day="pull">
+            <div class="workout-card collapsed" data-day="pull">
               <div class="card-head">
                 <div class="cat-icon dark">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1889,7 +1859,7 @@ body.in-session #end-session-dashboard { display: flex; }
             </div>
 
             <!-- Card 3: CHEST/BACK -->
-            <div class="workout-card" data-day="chest-back">
+            <div class="workout-card collapsed" data-day="chest-back">
               <div class="card-head">
                 <div class="cat-icon">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1950,7 +1920,7 @@ body.in-session #end-session-dashboard { display: flex; }
             </div>
 
             <!-- Card 4: ARMS + SHOULDERS -->
-            <div class="workout-card" data-day="arms-shoulder">
+            <div class="workout-card collapsed" data-day="arms-shoulder">
               <div class="card-head">
                 <div class="cat-icon dark">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
