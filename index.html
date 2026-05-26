@@ -681,8 +681,22 @@ body.in-session .ex-check { display: flex; }
 .sheet::-webkit-scrollbar { display: none; }
 .sheet.show { transform: translateY(0); }
 
-.sheet-handle { width: 40px; height: 5px; background: var(--grey-200); border-radius: 3px; margin: 0 auto 14px; }
+.sheet-handle { width: 40px; height: 5px; background: var(--grey-200); border-radius: 3px; margin: 0 auto 14px; cursor: grab; }
 .sheet-header { text-align: left; margin-bottom: 18px; }
+.sheet-header--row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sheet-close-btn {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--grey-100);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--grey-500);
+  cursor: pointer;
+  border: none;
+  margin-top: 2px;
+  transition: background 0.15s ease;
+}
+.sheet-close-btn:active { background: var(--grey-200); }
 .sheet-pretitle {
   font-size: 9.5px;
   font-weight: 700;
@@ -2590,10 +2604,15 @@ body.in-session #end-session-dashboard { display: flex; }
         <!-- Quick Log Sheet -->
         <div class="sheet" id="sheet-quick" role="dialog" aria-modal="true">
           <div class="sheet-handle"></div>
-          <div class="sheet-header">
-            <div class="sheet-pretitle">SESSION</div>
-            <div class="sheet-title">What did you train?</div>
-            <div class="sheet-subtitle">Log today's muscle groups</div>
+          <div class="sheet-header sheet-header--row">
+            <div>
+              <div class="sheet-pretitle">SESSION</div>
+              <div class="sheet-title">What did you train?</div>
+              <div class="sheet-subtitle">Log today's muscle groups</div>
+            </div>
+            <button class="sheet-close-btn" id="quick-close" aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
           <div class="quick-grid">
             <button class="quick-btn" data-cat="push">
@@ -2648,9 +2667,6 @@ body.in-session #end-session-dashboard { display: flex; }
                 <div class="quick-sub">Treadmill · HIIT · Run</div>
               </div>
             </button>
-          </div>
-          <div class="sheet-actions" style="margin-top:16px;">
-            <button class="btn-secondary" id="quick-cancel">Cancel</button>
           </div>
         </div>
 
@@ -3195,10 +3211,49 @@ body.in-session #end-session-dashboard { display: flex; }
         tap();
       });
     });
-    document.getElementById('quick-cancel')?.addEventListener('click', () => {
+    // X close button
+    document.getElementById('quick-close')?.addEventListener('click', () => {
       closeAllSheets(); resetSwipe(); tap();
     });
   }
+
+  // ─── Drag-to-dismiss for ALL sheets ──────────────────────────────────────────
+  // Dragging the handle (or anywhere inside a sheet) downward by 80px+ closes it.
+  document.querySelectorAll('.sheet').forEach(sheet => {
+    const handle = sheet.querySelector('.sheet-handle');
+    if (!handle) return;
+    let startY = 0;
+    let dragging = false;
+    handle.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      dragging = true;
+      sheet.style.transition = 'none';
+    }, { passive: true });
+    handle.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 0) sheet.style.transform = `translateY(${dy}px)`;
+    }, { passive: true });
+    handle.addEventListener('touchend', e => {
+      if (!dragging) return;
+      dragging = false;
+      const dy = e.changedTouches[0].clientY - startY;
+      sheet.style.transition = '';
+      if (dy > 80) {
+        sheet.style.transform = '';
+        closeAllSheets();
+        resetSwipe();
+        tap();
+      } else {
+        sheet.style.transform = '';
+      }
+    }, { passive: true });
+    handle.addEventListener('touchcancel', () => {
+      dragging = false;
+      sheet.style.transition = '';
+      sheet.style.transform = '';
+    }, { passive: true });
+  });
 
   // End session from dashboard button
   document.getElementById('end-session-dashboard')?.addEventListener('click', () => endSession());
