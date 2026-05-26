@@ -1108,6 +1108,81 @@ body.in-session .ex-check { display: flex; }
   box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.3);
   max-width: 80%;
 }
+/* ── Persistent session snackbar ─────────────────────────────────────────── */
+.session-snackbar {
+  position: absolute;
+  bottom: 100px; /* 8px gap above 92px bottom-nav */
+  left: 12px;
+  right: 12px;
+  background: var(--charcoal);
+  border-radius: 18px;
+  padding: 11px 12px 11px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 25;
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
+}
+body.in-session .session-snackbar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.snackbar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22C55E;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(34,197,94,0.6);
+  animation: snackbar-pulse 2.2s ease-in-out infinite;
+}
+@keyframes snackbar-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.82); }
+}
+.snackbar-text {
+  flex: 1;
+  min-width: 0;
+}
+.snackbar-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.1px;
+}
+.snackbar-sub {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.42);
+  letter-spacing: 0.1px;
+}
+.snackbar-end-btn {
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+  letter-spacing: -0.1px;
+}
+.snackbar-end-btn:active { background: rgba(255,255,255,0.2); }
+/* Extra bottom padding on views so content doesn't hide behind snackbar */
+body.in-session .view { padding-bottom: 176px; }
+
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast .toast-dot {
   width: 6px;
@@ -1158,6 +1233,15 @@ body.in-session .ex-check { display: flex; }
     padding: 12px 22px calc(env(safe-area-inset-bottom, 0px) + 12px);
   }
   .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 110px); }
+  .session-snackbar {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
+    left: 12px;
+    right: 12px;
+  }
+  body.in-session .view {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 176px);
+  }
   .sheet { border-radius: 28px 28px 0 0; }
 }
 
@@ -2312,6 +2396,16 @@ body.in-session #end-session-dashboard { display: flex; }
           </button>
         </nav>
 
+        <!-- Persistent in-session snackbar — visible on all tabs while a session is active -->
+        <div class="session-snackbar" id="session-snackbar">
+          <span class="snackbar-dot"></span>
+          <div class="snackbar-text">
+            <span class="snackbar-name" id="snackbar-name">Push Day</span>
+            <span class="snackbar-sub">In progress</span>
+          </div>
+          <button class="snackbar-end-btn" id="snackbar-end-btn">End Session</button>
+        </div>
+
         <div class="sheet-overlay" id="sheet-overlay"></div>
         <div class="sheet" id="sheet" role="dialog" aria-modal="true">
           <div class="sheet-handle"></div>
@@ -2999,6 +3093,7 @@ body.in-session #end-session-dashboard { display: flex; }
 
   // End session from dashboard button
   document.getElementById('end-session-dashboard')?.addEventListener('click', () => endSession());
+  document.getElementById('snackbar-end-btn')?.addEventListener('click', () => endSession());
 
   // ─── Swipe-to-log ─────────────────────────────────────────────────────────────
   let swipeActive = false;
@@ -3043,6 +3138,9 @@ body.in-session #end-session-dashboard { display: flex; }
     track.classList.remove('armed');
     track.classList.add('session-on');
     document.body.classList.add('in-session');
+    // Update persistent snackbar name
+    const snackName = document.getElementById('snackbar-name');
+    if (snackName) snackName.textContent = displayName;
     // Show only the matching workout card, hide the rest
     // dayKey === null means Cardio (no dedicated card) → hide all cards
     document.querySelectorAll('.workout-card').forEach(card => {
@@ -3613,6 +3711,8 @@ body.in-session #end-session-dashboard { display: flex; }
       (typeof stored.name === 'string' || typeof stored.exerciseKey === 'string');
     if (validActive) {
       document.body.classList.add('in-session');
+      const snackName = document.getElementById('snackbar-name');
+      if (snackName) snackName.textContent = stored.displayName;
       requestAnimationFrame(() => setSwipeSession(stored.displayName, stored.dayKey ?? null));
     } else if (stored) {
       // Corrupted activeSession — clear it so the UI isn't stuck in-session
