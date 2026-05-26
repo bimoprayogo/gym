@@ -3410,7 +3410,27 @@ body.in-session #end-session-dashboard { display: flex; }
       if (!name) return;
       if (row.id === 'export-csv-row') {
         const d = loadData();
-        const sessions = (d.sessions || []).filter(s => s && s.date && s.exercise && !s.exercise.startsWith('Quick:'));
+        const raw = (d.sessions || []).filter(s => s && s.date && s.exercise);
+        // Build exportable rows:
+        //  • Real exercise entries pass through.
+        //  • Quick: Cardio markers become a single "Cardio" row per date
+        //    (cardio sessions don't auto-log individual exercises).
+        //  • Other Quick: markers (Push/Pull/Arms) are skipped — the real
+        //    exercises auto-logged alongside them already cover that data.
+        const sessions = [];
+        const seenCardioDates = new Set();
+        raw.forEach(s => {
+          const ex = s.exercise || '';
+          if (ex === 'Quick: Cardio') {
+            if (!seenCardioDates.has(s.date)) {
+              seenCardioDates.add(s.date);
+              sessions.push({ date: s.date, exercise: 'Cardio', group: 'Cardio', weight: 0 });
+            }
+            return;
+          }
+          if (ex.startsWith('Quick:')) return;
+          sessions.push(s);
+        });
         if (sessions.length === 0) { showToast('No data to export'); return; }
         const escape = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
         const rows = [['Date', 'Exercise', 'Muscle Group', 'Weight (kg)']];
