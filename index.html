@@ -2420,7 +2420,7 @@ body.in-session #end-session-dashboard { display: flex; }
             <div class="settings-section">
               <div class="settings-label">Data</div>
               <div class="settings-group">
-                <div class="setting-row">
+                <div class="setting-row" id="export-csv-row">
                   <div class="setting-info">
                     <div class="setting-name">Export Progress</div>
                     <div class="setting-desc">Download as CSV</div>
@@ -3403,6 +3403,30 @@ body.in-session #end-session-dashboard { display: flex; }
       if (e.target.closest('.toggle') || e.target.closest('.segmented') || e.target.closest('.edit-pill')) return;
       const name = row.querySelector('.setting-name')?.textContent;
       if (!name) return;
+      if (row.id === 'export-csv-row') {
+        const d = loadData();
+        const sessions = (d.sessions || []).filter(s => s && s.date && s.exercise && !s.exercise.startsWith('Quick:'));
+        if (sessions.length === 0) { showToast('No data to export'); return; }
+        const escape = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+        const rows = [['Date', 'Exercise', 'Muscle Group', 'Weight (kg)']];
+        sessions
+          .slice()
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .forEach(s => rows.push([s.date, s.exercise, s.group || '', s.weight ?? '']));
+        const csv = rows.map(r => r.map(escape).join(',')).join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'gym-progress-' + new Date().toISOString().slice(0, 10) + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('CSV downloaded');
+        tap();
+        return;
+      }
       if (row.id === 'reset-row') {
         if (confirm('Reset all logged weights and history? This cannot be undone.')) {
           clearAllData();
