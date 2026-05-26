@@ -1901,7 +1901,7 @@ body.in-session #end-session-dashboard { display: flex; }
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days-row"><div class="card-days">Mon · Thu</div></div>
+                  <div class="card-days-row"><div class="card-days">Fri</div></div>
                   <div class="card-title">Push Day</div>
                   <div class="card-subtitle">Chest · Shoulders · Triceps</div>
                 </div>
@@ -1983,7 +1983,7 @@ body.in-session #end-session-dashboard { display: flex; }
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days-row"><div class="card-days">Tue · Fri</div></div>
+                  <div class="card-days-row"><div class="card-days">Sat</div></div>
                   <div class="card-title">Pull Day</div>
                   <div class="card-subtitle">Back · Biceps · Rear Delts</div>
                 </div>
@@ -2060,7 +2060,7 @@ body.in-session #end-session-dashboard { display: flex; }
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days-row"><div class="card-days">Wed</div></div>
+                  <div class="card-days-row"><div class="card-days">Tue</div></div>
                   <div class="card-title">Chest / Back Day</div>
                   <div class="card-subtitle">Back · Chest · Compound</div>
                 </div>
@@ -2123,7 +2123,7 @@ body.in-session #end-session-dashboard { display: flex; }
                   </svg>
                 </div>
                 <div class="card-title-area">
-                  <div class="card-days-row"><div class="card-days">Sat</div></div>
+                  <div class="card-days-row"><div class="card-days">Wed</div></div>
                   <div class="card-title">Arms + Shoulders</div>
                   <div class="card-subtitle">Biceps · Triceps · Shoulders</div>
                 </div>
@@ -2815,8 +2815,8 @@ body.in-session #end-session-dashboard { display: flex; }
   // ─── Today highlight ──────────────────────────────────────────────────────────
   // dayMap: 0=Sun … 6=Sat  →  card data-day value
   const dayMap = {
-    0: 'arms-shoulder', 1: 'push', 2: 'pull',
-    3: 'chest-back',    4: 'push', 5: 'pull', 6: 'arms-shoulder'
+    0: null,            1: null,   2: 'chest-back',
+    3: 'arms-shoulder', 4: null,   5: 'push', 6: 'pull'
   };
   const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   function isoWeekNumber(d) {
@@ -3005,7 +3005,7 @@ body.in-session #end-session-dashboard { display: flex; }
     const days = card?.querySelector('.card-days')?.textContent || '';
     const group = item.dataset.group || '';
 
-    sheetPretitle.textContent = group + (days ? ' · ' + days : '');
+    sheetPretitle.textContent = group;
     sheetTitle.textContent = name;
     sheetSubtitle.textContent = target;
 
