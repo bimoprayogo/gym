@@ -2281,11 +2281,6 @@ body.in-session #end-session-dashboard { display: flex; }
 
             <div class="page-head">
               <h2>Session Log</h2>
-              <div class="sub">
-                <span>All sessions</span>
-                <span class="divider"></span>
-                <span>Most recent first</span>
-              </div>
             </div>
 
             <div class="session-log-list" id="session-log-list">
@@ -3766,7 +3761,6 @@ body.in-session #end-session-dashboard { display: flex; }
         </div>
         <div class="session-tl-card">
           <div class="session-tl-name">${escapeHtml(sessionName)}</div>
-          ${groupList.length ? `<div class="session-tl-groups">${groupList.map(escapeHtml).join(' · ')}</div>` : ''}
           ${weightPill}
           <div class="session-tl-date-label">${escapeHtml(dateLabel)}</div>
         </div>
@@ -3808,6 +3802,20 @@ body.in-session #end-session-dashboard { display: flex; }
   boot();
 
 })();
+</script>
+<script>
+  // Prevent double-tap zoom on iOS (belt-and-suspenders alongside
+  // touch-action:manipulation in CSS and user-scalable=no in viewport).
+  (function () {
+    var lastTap = 0;
+    document.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      if (now - lastTap < 350 && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+      }
+      lastTap = now;
+    }, { passive: false });
+  })();
 </script>
 <script>
   // Register service worker for offline support + reliable auto-updates on iPhone.
