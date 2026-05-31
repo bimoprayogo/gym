@@ -761,6 +761,27 @@ body.in-session .ex-check { display: flex; }
   font-variant-numeric: tabular-nums;
 }
 .weight-number .unit { font-size: 18px; font-weight: 600; color: var(--grey-400); margin-left: 4px; letter-spacing: -0.3px; }
+.weight-input {
+  font: inherit;
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--charcoal);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  width: 3ch;
+  min-width: 1ch;
+  max-width: 5ch;
+  border: none;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.weight-input:focus { color: var(--accent-strong); }
+.weight-input::-webkit-outer-spin-button,
+.weight-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .weight-helper { font-size: 10.5px; color: var(--grey-400); font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
 
 .history-empty {
@@ -850,6 +871,9 @@ body.in-session .ex-check { display: flex; }
 }
 .streak-value { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
 .streak-value .unit { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.55); margin-left: 4px; }
+.streak-aside { position: relative; z-index: 2; text-align: right; flex-shrink: 0; }
+.streak-aside-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; color: #fff; }
+.streak-aside-label { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 4px; line-height: 1.2; }
 
 .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .metric-card {
@@ -887,6 +911,33 @@ body.in-session .ex-check { display: flex; }
   margin-top: 6px;
 }
 .metric-trend.down { color: var(--grey-500); }
+.metric-trend.neutral { color: var(--grey-400); font-weight: 600; }
+.metric-value .unit.small { font-size: 11px; }
+
+.activity-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 7px;
+  height: 130px;
+  margin-top: 14px;
+  padding-top: 6px;
+}
+.activity-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.activity-bar-track { width: 100%; flex: 1; display: flex; align-items: flex-end; }
+.activity-bar {
+  width: 100%;
+  min-height: 4px;
+  border-radius: 6px 6px 4px 4px;
+  background: linear-gradient(180deg, #A78BFA 0%, var(--accent) 100%);
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.activity-bar.zero { background: var(--grey-150); }
+.activity-bar.current { background: linear-gradient(180deg, var(--accent) 0%, var(--accent-strong) 100%); box-shadow: 0 0 10px var(--accent-glow); }
+.activity-count { font-size: 10px; font-weight: 700; color: var(--charcoal); font-variant-numeric: tabular-nums; line-height: 1; }
+.activity-count.zero { color: var(--grey-300); }
+.activity-label { font-size: 8.5px; font-weight: 600; letter-spacing: 0.3px; color: var(--grey-400); text-transform: uppercase; line-height: 1; }
+.activity-label.current { color: var(--accent); font-weight: 700; }
 
 .chart-card {
   background: white;
@@ -1729,6 +1780,84 @@ body.in-session #end-session-dashboard { display: flex; }
 }
 .session-tl-card:active { opacity: 0.75; }
 
+/* Log view toggle (List / Calendar) */
+.log-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.log-toggle {
+  display: inline-flex;
+  background: var(--grey-100);
+  border-radius: 100px;
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+.log-toggle-btn {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  color: var(--grey-500);
+  padding: 7px 14px;
+  border-radius: 100px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.log-toggle-btn.active { background: var(--white); color: var(--charcoal); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+/* Calendar view */
+.session-cal { margin-top: 4px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.cal-month { font-size: 16px; font-weight: 800; letter-spacing: -0.4px; color: var(--charcoal); }
+.cal-nav {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--grey-100);
+  color: var(--charcoal);
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.cal-nav:active { background: var(--grey-200); transform: scale(0.92); }
+.cal-nav.disabled { opacity: 0.3; pointer-events: none; }
+.cal-weekdays {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+.cal-weekdays span {
+  text-align: center;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--grey-400); text-transform: uppercase;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: none; background: transparent;
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px;
+  font-family: inherit;
+}
+.cal-cell.empty { visibility: hidden; }
+.cal-daynum { font-size: 13px; font-weight: 600; color: var(--grey-500); font-variant-numeric: tabular-nums; }
+.cal-cell.future .cal-daynum { color: var(--grey-300); }
+.cal-cell.has-session { background: var(--accent-pale); cursor: pointer; }
+.cal-cell.has-session .cal-daynum { color: var(--accent-strong); font-weight: 800; }
+.cal-cell.has-session:active { transform: scale(0.92); }
+.cal-cell.today { box-shadow: inset 0 0 0 2px var(--accent); }
+.cal-cell.today .cal-daynum { color: var(--accent-strong); }
+.cal-dots { display: flex; gap: 2px; height: 4px; align-items: center; }
+.cal-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.cal-footer {
+  margin-top: 18px; padding-top: 14px;
+  border-top: 1px solid var(--grey-100);
+  text-align: center;
+  font-size: 12px; font-weight: 600; color: var(--grey-500);
+}
+.cal-footer-num { font-weight: 800; color: var(--charcoal); }
+
 /* Active session banner */
 .session-active-banner {
   display: flex;
@@ -2234,31 +2363,35 @@ body.in-session #end-session-dashboard { display: flex; }
                 </svg>
               </div>
               <div class="streak-text">
-                <div class="streak-label">Current Streak</div>
-                <div class="streak-value">12<span class="unit">days</span></div>
+                <div class="streak-label">Week Streak</div>
+                <div class="streak-value"><span id="stat-streak">0</span><span class="unit" id="stat-streak-unit">weeks</span></div>
+              </div>
+              <div class="streak-aside">
+                <div class="streak-aside-num" id="stat-week-count">0</div>
+                <div class="streak-aside-label">this<br>week</div>
               </div>
             </div>
 
             <div class="metric-grid">
               <div class="metric-card">
-                <div class="metric-label">Sessions</div>
-                <div class="metric-value">28<span class="unit">/ 32</span></div>
-                <div class="metric-trend"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/></svg>+14% vs prev</div>
+                <div class="metric-label">This Month</div>
+                <div class="metric-value"><span id="stat-month">0</span><span class="unit">sessions</span></div>
+                <div class="metric-trend neutral" id="stat-month-sub">—</div>
               </div>
               <div class="metric-card">
-                <div class="metric-label">Volume</div>
-                <div class="metric-value">48.2<span class="unit">k kg</span></div>
-                <div class="metric-trend"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/></svg>+22%</div>
+                <div class="metric-label">All Time</div>
+                <div class="metric-value"><span id="stat-total">0</span><span class="unit">sessions</span></div>
+                <div class="metric-trend neutral" id="stat-total-sub">—</div>
               </div>
               <div class="metric-card">
-                <div class="metric-label">Avg Steps</div>
-                <div class="metric-value">11.4<span class="unit">k</span></div>
-                <div class="metric-trend"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" transform="rotate(180 12 12)"/></svg>+6%</div>
+                <div class="metric-label">Heaviest Lift</div>
+                <div class="metric-value"><span id="stat-pr">0</span><span class="unit">kg</span></div>
+                <div class="metric-trend neutral" id="stat-pr-sub">—</div>
               </div>
               <div class="metric-card">
-                <div class="metric-label">Body Fat</div>
-                <div class="metric-value">14.2<span class="unit">%</span></div>
-                <div class="metric-trend down"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>-1.8% this mo.</div>
+                <div class="metric-label">Weekly Avg</div>
+                <div class="metric-value"><span id="stat-avg">0</span><span class="unit">/ week</span></div>
+                <div class="metric-trend neutral" id="stat-avg-sub">last 8 wks</div>
               </div>
             </div>
 
@@ -2280,33 +2413,12 @@ body.in-session #end-session-dashboard { display: flex; }
             <div class="chart-card" style="margin-top:10px;">
               <div class="chart-head">
                 <div>
-                  <div class="chart-title">Strength Progress</div>
-                  <div class="chart-sub">Avg weight · last 5 weeks</div>
+                  <div class="chart-title">Activity</div>
+                  <div class="chart-sub">Sessions per week · last 8 weeks</div>
                 </div>
-                <div class="chart-now">68<span class="unit">/100</span></div>
+                <div class="chart-now"><span id="activity-total">0</span><span class="unit">total</span></div>
               </div>
-              <svg class="line-chart" viewBox="0 0 320 130" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.32"/>
-                    <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <line x1="0" y1="30" x2="320" y2="30" stroke="rgba(0,0,0,0.04)"/>
-                <line x1="0" y1="65" x2="320" y2="65" stroke="rgba(0,0,0,0.04)"/>
-                <line x1="0" y1="100" x2="320" y2="100" stroke="rgba(0,0,0,0.04)"/>
-                <path d="M 0 95 C 30 92, 50 85, 80 78 C 110 72, 130 68, 160 60 C 190 55, 210 45, 240 40 C 270 38, 290 28, 320 22 L 320 130 L 0 130 Z" fill="url(#areaGrad)"/>
-                <path d="M 0 95 C 30 92, 50 85, 80 78 C 110 72, 130 68, 160 60 C 190 55, 210 45, 240 40 C 270 38, 290 28, 320 22" stroke="#8B5CF6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <circle cx="80" cy="78" r="5" fill="#fff" stroke="#8B5CF6" stroke-width="2.5"/>
-                <circle cx="80" cy="78" r="2" fill="#8B5CF6"/>
-              </svg>
-              <div class="chart-x-axis">
-                <span>W1</span>
-                <span class="current">· W2 ·</span>
-                <span>W3</span>
-                <span>W4</span>
-                <span>W5</span>
-              </div>
+              <div class="activity-chart" id="activity-chart"></div>
             </div>
 
           </section>
@@ -2326,13 +2438,18 @@ body.in-session #end-session-dashboard { display: flex; }
               </button>
             </div>
 
-            <div class="page-head">
+            <div class="page-head log-head">
               <h2>Session Log</h2>
+              <div class="log-toggle" role="tablist" aria-label="Log view">
+                <button class="log-toggle-btn active" data-logview="list" role="tab">List</button>
+                <button class="log-toggle-btn" data-logview="calendar" role="tab">Calendar</button>
+              </div>
             </div>
 
             <div class="session-log-list" id="session-log-list">
               <div class="session-log-empty">No sessions logged yet.<br>Swipe to log today's session.</div>
             </div>
+            <div class="session-cal" id="session-cal" style="display:none;"></div>
 
           </section>
 
@@ -2534,8 +2651,8 @@ body.in-session #end-session-dashboard { display: flex; }
             <div class="stepper">
               <button class="step-btn" id="step-minus" aria-label="Decrease">−</button>
               <div class="weight-display">
-                <div class="weight-number"><span id="weight-value">20</span><span class="unit" id="weight-unit-label">kg</span></div>
-                <div class="weight-helper" id="weight-helper">Tap + / − to adjust</div>
+                <div class="weight-number"><input id="weight-value" class="weight-input" type="text" inputmode="decimal" value="20" aria-label="Weight in kilograms"><span class="unit" id="weight-unit-label">kg</span></div>
+                <div class="weight-helper" id="weight-helper">Tap to type · + / − to adjust</div>
               </div>
               <button class="step-btn" id="step-plus" aria-label="Increase">+</button>
             </div>
@@ -2818,6 +2935,9 @@ body.in-session #end-session-dashboard { display: flex; }
   document.querySelectorAll('[data-go]').forEach(el => {
     el.addEventListener('click', e => { e.stopPropagation(); switchView(el.dataset.go); });
   });
+  document.querySelectorAll('.log-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => { setLogView(btn.dataset.logview); tap(); });
+  });
 
   // ─── Workout card collapse ────────────────────────────────────────────────────
   document.querySelectorAll('.workout-card').forEach(card => {
@@ -3058,23 +3178,58 @@ body.in-session #end-session-dashboard { display: flex; }
     overlay.classList.add('show');
   }
 
+  function sizeWeightInput() {
+    const len = String(weightValueEl.value || '').length;
+    weightValueEl.style.width = Math.max(2, len + 0.5) + 'ch';
+  }
+
   function updateWeightDisplay() {
     if (currentIsBW && currentWeight === 0) {
-      weightValueEl.textContent = 'BW'; weightUnitLabel.textContent = '';
+      weightValueEl.value = 'BW'; weightUnitLabel.textContent = '';
     } else {
-      weightValueEl.textContent = currentWeight % 1 === 0 ? currentWeight : currentWeight.toFixed(1);
+      weightValueEl.value = currentWeight % 1 === 0 ? String(currentWeight) : currentWeight.toFixed(1);
       weightUnitLabel.textContent = 'kg';
     }
     currentStep = currentWeight < 5 ? 0.5 : (currentWeight < 20 ? 1 : 2.5);
     weightHelper.textContent = (currentIsBW && currentWeight === 0) ? 'Bodyweight · tap + to add load' : ('Step ' + currentStep + ' kg');
+    sizeWeightInput();
   }
 
+  // Type-in weight: select all on focus, parse on input, commit on blur/Enter.
+  weightValueEl.addEventListener('focus', () => {
+    if (weightValueEl.value === 'BW') weightValueEl.value = '';
+    weightUnitLabel.textContent = 'kg';
+    setTimeout(() => weightValueEl.select(), 0);
+  });
+  weightValueEl.addEventListener('input', () => {
+    // Keep only digits and a single decimal point.
+    let v = weightValueEl.value.replace(/[^0-9.]/g, '');
+    const parts = v.split('.');
+    if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+    weightValueEl.value = v;
+    const n = parseFloat(v);
+    if (!isNaN(n)) currentWeight = n;
+    sizeWeightInput();
+  });
+  function commitWeightInput() {
+    let n = parseFloat(weightValueEl.value);
+    if (isNaN(n) || n < 0) n = 0;
+    currentWeight = +n.toFixed(1);
+    updateWeightDisplay();
+  }
+  weightValueEl.addEventListener('blur', commitWeightInput);
+  weightValueEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); weightValueEl.blur(); }
+  });
+
   stepMinus.addEventListener('click', () => {
+    commitWeightInput();
     currentWeight = Math.max(0, +(currentWeight - currentStep).toFixed(1));
     if (Math.abs(currentWeight) < 0.01) currentWeight = 0;
     updateWeightDisplay(); tap();
   });
   stepPlus.addEventListener('click', () => {
+    commitWeightInput();
     currentWeight = +(currentWeight + currentStep).toFixed(1);
     updateWeightDisplay(); tap();
   });
@@ -3603,16 +3758,10 @@ body.in-session #end-session-dashboard { display: flex; }
     });
     return counts;
   }
-  function getSeededCounts() {
-    const real = getThisWeekCounts();
-    const anyReal = Object.values(real).some(v => v > 0);
-    if (anyReal) return real;
-    return { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 1 };
-  }
   function renderFrequency() {
     const list = document.getElementById('freq-list');
     if (!list) return;
-    const counts = getSeededCounts();
+    const counts = getThisWeekCounts();
     let totalDone = 0, totalTarget = 0;
     list.innerHTML = '';
     GROUP_ORDER.forEach(group => {
@@ -3632,6 +3781,121 @@ body.in-session #end-session-dashboard { display: flex; }
     });
     document.getElementById('freq-total-num').innerHTML = totalDone + '<span class="of"> / ' + totalTarget + '</span>';
     renderDashboardStats();
+    renderStats();
+  }
+
+  // ─── Statistics page (real data) ──────────────────────────────────────────────
+  function mondayOf(date) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const day = d.getDay();             // 0=Sun … 6=Sat
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  function renderStats() {
+    const data = loadData();
+    const sessions = (data.sessions || []).filter(s => s && s.exercise && s.date);
+    const now = new Date();
+
+    // Distinct session days (a "session" = a day you logged anything).
+    const sessionDates = [...new Set(sessions.map(s => s.date))].sort();
+    const dateSet = new Set(sessionDates);
+
+    // ── Week streak: consecutive weeks (back from now) with ≥1 session ──────────
+    const weekHasActivity = monday => {
+      const start = new Date(monday);
+      const end = new Date(monday); end.setDate(end.getDate() + 7);
+      return sessionDates.some(ds => {
+        const d = new Date(ds + 'T00:00:00');
+        return d >= start && d < end;
+      });
+    };
+    let streak = 0;
+    let wk = mondayOf(now);
+    if (!weekHasActivity(wk)) wk.setDate(wk.getDate() - 7); // grace for early in current week
+    while (weekHasActivity(wk)) { streak++; wk.setDate(wk.getDate() - 7); }
+    const streakEl = document.getElementById('stat-streak');
+    const streakUnitEl = document.getElementById('stat-streak-unit');
+    if (streakEl) streakEl.textContent = streak;
+    if (streakUnitEl) streakUnitEl.textContent = streak === 1 ? 'week' : 'weeks';
+
+    // ── This week count ─────────────────────────────────────────────────────────
+    const thisMonday = mondayOf(now);
+    const weekCount = sessionDates.filter(ds => new Date(ds + 'T00:00:00') >= thisMonday).length;
+    const weekEl = document.getElementById('stat-week-count');
+    if (weekEl) weekEl.textContent = weekCount;
+
+    // ── This month ────────────────────────────────────────────────────────────
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthCount = sessionDates.filter(ds => new Date(ds + 'T00:00:00') >= monthStart).length;
+    const monthEl = document.getElementById('stat-month');
+    if (monthEl) monthEl.textContent = monthCount;
+    const monthSub = document.getElementById('stat-month-sub');
+    if (monthSub) monthSub.textContent = now.toLocaleDateString(undefined, { month: 'long' });
+
+    // ── All time ──────────────────────────────────────────────────────────────
+    const totalEl = document.getElementById('stat-total');
+    if (totalEl) totalEl.textContent = sessionDates.length;
+    const totalSub = document.getElementById('stat-total-sub');
+    if (totalSub) {
+      if (sessionDates.length > 0) {
+        const first = new Date(sessionDates[0] + 'T00:00:00');
+        totalSub.textContent = 'since ' + first.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+      } else totalSub.textContent = 'no sessions yet';
+    }
+
+    // ── Heaviest lift ───────────────────────────────────────────────────────────
+    let pr = null;
+    sessions.forEach(s => {
+      if (typeof s.exercise === 'string' && !s.exercise.startsWith('Quick:') && s.weight > 0) {
+        if (!pr || s.weight > pr.weight) pr = s;
+      }
+    });
+    const prEl = document.getElementById('stat-pr');
+    const prSub = document.getElementById('stat-pr-sub');
+    if (prEl) prEl.textContent = pr ? (pr.weight % 1 === 0 ? pr.weight : pr.weight.toFixed(1)) : 0;
+    if (prSub) prSub.textContent = pr ? pr.exercise : 'lift to set a PR';
+
+    // ── Weekly activity (last 8 weeks) ──────────────────────────────────────────
+    const weeks = [];
+    const base = mondayOf(now);
+    for (let i = 7; i >= 0; i--) {
+      const start = new Date(base); start.setDate(start.getDate() - i * 7);
+      const end = new Date(start); end.setDate(end.getDate() + 7);
+      const count = sessionDates.filter(ds => {
+        const d = new Date(ds + 'T00:00:00');
+        return d >= start && d < end;
+      }).length;
+      weeks.push({ start, count, isCurrent: i === 0 });
+    }
+    const maxCount = Math.max(1, ...weeks.map(w => w.count));
+    const total8 = weeks.reduce((a, w) => a + w.count, 0);
+    const avg = (total8 / 8);
+
+    const avgEl = document.getElementById('stat-avg');
+    if (avgEl) avgEl.textContent = avg % 1 === 0 ? avg : avg.toFixed(1);
+    const activityTotal = document.getElementById('activity-total');
+    if (activityTotal) activityTotal.textContent = total8;
+
+    const chart = document.getElementById('activity-chart');
+    if (chart) {
+      chart.innerHTML = '';
+      weeks.forEach(w => {
+        const pct = Math.round((w.count / maxCount) * 100);
+        const col = document.createElement('div');
+        col.className = 'activity-col';
+        col.innerHTML = `
+          <div class="activity-count ${w.count === 0 ? 'zero' : ''}">${w.count}</div>
+          <div class="activity-bar-track">
+            <div class="activity-bar ${w.count === 0 ? 'zero' : ''} ${w.isCurrent ? 'current' : ''}" style="height:${w.count === 0 ? 4 : Math.max(8, pct)}%"></div>
+          </div>
+          <div class="activity-label ${w.isCurrent ? 'current' : ''}">${w.isCurrent ? 'NOW' : w.start.getDate()}</div>
+        `;
+        chart.appendChild(col);
+      });
+    }
   }
 
   function renderDashboardStats() {
@@ -3848,7 +4112,52 @@ body.in-session #end-session-dashboard { display: flex; }
     tap();
   }
 
+  // Group raw entries into session slots (one per unique date+quickKey),
+  // newest date first. Shared by the list view and the calendar view.
+  function buildSessionSlots(allEntries) {
+    const byDate = {};
+    allEntries.forEach(s => {
+      if (!byDate[s.date]) byDate[s.date] = [];
+      byDate[s.date].push(s);
+    });
+    const slots = [];
+    Object.keys(byDate).sort((a, b) => b.localeCompare(a)).forEach(date => {
+      const dayEntries = byDate[date];
+      const slotsByKey = new Map();
+      let manualSlot = null;
+      let currentKey = null;
+      dayEntries.forEach(s => {
+        const isQuick = typeof s.exercise === 'string' && s.exercise.startsWith('Quick:');
+        if (isQuick) {
+          if (!slotsByKey.has(s.exercise)) {
+            slotsByKey.set(s.exercise, { date, quickKey: s.exercise, allEntries: [], loggedEntries: [] });
+          }
+          currentKey = s.exercise;
+          slotsByKey.get(s.exercise).allEntries.push(s);
+        } else {
+          if (currentKey && slotsByKey.has(currentKey)) {
+            const slot = slotsByKey.get(currentKey);
+            slot.loggedEntries.push(s);
+            slot.allEntries.push(s);
+          } else {
+            if (!manualSlot) manualSlot = { date, quickKey: null, allEntries: [], loggedEntries: [] };
+            manualSlot.loggedEntries.push(s);
+            manualSlot.allEntries.push(s);
+          }
+        }
+      });
+      slotsByKey.forEach(slot => slots.push(slot));
+      if (manualSlot) slots.push(manualSlot);
+    });
+    return slots;
+  }
+
+  // ─── Log view mode + calendar ─────────────────────────────────────────────────
+  let logViewMode = 'list';
+  let calMonth = new Date(); calMonth.setDate(1);
+
   function renderSessionLog() {
+    if (logViewMode === 'calendar') { renderCalendar(); return; }
     const container = document.getElementById('session-log-list');
     if (!container) return;
     const data = loadData();
@@ -3880,55 +4189,7 @@ body.in-session #end-session-dashboard { display: flex; }
     }
 
     // ── Group into session slots: one slot per unique (date, quickKey) ─────────
-    const byDate = {};
-    allEntries.forEach(s => {
-      if (!byDate[s.date]) byDate[s.date] = [];
-      byDate[s.date].push(s);
-    });
-
-    const slots = [];
-    Object.keys(byDate).sort((a, b) => b.localeCompare(a)).forEach(date => {
-      const dayEntries = byDate[date]; // chronological (push order)
-
-      // Chronological assignment: each weight entry attaches to the most
-      // recently started Quick: session on the same day. Entries logged
-      // before any Quick: marker go into a manual-only bucket. This avoids
-      // double-counting exercises whose muscle group overlaps multiple
-      // session types (e.g., Triceps appearing in both Push and Arms).
-      const slotsByKey = new Map();
-      let manualSlot = null;
-      let currentKey = null;
-
-      dayEntries.forEach(s => {
-        const isQuick = typeof s.exercise === 'string' && s.exercise.startsWith('Quick:');
-        if (isQuick) {
-          if (!slotsByKey.has(s.exercise)) {
-            slotsByKey.set(s.exercise, {
-              date, quickKey: s.exercise,
-              allEntries: [], loggedEntries: []
-            });
-          }
-          currentKey = s.exercise;
-          slotsByKey.get(s.exercise).allEntries.push(s);
-        } else {
-          // Logged exercise — attach to current Quick: session, or manual bucket
-          if (currentKey && slotsByKey.has(currentKey)) {
-            const slot = slotsByKey.get(currentKey);
-            slot.loggedEntries.push(s);
-            slot.allEntries.push(s);
-          } else {
-            if (!manualSlot) {
-              manualSlot = { date, quickKey: null, allEntries: [], loggedEntries: [] };
-            }
-            manualSlot.loggedEntries.push(s);
-            manualSlot.allEntries.push(s);
-          }
-        }
-      });
-
-      slotsByKey.forEach(slot => slots.push(slot));
-      if (manualSlot) slots.push(manualSlot);
-    });
+    const slots = buildSessionSlots(allEntries);
 
     // ── Active session filter ──────────────────────────────────────────────────
     let visibleSlots = slots;
@@ -4007,6 +4268,119 @@ body.in-session #end-session-dashboard { display: flex; }
     });
 
     container.appendChild(tl);
+  }
+
+  // Build a Map of date(ISO) → array of slots for that date.
+  function slotsByDateMap() {
+    const data = loadData();
+    const allEntries = (data.sessions || []).filter(s => s && s.exercise && s.date);
+    const slots = buildSessionSlots(allEntries);
+    const map = new Map();
+    slots.forEach(slot => {
+      if (!map.has(slot.date)) map.set(slot.date, []);
+      map.get(slot.date).push(slot);
+    });
+    return map;
+  }
+
+  function renderCalendar() {
+    const container = document.getElementById('session-cal');
+    if (!container) return;
+    const map = slotsByDateMap();
+    const todayIso = todayISO();
+
+    const year = calMonth.getFullYear();
+    const month = calMonth.getMonth();
+    const monthLabel = calMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+    // First cell = Monday on/before the 1st of the month.
+    const first = new Date(year, month, 1);
+    const lead = (first.getDay() + 6) % 7; // 0=Mon … 6=Sun
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const totalCells = Math.ceil((lead + daysInMonth) / 7) * 7;
+
+    // Don't allow navigating past the current month.
+    const thisMonthStart = new Date(); thisMonthStart.setDate(1); thisMonthStart.setHours(0,0,0,0);
+    const atCurrentMonth = year === thisMonthStart.getFullYear() && month === thisMonthStart.getMonth();
+
+    let monthSessionDays = 0;
+
+    let cells = '';
+    for (let i = 0; i < totalCells; i++) {
+      const dayNum = i - lead + 1;
+      if (dayNum < 1 || dayNum > daysInMonth) { cells += '<div class="cal-cell empty"></div>'; continue; }
+      const dateObj = new Date(year, month, dayNum);
+      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+      const daySlots = map.get(iso) || [];
+      const hasSession = daySlots.length > 0;
+      if (hasSession) monthSessionDays++;
+      const isToday = iso === todayIso;
+      const isFuture = dateObj > new Date(new Date().setHours(23,59,59,999));
+      const cls = ['cal-cell'];
+      if (hasSession) cls.push('has-session');
+      if (isToday) cls.push('today');
+      if (isFuture) cls.push('future');
+      const dots = hasSession
+        ? `<div class="cal-dots">${daySlots.slice(0,3).map(() => '<span class="cal-dot"></span>').join('')}</div>`
+        : '';
+      cells += `<button class="${cls.join(' ')}" data-iso="${iso}" ${hasSession ? '' : 'tabindex="-1"'}>
+        <span class="cal-daynum">${dayNum}</span>${dots}
+      </button>`;
+    }
+
+    container.innerHTML = `
+      <div class="cal-head">
+        <button class="cal-nav" id="cal-prev" aria-label="Previous month">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="cal-month">${escapeHtml(monthLabel)}</div>
+        <button class="cal-nav ${atCurrentMonth ? 'disabled' : ''}" id="cal-next" aria-label="Next month" ${atCurrentMonth ? 'disabled' : ''}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="cal-weekdays">
+        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+      </div>
+      <div class="cal-grid">${cells}</div>
+      <div class="cal-footer">
+        <span class="cal-footer-num">${monthSessionDays}</span> session${monthSessionDays === 1 ? '' : 's'} this month
+      </div>
+    `;
+
+    container.querySelector('#cal-prev').addEventListener('click', () => {
+      calMonth = new Date(year, month - 1, 1); renderCalendar(); tap();
+    });
+    const nextBtn = container.querySelector('#cal-next');
+    if (!atCurrentMonth) {
+      nextBtn.addEventListener('click', () => { calMonth = new Date(year, month + 1, 1); renderCalendar(); tap(); });
+    }
+    container.querySelectorAll('.cal-cell.has-session').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const iso = cell.dataset.iso;
+        const daySlots = map.get(iso) || [];
+        if (daySlots.length === 0) return;
+        const slot = daySlots[0];
+        openSessionDetail(slot, inferSessionName(slot.allEntries));
+      });
+    });
+  }
+
+  function setLogView(mode) {
+    logViewMode = mode;
+    const list = document.getElementById('session-log-list');
+    const cal = document.getElementById('session-cal');
+    document.querySelectorAll('.log-toggle-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.logview === mode));
+    if (mode === 'calendar') {
+      if (list) list.style.display = 'none';
+      if (cal) cal.style.display = '';
+      calMonth = new Date(); calMonth.setDate(1);
+      renderCalendar();
+    } else {
+      if (cal) cal.style.display = 'none';
+      if (list) list.style.display = '';
+      renderSessionLog();
+    }
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────────
