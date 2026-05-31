@@ -452,6 +452,64 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 
 .workout-card.collapsed { padding-bottom: 16px; }
 
+/* ─── Stacked routine deck ─────────────────────────────────────────────── */
+.workout-deck {
+  position: relative;
+  min-height: 104px;
+  margin-bottom: 4px;
+  touch-action: pan-y;            /* vertical scroll passes through; JS owns horizontal */
+}
+.workout-deck .workout-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  transform-origin: 50% 0;
+  will-change: transform;
+  box-shadow: 0 12px 30px -20px rgba(15, 15, 18, 0.45);
+  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease, box-shadow 0.3s ease;
+}
+.workout-deck .workout-card.today { box-shadow: 0 0 0 3px var(--accent-pale), 0 12px 30px -16px var(--accent-glow); }
+.workout-deck .workout-card .chevron-btn { display: none; }
+.workout-deck .workout-card.deck-front { cursor: pointer; }
+
+/* Active session: deck collapses to the single live card flowing normally */
+.workout-deck.deck-session {
+  min-height: 0;
+  height: auto !important;
+  touch-action: auto;
+}
+.workout-deck.deck-session .workout-card {
+  position: static;
+  transform: none !important;
+  opacity: 1 !important;
+  box-shadow: none;
+  transition: none;
+}
+.workout-deck.deck-session .workout-card .chevron-btn { display: flex; }
+
+.deck-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  margin: 4px 0 16px;
+  min-height: 8px;
+}
+.deck-dots .deck-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 100px;
+  background: var(--grey-200);
+  cursor: pointer;
+  transition: background 0.22s ease, width 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.deck-dots .deck-dot.active { background: var(--accent); width: 20px; }
+body.in-session .deck-dots { display: none; }
+
 .card-head {
   display: flex;
   align-items: flex-start;
@@ -2404,6 +2462,8 @@ body.in-session #session-media-cta { display: flex; }
               <div class="section-action">4 routines</div>
             </div>
 
+            <!-- Swipeable stacked deck of the week's routines -->
+            <div class="workout-deck" id="workout-deck">
             <!-- Card 1: PUSH -->
             <div class="workout-card collapsed" data-day="push">
               <div class="card-head">
@@ -2706,6 +2766,9 @@ body.in-session #session-media-cta { display: flex; }
                 </div>
               </div>
             </div>
+            </div><!-- /.workout-deck -->
+
+            <div class="deck-dots" id="deck-dots" role="tablist" aria-label="Choose routine"></div>
 
             <!-- Photo & note for the active session — only visible during active session -->
             <button id="session-media-cta" type="button" aria-haspopup="dialog">
@@ -3586,6 +3649,8 @@ body.in-session #session-media-cta { display: flex; }
     modalReturnParent.insertBefore(modalAnchor, card);
     card.classList.remove('collapsed');
     card.classList.add('in-modal');
+    card.style.transform = ''; card.style.zIndex = ''; card.style.opacity = '';
+    card.style.pointerEvents = ''; card.style.transition = '';
     workoutModalBody.appendChild(card);
     workoutModal.scrollTop = 0;
 
@@ -3610,17 +3675,11 @@ body.in-session #session-media-cta { display: flex; }
       card.classList.remove('in-modal');
       if (workoutModal) workoutModal.setAttribute('hidden', '');
       modalCard = null; modalAnchor = null; modalReturnParent = null;
+      renderDeck();
     };
     modalRestoreTimer = setTimeout(restore, 320);
     tap();
   }
-
-  document.querySelectorAll('.workout-card').forEach(card => {
-    card.querySelector('.card-head').addEventListener('click', () => {
-      if (swipeMode === 'active') { card.classList.toggle('collapsed'); tap(); return; }
-      openWorkoutModal(card);
-    });
-  });
 
   if (workoutModalOverlay) workoutModalOverlay.addEventListener('click', closeWorkoutModal);
   const workoutModalCloseBtn = document.getElementById('workout-modal-close');
@@ -3628,6 +3687,93 @@ body.in-session #session-media-cta { display: flex; }
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && modalCard) closeWorkoutModal();
   });
+
+  // ─── Stacked routine deck ─────────────────────────────────────────────────────
+  // The four weekly routines live in a card stack: one card on top, the rest
+  // peeking behind it. Swipe left/right (or tap a dot / a peeking card) to flip
+  // to another day; tap the front card to open it in the popup. Keeps the
+  // dashboard short — only one routine is fully shown at a time. During a live
+  // session the deck collapses to just the active card flowing inline.
+  const deckEl = document.getElementById('workout-deck');
+  const deckDotsEl = document.getElementById('deck-dots');
+  let deckCards = deckEl ? Array.from(deckEl.querySelectorAll('.workout-card')) : [];
+  let deckFront = 0;
+  let deckDidDrag = false;
+  const DECK_MAX_DEPTH = 3;
+  function deckFrontHeight() { const c = deckCards[deckFront] || deckCards[0]; return c ? c.offsetHeight : 96; }
+  function renderDeck(dragDx) {
+    if (!deckEl || !deckCards.length || modalCard) return;
+    if (deckEl.classList.contains('deck-session')) return;
+    const n = deckCards.length;
+    deckCards.forEach((card, i) => {
+      const pos = (i - deckFront + n) % n;
+      const depth = Math.min(pos, DECK_MAX_DEPTH);
+      const scale = 1 - depth * 0.05;
+      const ty = depth * 9;
+      const tx = (pos === 0 && typeof dragDx === 'number') ? dragDx : 0;
+      card.style.transform = 'translateX(' + tx + 'px) translateY(' + ty + 'px) scale(' + scale + ')';
+      card.style.zIndex = String(100 - depth);
+      card.style.opacity = pos > DECK_MAX_DEPTH ? '0' : '1';
+      card.style.pointerEvents = pos > DECK_MAX_DEPTH ? 'none' : 'auto';
+      card.classList.toggle('deck-front', pos === 0);
+    });
+    deckEl.style.height = (deckFrontHeight() + Math.min(n - 1, DECK_MAX_DEPTH) * 9 + 4) + 'px';
+    renderDeckDots();
+  }
+  function renderDeckDots() {
+    if (!deckDotsEl || !deckCards.length) return;
+    if (deckDotsEl.childElementCount !== deckCards.length) {
+      deckDotsEl.innerHTML = '';
+      deckCards.forEach((card, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button'; dot.className = 'deck-dot'; dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-label', (card.querySelector('.card-title')?.textContent || ('Routine ' + (i + 1))).trim());
+        dot.addEventListener('click', () => { if (deckFront !== i) { deckFront = i; renderDeck(); tap(); } });
+        deckDotsEl.appendChild(dot);
+      });
+    }
+    Array.from(deckDotsEl.children).forEach((dot, i) => { const active = i === deckFront; dot.classList.toggle('active', active); dot.setAttribute('aria-selected', active ? 'true' : 'false'); });
+  }
+  function deckStep(dir) { const n = deckCards.length; if (!n) return; deckFront = (deckFront + dir + n) % n; renderDeck(); tap(); }
+  deckCards.forEach(card => {
+    card.addEventListener('click', e => {
+      if (modalCard) return;
+      if (swipeMode === 'active') { if (e.target.closest('.card-head')) { card.classList.toggle('collapsed'); tap(); } return; }
+      if (deckDidDrag) return;
+      const idx = deckCards.indexOf(card);
+      const pos = (idx - deckFront + deckCards.length) % deckCards.length;
+      if (pos === 0) openWorkoutModal(card);
+      else { deckFront = idx; renderDeck(); tap(); }
+    });
+  });
+  if (deckEl) {
+    let dStartX = 0, dStartY = 0, dDragging = false, dId = null;
+    deckEl.addEventListener('pointerdown', e => {
+      if (swipeMode === 'active' || modalCard || !deckCards.length) return;
+      if (e.target.closest('.deck-dot')) return;
+      dStartX = e.clientX; dStartY = e.clientY; dDragging = false; dId = e.pointerId; deckDidDrag = false;
+    });
+    deckEl.addEventListener('pointermove', e => {
+      if (dId === null) return;
+      const dx = e.clientX - dStartX, dy = e.clientY - dStartY;
+      if (!dDragging) {
+        if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) { dDragging = true; try { deckEl.setPointerCapture(dId); } catch (_) {} const f = deckCards[deckFront]; if (f) f.style.transition = 'none'; }
+        else if (Math.abs(dy) > 10) { dId = null; return; } else return;
+      }
+      e.preventDefault(); renderDeck(dx);
+    });
+    function deckPointerEnd(e) {
+      if (dId === null) return;
+      const dx = e.clientX - dStartX; const f = deckCards[deckFront]; if (f) f.style.transition = '';
+      const wasDragging = dDragging; dId = null; dDragging = false;
+      if (!wasDragging) return;
+      deckDidDrag = true; setTimeout(() => { deckDidDrag = false; }, 60);
+      const TH = 52;
+      if (dx <= -TH) deckStep(1); else if (dx >= TH) deckStep(-1); else renderDeck();
+    }
+    deckEl.addEventListener('pointerup', deckPointerEnd);
+    deckEl.addEventListener('pointercancel', () => { const f = deckCards[deckFront]; if (f) f.style.transition = ''; dId = null; dDragging = false; renderDeck(); });
+  }
 
   // ─── Today highlight ──────────────────────────────────────────────────────────
   // dayMap: 0=Sun … 6=Sat  →  card data-day value
@@ -4133,8 +4279,10 @@ body.in-session #session-media-cta { display: flex; }
     label.textContent = 'Swipe to log today\'s session';
     track.classList.remove('armed', 'session-on');
     document.body.classList.remove('in-session');
-    // Restore all workout cards
-    document.querySelectorAll('.workout-card').forEach(card => card.style.display = '');
+    // Restore all workout cards into the stacked deck
+    document.querySelectorAll('.workout-card').forEach(card => { card.style.display = ''; card.classList.add('collapsed'); });
+    if (deckEl) deckEl.classList.remove('deck-session');
+    renderDeck();
   }
 
   function setSwipeSession(displayName, dayKey) {
@@ -4166,6 +4314,8 @@ body.in-session #session-media-cta { display: flex; }
       // Ensure the active card is expanded
       if (match) card.classList.remove('collapsed');
     });
+    // Collapse the deck to just the live card flowing normally
+    if (deckEl) { deckEl.classList.add('deck-session'); deckEl.style.height = ''; }
   }
 
   // alias kept for cancel button
@@ -4844,7 +4994,9 @@ body.in-session #session-media-cta { display: flex; }
       card.classList.remove('collapsed');
       setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 140);
     } else {
-      setTimeout(() => openWorkoutModal(card), 180);
+      const idx = deckCards.indexOf(card);
+      if (idx >= 0) { deckFront = idx; renderDeck(); }
+      setTimeout(() => openWorkoutModal(card), 200);
     }
   }
 
@@ -5585,6 +5737,10 @@ body.in-session #session-media-cta { display: flex; }
     }
     applyTodayHighlight();
     renderExerciseLists();
+    // Front the routine deck on today's workout (fallback: first card)
+    const todayDeckIdx = deckCards.findIndex(c => c.classList.contains('today'));
+    if (todayDeckIdx >= 0) deckFront = todayDeckIdx;
+    renderDeck();
     renderFrequency();
     initSwipeLog();
     // Restore session state if a session was already active and still valid
