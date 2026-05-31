@@ -1439,19 +1439,31 @@ button:focus-visible { border-radius: 8px; }
 }
 /* Active session locked state */
 .swipe-track.session-on {
-  background: rgba(139, 92, 246, 0.07);
+  background: var(--accent-pale);
 }
 .swipe-track.session-on .swipe-fill {
-  background: linear-gradient(90deg, rgba(139,92,246,0.25) 0%, rgba(139,92,246,0.55) 100%);
+  background: linear-gradient(90deg, var(--accent-pale) 0%, rgba(139, 92, 246, 0.45) 100%);
 }
 .swipe-track.session-on .swipe-thumb {
   background: var(--accent);
   box-shadow: 0 4px 18px var(--accent-glow);
+  animation: swipeThumbPulse 2.4s ease-in-out infinite;
+}
+/* Flip the chevron so it points the way you drag (left) to end */
+.swipe-track.session-on .swipe-thumb svg {
+  transform: rotate(180deg);
 }
 .swipe-track.session-on .swipe-label {
-  color: var(--accent);
+  color: var(--accent-strong);
   padding-left: 0;
-  padding-right: 60px;
+  padding-right: 56px;
+}
+@keyframes swipeThumbPulse {
+  0%, 100% { box-shadow: 0 4px 18px var(--accent-glow), 0 0 0 0 rgba(139, 92, 246, 0.30); }
+  50%      { box-shadow: 0 4px 18px var(--accent-glow), 0 0 0 7px rgba(139, 92, 246, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swipe-track.session-on .swipe-thumb { animation: none; }
 }
 
 /* End session dashboard button */
@@ -3468,7 +3480,7 @@ body.in-session #end-session-dashboard { display: flex; }
     fill.style.transition = 'width 0.35s ease';
     fill.style.width = '100%';
     label.style.opacity = '1';
-    label.textContent = '← Slide to end session';
+    label.textContent = 'Slide to end session';
     track.classList.remove('armed');
     track.classList.add('session-on');
     document.body.classList.add('in-session');
