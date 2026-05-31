@@ -1687,6 +1687,85 @@ body.in-session #session-media-cta { display: flex; }
 }
 .lightbox-counter[hidden] { display: none; }
 
+/* Workout detail popup — dashboard cards open into a centered scale+fade dialog */
+.workout-modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  background: rgba(15, 15, 18, 0.42);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.workout-modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+.workout-modal {
+  position: absolute;
+  z-index: 86;
+  left: 16px;
+  right: 16px;
+  top: 50%;
+  max-height: 80%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--white);
+  border-radius: 28px;
+  padding: 22px 20px 12px;
+  box-shadow: 0 30px 80px -20px rgba(15, 15, 18, 0.45), 0 12px 30px -12px rgba(15, 15, 18, 0.3);
+  transform-origin: 50% 50%;
+  transform: translateY(-50%) scale(0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease, transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.workout-modal.show {
+  transform: translateY(-50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+.workout-modal[hidden] { display: none; }
+.workout-modal::-webkit-scrollbar { display: none; }
+
+.workout-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--grey-100);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--charcoal);
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.15s ease;
+}
+.workout-modal-close:active { background: var(--grey-200); }
+
+/* The relocated card sheds its own card chrome inside the popup */
+.workout-modal .workout-card.in-modal {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.workout-modal .workout-card.in-modal .card-head { cursor: default; padding: 0 38px 0 0; gap: 14px; }
+.workout-modal .workout-card.in-modal .chevron-btn { display: none; }
+.workout-modal .workout-card.in-modal .collapsible {
+  max-height: none;
+  opacity: 1;
+  overflow: visible;
+  transition: none;
+}
+
 /* + Add exercise button */
 .add-exercise-btn {
   display: flex;
@@ -3269,6 +3348,15 @@ body.in-session #session-media-cta { display: flex; }
           <div class="lightbox-counter" id="lightbox-counter" aria-live="polite" hidden>1 / 1</div>
         </div>
 
+        <!-- Workout detail popup (dashboard cards open into this) -->
+        <div class="workout-modal-overlay" id="workout-modal-overlay"></div>
+        <div class="workout-modal" id="workout-modal" role="dialog" aria-modal="true" aria-label="Workout details" hidden>
+          <button class="workout-modal-close" id="workout-modal-close" type="button" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="workout-modal-body" id="workout-modal-body"></div>
+        </div>
+
         <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
           <span class="toast-dot"></span>
           <span id="toast-text">Saved</span>
@@ -3464,12 +3552,81 @@ body.in-session #session-media-cta { display: flex; }
     if (bodyActive && bodySelected) positionBodyPill(bodySelected);
   });
 
-  // ─── Workout card collapse ────────────────────────────────────────────────────
+  // ─── Workout card popup ───────────────────────────────────────────────────────
+  // Dashboard cards are compact summaries; tapping one opens that day's exercises
+  // in a centered popup, so the dashboard stays short instead of one long scroll.
+  // During a live session the active card stays expanded inline, so tapping its
+  // head there just toggles it (unchanged workflow).
+  let modalCard = null;          // the .workout-card currently hosted in the popup
+  let modalAnchor = null;        // placeholder marking the card's dashboard slot
+  let modalReturnParent = null;
+  let modalRestoreTimer = null;
+  const workoutModal = document.getElementById('workout-modal');
+  const workoutModalOverlay = document.getElementById('workout-modal-overlay');
+  const workoutModalBody = document.getElementById('workout-modal-body');
+
+  function openWorkoutModal(card) {
+    if (!card || modalCard || !workoutModal) return;
+    if (modalRestoreTimer) { clearTimeout(modalRestoreTimer); modalRestoreTimer = null; }
+
+    // Grow the popup from the tapped card's vertical position for spatial context.
+    const screen = document.querySelector('.phone-screen');
+    if (screen) {
+      const cr = card.getBoundingClientRect();
+      const sr = screen.getBoundingClientRect();
+      const oy = Math.max(8, Math.min(92, ((cr.top + cr.height / 2 - sr.top) / sr.height) * 100));
+      workoutModal.style.transformOrigin = '50% ' + oy.toFixed(1) + '%';
+    }
+
+    // Relocate the live card into the popup so every existing handler, weight
+    // badge and done-state keeps working on the same DOM nodes.
+    modalCard = card;
+    modalReturnParent = card.parentNode;
+    modalAnchor = document.createComment('workout-card-slot');
+    modalReturnParent.insertBefore(modalAnchor, card);
+    card.classList.remove('collapsed');
+    card.classList.add('in-modal');
+    workoutModalBody.appendChild(card);
+    workoutModal.scrollTop = 0;
+
+    workoutModalOverlay.classList.add('show');
+    workoutModal.removeAttribute('hidden');
+    requestAnimationFrame(() => workoutModal.classList.add('show'));
+    tap();
+  }
+
+  function closeWorkoutModal() {
+    if (!modalCard) return;
+    const card = modalCard;
+    workoutModal.classList.remove('show');
+    workoutModalOverlay.classList.remove('show');
+    const restore = () => {
+      modalRestoreTimer = null;
+      if (modalAnchor && modalReturnParent) {
+        modalReturnParent.insertBefore(card, modalAnchor);
+        modalAnchor.remove();
+      }
+      card.classList.add('collapsed');
+      card.classList.remove('in-modal');
+      if (workoutModal) workoutModal.setAttribute('hidden', '');
+      modalCard = null; modalAnchor = null; modalReturnParent = null;
+    };
+    modalRestoreTimer = setTimeout(restore, 320);
+    tap();
+  }
+
   document.querySelectorAll('.workout-card').forEach(card => {
     card.querySelector('.card-head').addEventListener('click', () => {
-      card.classList.toggle('collapsed');
-      tap();
+      if (swipeMode === 'active') { card.classList.toggle('collapsed'); tap(); return; }
+      openWorkoutModal(card);
     });
+  });
+
+  if (workoutModalOverlay) workoutModalOverlay.addEventListener('click', closeWorkoutModal);
+  const workoutModalCloseBtn = document.getElementById('workout-modal-close');
+  if (workoutModalCloseBtn) workoutModalCloseBtn.addEventListener('click', closeWorkoutModal);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modalCard) closeWorkoutModal();
   });
 
   // ─── Today highlight ──────────────────────────────────────────────────────────
@@ -4681,9 +4838,13 @@ body.in-session #session-media-cta { display: flex; }
     if (group === 'Cardio') { setTimeout(openQuickLog, 200); return; }
     const item = document.querySelector('.workout-card .exercise-item[data-group="' + group + '"]');
     const card = item ? item.closest('.workout-card') : null;
-    if (card) {
+    if (!card) return;
+    if (swipeMode === 'active') {
+      // Live session: the active card lives inline — expand and scroll to it.
       card.classList.remove('collapsed');
       setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 140);
+    } else {
+      setTimeout(() => openWorkoutModal(card), 180);
     }
   }
 
