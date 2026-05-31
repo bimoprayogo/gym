@@ -1510,37 +1510,45 @@ body.in-session #session-media-cta { display: flex; }
 .smc-sub { display: block; font-size: 11.5px; color: var(--grey-500); margin-top: 2px; }
 .smc-chev { flex: none; color: var(--grey-400); }
 
-/* Session media sheet */
-.smedia-photo-wrap {
-  width: 100%;
+/* Session media sheet — Lampiran thumbnails */
+.smedia-section-label {
+  display: block; margin: 2px 0 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--grey-400);
+}
+.smedia-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.smedia-thumb {
+  position: relative;
+  width: calc(33.333% - 6px);
   aspect-ratio: 4 / 3;
-  border-radius: 16px;
-  background: var(--grey-50);
-  border: 1px dashed var(--grey-200);
+  border-radius: 12px;
   overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 12px;
+  background: var(--grey-100);
+  border: 1px solid var(--grey-150);
 }
-.smedia-photo-wrap.has-photo { border-style: solid; border-color: var(--grey-150); }
-.smedia-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.smedia-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--grey-400); font-size: 12.5px; font-weight: 600; padding: 20px; text-align: center; }
-.smedia-photo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.smedia-btn {
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 13px; border-radius: 14px;
-  background: var(--grey-100); color: var(--charcoal);
+.smedia-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.smedia-thumb-x {
+  position: absolute; top: 5px; right: 5px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(22, 22, 30, 0.72); color: #fff;
   border: none; cursor: pointer;
-  font-size: 13px; font-weight: 700;
-  transition: background 0.15s, transform 0.12s;
+  display: flex; align-items: center; justify-content: center;
 }
-.smedia-btn:active { background: var(--grey-150); transform: scale(0.98); }
-.smedia-remove {
-  width: 100%; margin-top: 8px; padding: 10px;
-  background: none; border: none; cursor: pointer;
-  color: var(--danger); font-size: 12.5px; font-weight: 700;
+.smedia-thumb-x:active { background: rgba(22, 22, 30, 0.9); }
+.smedia-add {
+  width: calc(33.333% - 6px);
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  border: 1.5px dashed var(--grey-300);
+  background: var(--grey-50);
+  color: var(--grey-400);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
 }
+.smedia-add:active { background: var(--grey-100); border-color: var(--accent); }
+.smedia-add-count { font-size: 11px; font-weight: 700; }
 .smedia-note-label {
-  display: block; margin: 20px 0 8px;
+  display: block; margin: 22px 0 8px;
   font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--grey-400);
 }
 .smedia-note {
@@ -1561,19 +1569,100 @@ body.in-session #session-media-cta { display: flex; }
 }
 .smedia-save:active { opacity: 0.9; transform: scale(0.98); }
 
-/* Session detail — photo & note */
+/* Session detail — Lampiran thumbnails + note */
 .detail-media { margin-top: 18px; }
-.detail-media-img { width: 100%; border-radius: 16px; display: block; }
+.detail-lampiran-label,
 .detail-note-label {
-  display: block; margin: 14px 0 6px;
+  display: block; margin: 16px 0 8px;
   font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--grey-400);
 }
+.detail-media > .detail-lampiran-label:first-child { margin-top: 0; }
+.detail-thumbs { display: flex; flex-wrap: wrap; gap: 8px; }
+.detail-thumb {
+  width: 92px; aspect-ratio: 4 / 3;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--grey-150); padding: 0;
+  background: var(--grey-100); cursor: zoom-in;
+  transition: transform 0.12s;
+}
+.detail-thumb:active { transform: scale(0.97); }
+.detail-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .detail-note {
   padding: 14px;
   background: var(--grey-50); border-radius: 14px;
   font-size: 13.5px; line-height: 1.55; color: var(--charcoal);
   white-space: pre-wrap; word-break: break-word;
 }
+
+/* Session detail — inline edit controls */
+.detail-edit-btn {
+  flex-shrink: 0; align-self: flex-start; margin-top: 2px;
+  min-height: 40px; padding: 9px 18px;
+  background: var(--grey-100); color: var(--charcoal);
+  border: none; border-radius: 100px;
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+}
+.detail-edit-btn:active { background: var(--grey-200); }
+.detail-edit-btn.is-active { background: var(--accent-pale); color: var(--accent-strong); }
+.detail-weight-edit { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.detail-weight-input {
+  width: 72px; height: 44px; box-sizing: border-box;
+  border: 1px solid var(--grey-200); border-radius: 10px;
+  background: var(--grey-50);
+  text-align: right; padding: 0 10px;
+  font-family: inherit; font-size: 15px; font-weight: 700; color: var(--charcoal);
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s, background 0.15s;
+}
+.detail-weight-input:focus { outline: none; border-color: var(--accent); background: var(--white); }
+.detail-weight-unit { font-size: 12px; font-weight: 600; color: var(--grey-400); }
+.detail-media-edit-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 14px; padding: 13px;
+  background: var(--grey-50); color: var(--accent-strong);
+  border: 1.5px dashed var(--grey-300); border-radius: 14px;
+  font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.detail-media-edit-btn:active { background: var(--grey-100); border-color: var(--accent); }
+.detail-save-btn {
+  display: block; width: calc(100% - 40px);
+  margin: 14px 20px 4px; padding: 15px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 16px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  text-align: center; cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.detail-save-btn:active { opacity: 0.92; transform: scale(0.99); }
+.detail-save-btn[hidden] { display: none; }
+
+/* Fullscreen image viewer (lightbox) */
+.lightbox {
+  position: absolute; inset: 0; z-index: 2000;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px 22px;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.lightbox[hidden] { display: none; }
+.lightbox.show { opacity: 1; }
+.lightbox-img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain; border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.lightbox-close {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 14px); right: 14px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16); color: #fff;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.lightbox-close:active { background: rgba(255, 255, 255, 0.28); }
 
 /* + Add exercise button */
 .add-exercise-btn {
@@ -3104,13 +3193,17 @@ body.in-session #session-media-cta { display: flex; }
         <!-- Session detail sheet -->
         <div class="sheet" id="sheet-session-detail" role="dialog" aria-modal="true">
           <div class="sheet-handle"></div>
-          <div class="sheet-header">
-            <div class="sheet-pretitle" id="detail-pretitle">SESSION</div>
-            <div class="sheet-title" id="detail-title">Push Day</div>
+          <div class="sheet-header sheet-header--row">
+            <div>
+              <div class="sheet-pretitle" id="detail-pretitle">SESSION</div>
+              <div class="sheet-title" id="detail-title">Push Day</div>
+            </div>
+            <button class="detail-edit-btn" id="detail-edit-btn" type="button">Edit</button>
           </div>
           <div class="detail-meta" id="detail-meta"></div>
           <div id="detail-list"></div>
           <div id="detail-media"></div>
+          <button id="detail-save-btn" class="detail-save-btn" type="button" hidden>Save changes</button>
           <button id="detail-delete-btn" class="detail-delete-btn">Delete session</button>
         </div>
 
@@ -3120,39 +3213,30 @@ body.in-session #session-media-cta { display: flex; }
           <div class="sheet-header sheet-header--row">
             <div>
               <div class="sheet-pretitle">THIS SESSION</div>
-              <div class="sheet-title" id="smedia-title">Photo &amp; note</div>
+              <div class="sheet-title" id="smedia-title">Lampiran</div>
             </div>
             <button class="sheet-close-btn" id="smedia-close" type="button" aria-label="Close">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
 
-          <div class="smedia-photo-wrap" id="smedia-photo-wrap">
-            <div class="smedia-placeholder" id="smedia-placeholder">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z"/><circle cx="12" cy="13" r="3.2"/></svg>
-              <span>No photo yet</span>
-            </div>
-          </div>
+          <span class="smedia-section-label">Lampiran</span>
+          <div class="smedia-grid" id="smedia-grid"></div>
 
-          <div class="smedia-photo-actions">
-            <button type="button" class="smedia-btn" id="smedia-camera-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z"/><circle cx="12" cy="13" r="3.2"/></svg>
-              Camera
-            </button>
-            <button type="button" class="smedia-btn" id="smedia-upload-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg>
-              Upload
-            </button>
-          </div>
-          <button type="button" class="smedia-remove" id="smedia-remove-btn" hidden>Remove photo</button>
-
-          <input type="file" id="smedia-camera-input" accept="image/*" capture="environment" hidden>
-          <input type="file" id="smedia-upload-input" accept="image/*" hidden>
+          <input type="file" id="smedia-input" accept="image/*" hidden>
 
           <label class="smedia-note-label" for="smedia-note">Note</label>
           <textarea id="smedia-note" class="smedia-note" rows="3" maxlength="500" placeholder="How did it go? Energy, PRs, how you felt…"></textarea>
 
           <button type="button" class="smedia-save" id="smedia-save">Save</button>
+        </div>
+
+        <!-- Fullscreen image viewer -->
+        <div class="lightbox" id="lightbox" hidden>
+          <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <img class="lightbox-img" id="lightbox-img" alt="Lampiran">
         </div>
 
         <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
@@ -3194,21 +3278,33 @@ body.in-session #session-media-cta { display: flex; }
   function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
   function todayISO() { return new Date().toISOString().split('T')[0]; }
 
-  // ─── Session media (photo + note) ───────────────────────────────────────────────
+  // ─── Session media (photos + note) ──────────────────────────────────────────────
+  const MAX_PHOTOS = 4;
   function sessionMetaKey(date, quickKey) { return date + '|' + (quickKey || 'manual'); }
+  // Normalize stored meta to { photos: [], note: '' }, migrating the older
+  // single-`photo` shape transparently.
+  function normalizeMeta(raw) {
+    if (!raw) return { photos: [], note: '' };
+    let photos = Array.isArray(raw.photos) ? raw.photos.filter(Boolean) : [];
+    if (!photos.length && raw.photo) photos = [raw.photo];
+    return { photos: photos.slice(0, MAX_PHOTOS), note: raw.note || '' };
+  }
   function getSessionMeta(date, quickKey) {
     const d = loadData();
-    return (d.sessionMeta && d.sessionMeta[sessionMetaKey(date, quickKey)]) || null;
+    const raw = d.sessionMeta && d.sessionMeta[sessionMetaKey(date, quickKey)];
+    return raw ? normalizeMeta(raw) : null;
   }
   // Returns true on success, false if storage rejected the write (e.g. quota).
   function saveSessionMeta(date, quickKey, meta) {
     const d = loadData();
     if (!d.sessionMeta) d.sessionMeta = {};
     const key = sessionMetaKey(date, quickKey);
-    if (!meta || (!meta.photo && !(meta.note && meta.note.trim()))) {
+    const photos = (meta && Array.isArray(meta.photos)) ? meta.photos.filter(Boolean).slice(0, MAX_PHOTOS) : [];
+    const note = (meta && meta.note ? meta.note : '').trim();
+    if (!photos.length && !note) {
       delete d.sessionMeta[key];
     } else {
-      d.sessionMeta[key] = { photo: meta.photo || null, note: (meta.note || '').trim() };
+      d.sessionMeta[key] = { photos, note };
     }
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); return true; }
     catch (e) { return false; }
@@ -3922,10 +4018,11 @@ body.in-session #session-media-cta { display: flex; }
     tap();
   }
 
-  // ─── Session media sheet (photo + note) ─────────────────────────────────────────
-  let mediaDraft = { photo: null, note: '' };
+  // ─── Session media sheet (photos + note) ────────────────────────────────────────
+  let mediaDraft = { photos: [], note: '' };
+  let mediaTarget = null;   // { date, quickKey } the media sheet is currently editing
 
-  // Identifies the session the in-progress photo/note belongs to.
+  // Identifies the session the in-progress photos/note belong to.
   function activeSessionRef() {
     const a = loadData().activeSession;
     if (!a) return null;
@@ -3937,96 +4034,150 @@ body.in-session #session-media-cta { display: flex; }
     if (!cta) return;
     const ref = activeSessionRef();
     const meta = ref ? getSessionMeta(ref.date, ref.quickKey) : null;
+    const photoCount = meta ? meta.photos.length : 0;
     const noteText = meta && meta.note ? meta.note.trim() : '';
-    const hasMedia = !!(meta && (meta.photo || noteText));
+    const hasMedia = !!(photoCount || noteText);
     cta.classList.toggle('has-media', hasMedia);
     const title = document.getElementById('smc-title');
     const sub = document.getElementById('smc-sub');
     if (hasMedia) {
-      if (title) title.textContent = 'Photo & note added';
+      if (title) title.textContent = 'Lampiran & note added';
       if (sub) {
         const bits = [];
-        if (meta.photo) bits.push('Photo');
+        if (photoCount) bits.push(photoCount + (photoCount > 1 ? ' photos' : ' photo'));
         if (noteText) bits.push('Note');
         sub.textContent = bits.join(' · ') + ' — tap to edit';
       }
     } else {
-      if (title) title.textContent = 'Add photo & note';
+      if (title) title.textContent = 'Add lampiran & note';
       if (sub) sub.textContent = 'Capture how this session went';
     }
   }
 
-  function renderMediaPreview() {
-    const wrap = document.getElementById('smedia-photo-wrap');
-    const placeholder = document.getElementById('smedia-placeholder');
-    const removeBtn = document.getElementById('smedia-remove-btn');
-    if (!wrap) return;
-    const existingImg = wrap.querySelector('img');
-    if (existingImg) existingImg.remove();
-    if (mediaDraft.photo) {
-      const img = document.createElement('img');
-      img.alt = 'Session photo';
-      img.src = mediaDraft.photo;
-      wrap.appendChild(img);
-      wrap.classList.add('has-photo');
-      if (placeholder) placeholder.style.display = 'none';
-      if (removeBtn) removeBtn.hidden = false;
-    } else {
-      wrap.classList.remove('has-photo');
-      if (placeholder) placeholder.style.display = '';
-      if (removeBtn) removeBtn.hidden = true;
+  function renderMediaGrid() {
+    const grid = document.getElementById('smedia-grid');
+    if (!grid) return;
+    let html = '';
+    mediaDraft.photos.forEach((src, i) => {
+      html +=
+        '<div class="smedia-thumb">' +
+          '<img src="' + src + '" alt="Lampiran ' + (i + 1) + '">' +
+          '<button type="button" class="smedia-thumb-x" data-idx="' + i + '" aria-label="Remove photo">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          '</button>' +
+        '</div>';
+    });
+    if (mediaDraft.photos.length < MAX_PHOTOS) {
+      html +=
+        '<button type="button" class="smedia-add" id="smedia-add">' +
+          '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+          '<span class="smedia-add-count">' + mediaDraft.photos.length + '/' + MAX_PHOTOS + '</span>' +
+        '</button>';
     }
+    grid.innerHTML = html;
   }
 
-  function openMediaSheet() {
-    const ref = activeSessionRef();
-    if (!ref) { showToast('Start a session first'); return; }
-    const meta = getSessionMeta(ref.date, ref.quickKey);
-    mediaDraft = { photo: (meta && meta.photo) || null, note: (meta && meta.note) || '' };
+  // Opens the Lampiran sheet for a given session. With no ref it targets the
+  // active session (dashboard CTA); the session detail passes an explicit ref
+  // so past sessions can be edited too.
+  function openMediaSheet(ref) {
+    const target = ref && ref.date ? { date: ref.date, quickKey: ref.quickKey } : activeSessionRef();
+    if (!target) { showToast('Start a session first'); return; }
+    mediaTarget = target;
+    const meta = getSessionMeta(target.date, target.quickKey);
+    mediaDraft = { photos: meta ? meta.photos.slice() : [], note: meta ? meta.note : '' };
     const note = document.getElementById('smedia-note');
     if (note) note.value = mediaDraft.note;
-    renderMediaPreview();
+    renderMediaGrid();
     const sheet = document.getElementById('sheet-session-media');
     if (sheet) { sheet.classList.add('show'); overlay.classList.add('show'); }
     tap();
   }
 
+  // Closes just the Lampiran sheet, leaving any sheet beneath it (e.g. the
+  // session detail) in place; drops the overlay only if nothing else is open.
+  function closeMediaSheet() {
+    const sheet = document.getElementById('sheet-session-media');
+    if (sheet) sheet.classList.remove('show');
+    if (!document.querySelector('.sheet.show')) overlay.classList.remove('show');
+  }
+
   function handleMediaFile(file) {
     if (!file) return;
+    if (mediaDraft.photos.length >= MAX_PHOTOS) { showToast('Up to ' + MAX_PHOTOS + ' photos'); return; }
     if (!file.type || file.type.indexOf('image/') !== 0) { showToast('Please choose an image'); return; }
     compressImage(file, 1080, 0.7)
-      .then(dataUrl => { mediaDraft.photo = dataUrl; renderMediaPreview(); tap(); })
+      .then(dataUrl => {
+        if (mediaDraft.photos.length < MAX_PHOTOS) { mediaDraft.photos.push(dataUrl); renderMediaGrid(); tap(); }
+      })
       .catch(() => showToast("Couldn't process that image"));
   }
 
   (function initSessionMedia() {
     const cta = document.getElementById('session-media-cta');
-    if (cta) cta.addEventListener('click', openMediaSheet);
+    if (cta) cta.addEventListener('click', () => openMediaSheet());
     const closeBtn = document.getElementById('smedia-close');
-    if (closeBtn) closeBtn.addEventListener('click', closeAllSheets);
-    const camBtn = document.getElementById('smedia-camera-btn');
-    const camInput = document.getElementById('smedia-camera-input');
-    const upBtn = document.getElementById('smedia-upload-btn');
-    const upInput = document.getElementById('smedia-upload-input');
-    if (camBtn && camInput) camBtn.addEventListener('click', () => camInput.click());
-    if (upBtn && upInput) upBtn.addEventListener('click', () => upInput.click());
-    if (camInput) camInput.addEventListener('change', e => { handleMediaFile(e.target.files && e.target.files[0]); e.target.value = ''; });
-    if (upInput) upInput.addEventListener('change', e => { handleMediaFile(e.target.files && e.target.files[0]); e.target.value = ''; });
-    const removeBtn = document.getElementById('smedia-remove-btn');
-    if (removeBtn) removeBtn.addEventListener('click', () => { mediaDraft.photo = null; renderMediaPreview(); tap(); });
+    if (closeBtn) closeBtn.addEventListener('click', closeMediaSheet);
+    const input = document.getElementById('smedia-input');
+    const grid = document.getElementById('smedia-grid');
+    if (grid) grid.addEventListener('click', e => {
+      const rm = e.target.closest('.smedia-thumb-x');
+      if (rm) { mediaDraft.photos.splice(Number(rm.dataset.idx), 1); renderMediaGrid(); tap(); return; }
+      if (e.target.closest('.smedia-add') && input) input.click();
+    });
+    if (input) input.addEventListener('change', e => {
+      handleMediaFile(e.target.files && e.target.files[0]);
+      e.target.value = '';
+    });
     const saveBtn = document.getElementById('smedia-save');
     if (saveBtn) saveBtn.addEventListener('click', () => {
-      const ref = activeSessionRef();
-      if (!ref) { closeAllSheets(); return; }
+      const ref = mediaTarget || activeSessionRef();
+      if (!ref) { closeMediaSheet(); return; }
       const note = document.getElementById('smedia-note');
       mediaDraft.note = note ? note.value : '';
-      const ok = saveSessionMeta(ref.date, ref.quickKey, { photo: mediaDraft.photo, note: mediaDraft.note });
-      if (!ok) { showToast('Storage full — remove the photo or use a smaller one'); return; }
+      const ok = saveSessionMeta(ref.date, ref.quickKey, { photos: mediaDraft.photos, note: mediaDraft.note });
+      if (!ok) { showToast('Storage full — remove a photo and try again'); return; }
       updateMediaCta();
-      closeAllSheets();
+      closeMediaSheet();
+      // If the session detail is open for this same session, refresh just its
+      // Lampiran block (re-rendering the whole body would discard unsaved weight edits).
+      const detailSheet = document.getElementById('sheet-session-detail');
+      if (detailSheet && detailSheet.classList.contains('show') && detailCtx &&
+          detailCtx.date === ref.date && detailCtx.quickKey === ref.quickKey) {
+        const media = document.getElementById('detail-media');
+        if (media) renderDetailMedia(media, detailCtx.date, detailCtx.quickKey, detailEditMode);
+      }
       showToast('Saved ✓');
       tap();
     });
+  })();
+
+  // ─── Fullscreen image viewer (lightbox) ─────────────────────────────────────────
+  function lightboxKeyHandler(e) { if (e.key === 'Escape') closeLightbox(); }
+  function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    if (!lb || !img || !src) return;
+    img.src = src;
+    lb.hidden = false;
+    requestAnimationFrame(() => lb.classList.add('show'));
+    document.addEventListener('keydown', lightboxKeyHandler);
+    tap();
+  }
+  function closeLightbox() {
+    const lb = document.getElementById('lightbox');
+    if (!lb || lb.hidden) return;
+    lb.classList.remove('show');
+    document.removeEventListener('keydown', lightboxKeyHandler);
+    setTimeout(() => { lb.hidden = true; const img = document.getElementById('lightbox-img'); if (img) img.src = ''; }, 200);
+  }
+  (function initLightbox() {
+    const lb = document.getElementById('lightbox');
+    const closeBtn = document.getElementById('lightbox-close');
+    const img = document.getElementById('lightbox-img');
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    if (lb) lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    if (img) img.addEventListener('click', e => e.stopPropagation());
   })();
 
   function initSwipeLog() {
@@ -4639,6 +4790,152 @@ body.in-session #session-media-cta { display: flex; }
     Biceps: _dumbbellSvg, Triceps: _dumbbellSvg, Cardio: _cardioSvg
   };
 
+  // ─── Session detail rendering + inline edit ─────────────────────────────────────
+  // detailCtx holds the session currently shown in the detail sheet so the render
+  // helpers and the inline-edit Save can operate without re-deriving everything.
+  let detailCtx = null;
+  let detailEditMode = false;
+
+  function renderDetailBody() {
+    if (!detailCtx) return;
+    const list = document.getElementById('detail-list');
+    if (list) renderDetailList(list);
+    const media = document.getElementById('detail-media');
+    if (media) renderDetailMedia(media, detailCtx.date, detailCtx.quickKey, detailEditMode);
+  }
+
+  function renderDetailList(list) {
+    list.innerHTML = '';
+    const vals = Object.values(detailCtx.best || {});
+    if (vals.length === 0) {
+      list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
+      return;
+    }
+    vals.forEach(s => {
+      const icon = GROUP_ICON[s.group] || _dumbbellSvg;
+      const isCardio = (s.group || '').toLowerCase() === 'cardio';
+      const row = document.createElement('div');
+      row.className = 'detail-row';
+      const infoHtml =
+        `<div class="detail-row-icon" aria-hidden="true">${icon}</div>` +
+        `<div class="detail-row-info">` +
+          `<div class="detail-row-name">${escapeHtml(s.exercise)}</div>` +
+          `<div class="detail-row-group">${escapeHtml(s.group || '')}</div>` +
+        `</div>`;
+      if (detailEditMode && !isCardio) {
+        const wVal = (s.weight == null) ? 0 : s.weight;
+        row.innerHTML = infoHtml +
+          `<div class="detail-weight-edit">` +
+            `<input type="number" inputmode="decimal" class="detail-weight-input" data-ex="${escapeHtml(s.exercise)}" value="${wVal}" min="0" step="0.5" aria-label="Weight in kilograms for ${escapeHtml(s.exercise)}">` +
+            `<span class="detail-weight-unit">kg</span>` +
+          `</div>`;
+      } else {
+        let weightLabel;
+        if (isCardio) weightLabel = 'Done';
+        else if (s.weight === 0 || s.weight == null) weightLabel = 'BW';
+        else weightLabel = s.weight + ' kg';
+        row.innerHTML = infoHtml + `<div class="detail-row-weight">${weightLabel}</div>`;
+      }
+      list.appendChild(row);
+    });
+  }
+
+  function renderDetailMedia(container, date, quickKey, editing) {
+    const meta = getSessionMeta(date, quickKey);
+    const photos = meta ? meta.photos : [];
+    const noteText = meta && meta.note ? meta.note.trim() : '';
+    if (!editing && !photos.length && !noteText) { container.innerHTML = ''; return; }
+    let html = '<div class="detail-media">';
+    if (photos.length) {
+      html += '<span class="detail-lampiran-label">Lampiran</span><div class="detail-thumbs">';
+      photos.forEach((src, i) => {
+        html += '<button type="button" class="detail-thumb" aria-label="View Lampiran ' + (i + 1) + '"><img src="' + src + '" alt="Lampiran ' + (i + 1) + '"></button>';
+      });
+      html += '</div>';
+    }
+    if (noteText) {
+      html += '<span class="detail-note-label">Note</span><div class="detail-note">' + escapeHtml(meta.note) + '</div>';
+    }
+    if (editing) {
+      const label = (photos.length || noteText) ? 'Edit Lampiran &amp; note' : 'Add Lampiran &amp; note';
+      html += '<button type="button" class="detail-media-edit-btn" id="detail-media-edit-btn">' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+        '<span>' + label + '</span></button>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+    if (photos.length) {
+      container.querySelectorAll('.detail-thumb').forEach((btn, i) => {
+        btn.addEventListener('click', () => openLightbox(photos[i]));
+      });
+    }
+    if (editing) {
+      const eb = container.querySelector('#detail-media-edit-btn');
+      if (eb) eb.addEventListener('click', () => openMediaSheet({ date: date, quickKey: quickKey }));
+    }
+  }
+
+  function syncDetailButtons() {
+    const editBtn = document.getElementById('detail-edit-btn');
+    const saveBtn = document.getElementById('detail-save-btn');
+    if (editBtn) {
+      editBtn.textContent = detailEditMode ? 'Cancel' : 'Edit';
+      editBtn.classList.toggle('is-active', detailEditMode);
+    }
+    if (saveBtn) saveBtn.hidden = !detailEditMode;
+  }
+
+  function saveDetailEdits() {
+    if (!detailCtx) return;
+    const { date } = detailCtx;
+    const data = loadData();
+    if (!data.exercises) data.exercises = {};
+    if (!data.sessions) data.sessions = [];
+    document.querySelectorAll('#detail-list .detail-weight-input').forEach(inp => {
+      const exName = inp.dataset.ex;
+      if (!exName) return;
+      let w = parseFloat(inp.value);
+      if (isNaN(w) || w < 0) w = 0;
+      const group = (detailCtx.best[exName] && detailCtx.best[exName].group) || '';
+      // Upsert into the global session list for this date + exercise
+      let found = false;
+      data.sessions.forEach(s => {
+        if (s && s.date === date && s.exercise === exName) { s.weight = w; if (group && !s.group) s.group = group; found = true; }
+      });
+      if (!found) data.sessions.push({ date, exercise: exName, group, weight: w });
+      // Upsert per-exercise history (update the latest same-date entry, else add)
+      if (!data.exercises[exName]) data.exercises[exName] = { sessions: [] };
+      const hist = data.exercises[exName].sessions;
+      let histFound = false;
+      for (let i = hist.length - 1; i >= 0; i--) {
+        if (hist[i] && hist[i].date === date) { hist[i].weight = w; histFound = true; break; }
+      }
+      if (!histFound) hist.push({ date, weight: w });
+      // Reflect in best so the immediate re-render shows the saved values
+      detailCtx.best[exName] = { exercise: exName, group, weight: w };
+    });
+    saveData(data);
+    detailEditMode = false;
+    renderDetailBody();
+    syncDetailButtons();
+    renderSessionLog();
+    renderFrequency();
+    showToast('Session updated');
+    tap();
+  }
+
+  (function initDetailControls() {
+    const editBtn = document.getElementById('detail-edit-btn');
+    if (editBtn) editBtn.addEventListener('click', () => {
+      detailEditMode = !detailEditMode;   // Edit ⇆ Cancel (Cancel discards unsaved weight edits)
+      renderDetailBody();
+      syncDetailButtons();
+      tap();
+    });
+    const saveBtn = document.getElementById('detail-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', saveDetailEdits);
+  })();
+
   function openSessionDetail(slot, sessionName) {
     const { date, quickKey, allEntries: entries, loggedEntries } = slot;
     const sheetDetail = document.getElementById('sheet-session-detail');
@@ -4651,10 +4948,6 @@ body.in-session #session-media-cta { display: flex; }
     document.getElementById('detail-pretitle').textContent = 'SESSION';
     document.getElementById('detail-title').textContent = sessionName;
     document.getElementById('detail-meta').textContent = fullDate;
-
-    // Exercise rows
-    const list = document.getElementById('detail-list');
-    list.innerHTML = '';
 
     // Build best-weight map from explicitly logged entries
     const best = {};
@@ -4688,45 +4981,11 @@ body.in-session #session-media-cta { display: flex; }
       }
     }
 
-    if (Object.keys(best).length === 0) {
-      list.innerHTML = '<div class="detail-empty">No exercises logged for this session.</div>';
-    } else {
-      Object.values(best).forEach(s => {
-        const icon = GROUP_ICON[s.group] || _dumbbellSvg;
-        const isCardio = (s.group || '').toLowerCase() === 'cardio';
-        let weightLabel;
-        if (isCardio) weightLabel = 'Done';
-        else if (s.weight === 0 || s.weight == null) weightLabel = 'BW';
-        else weightLabel = s.weight + ' kg';
-        const row = document.createElement('div');
-        row.className = 'detail-row';
-        row.innerHTML = `
-          <div class="detail-row-icon" aria-hidden="true">${icon}</div>
-          <div class="detail-row-info">
-            <div class="detail-row-name">${escapeHtml(s.exercise)}</div>
-            <div class="detail-row-group">${escapeHtml(s.group || '')}</div>
-          </div>
-          <div class="detail-row-weight">${weightLabel}</div>
-        `;
-        list.appendChild(row);
-      });
-    }
-
-    // Photo & note for this session (if any)
-    const detailMedia = document.getElementById('detail-media');
-    if (detailMedia) {
-      const meta = getSessionMeta(date, quickKey);
-      const noteText = meta && meta.note ? meta.note.trim() : '';
-      if (meta && (meta.photo || noteText)) {
-        let html = '<div class="detail-media">';
-        if (meta.photo) html += '<img class="detail-media-img" alt="Session photo" src="' + meta.photo + '">';
-        if (noteText) html += '<div class="detail-note-label">Note</div><div class="detail-note">' + escapeHtml(meta.note) + '</div>';
-        html += '</div>';
-        detailMedia.innerHTML = html;
-      } else {
-        detailMedia.innerHTML = '';
-      }
-    }
+    // Store context for the render + inline-edit helpers, then render in view mode.
+    detailCtx = { date, quickKey, sessionName, best, loggedEntries: loggedEntries || [] };
+    detailEditMode = false;
+    renderDetailBody();
+    syncDetailButtons();
 
     // Delete button — clone to clear old listeners
     const oldBtn = document.getElementById('detail-delete-btn');
