@@ -64,6 +64,11 @@ html.dark {
 }
 html.dark body { background: radial-gradient(ellipse at top, #1b1b21 0%, #0c0c0f 100%); }
 html.dark .bottom-nav { background: rgba(22, 22, 27, 0.82); }
+/* Body map: the light radial stage and bright white muscle outlines need a
+   dark-native treatment so the silhouette doesn't sit on a white blob. */
+html.dark .bodymap-stage { background: radial-gradient(120% 78% at 50% 6%, var(--accent-pale) 0%, var(--surface) 55%, var(--screen) 100%); }
+html.dark .muscle { stroke: rgba(255, 255, 255, 0.16); }
+html.dark .bm-base ellipse, html.dark .bm-base rect, html.dark .bm-base path { stroke: rgba(255, 255, 255, 0.08); }
 
 * {
   margin: 0;
