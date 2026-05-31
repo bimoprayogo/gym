@@ -1478,6 +1478,103 @@ button:focus-visible { border-radius: 8px; }
 #end-session-dashboard:active { opacity: 0.8; transform: scale(0.98); }
 body.in-session #end-session-dashboard { display: flex; }
 
+/* In-session photo & note CTA */
+#session-media-cta {
+  display: none; /* shown only during active session */
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 13px 15px;
+  background: var(--white);
+  border: 1px solid var(--grey-150);
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+#session-media-cta:active { transform: scale(0.99); background: var(--grey-50); }
+body.in-session #session-media-cta { display: flex; }
+#session-media-cta.has-media { border-color: var(--accent); background: var(--accent-pale); }
+.smc-icon {
+  flex: none;
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: var(--accent-pale);
+  color: var(--accent-strong);
+  display: flex; align-items: center; justify-content: center;
+}
+#session-media-cta.has-media .smc-icon { background: var(--white); }
+.smc-text { flex: 1 1 auto; min-width: 0; }
+.smc-title { display: block; font-size: 13.5px; font-weight: 700; color: var(--charcoal); }
+.smc-sub { display: block; font-size: 11.5px; color: var(--grey-500); margin-top: 2px; }
+.smc-chev { flex: none; color: var(--grey-400); }
+
+/* Session media sheet */
+.smedia-photo-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  background: var(--grey-50);
+  border: 1px dashed var(--grey-200);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.smedia-photo-wrap.has-photo { border-style: solid; border-color: var(--grey-150); }
+.smedia-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.smedia-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--grey-400); font-size: 12.5px; font-weight: 600; padding: 20px; text-align: center; }
+.smedia-photo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.smedia-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 13px; border-radius: 14px;
+  background: var(--grey-100); color: var(--charcoal);
+  border: none; cursor: pointer;
+  font-size: 13px; font-weight: 700;
+  transition: background 0.15s, transform 0.12s;
+}
+.smedia-btn:active { background: var(--grey-150); transform: scale(0.98); }
+.smedia-remove {
+  width: 100%; margin-top: 8px; padding: 10px;
+  background: none; border: none; cursor: pointer;
+  color: var(--danger); font-size: 12.5px; font-weight: 700;
+}
+.smedia-note-label {
+  display: block; margin: 20px 0 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--grey-400);
+}
+.smedia-note {
+  width: 100%; box-sizing: border-box;
+  border: 1px solid var(--grey-150); border-radius: 14px;
+  padding: 13px; font-size: 16px; font-family: inherit; color: var(--charcoal);
+  resize: vertical; min-height: 78px; line-height: 1.5;
+  background: var(--grey-50);
+  transition: border-color 0.15s, background 0.15s;
+}
+.smedia-note:focus { outline: none; border-color: var(--accent); background: var(--white); }
+.smedia-save {
+  width: 100%; margin-top: 16px; padding: 16px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 16px; cursor: pointer;
+  font-size: 14px; font-weight: 700;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.smedia-save:active { opacity: 0.9; transform: scale(0.98); }
+
+/* Session detail — photo & note */
+.detail-media { margin-top: 18px; }
+.detail-media-img { width: 100%; border-radius: 16px; display: block; }
+.detail-note-label {
+  display: block; margin: 14px 0 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--grey-400);
+}
+.detail-note {
+  padding: 14px;
+  background: var(--grey-50); border-radius: 14px;
+  font-size: 13.5px; line-height: 1.55; color: var(--charcoal);
+  white-space: pre-wrap; word-break: break-word;
+}
+
 /* + Add exercise button */
 .add-exercise-btn {
   display: flex;
@@ -1859,6 +1956,102 @@ body.in-session #end-session-dashboard { display: flex; }
   font-size: 12px; font-weight: 600; color: var(--grey-500);
 }
 .cal-footer-num { font-weight: 800; color: var(--charcoal); }
+
+/* ===== Body Map page ===== */
+.body-intro { color: var(--grey-500); font-size: 13px; line-height: 1.5; margin: 2px 0 14px; }
+.bodymap-stage {
+  position: relative;
+  background: radial-gradient(120% 78% at 50% 6%, var(--accent-pale) 0%, var(--grey-50) 55%, #ffffff 100%);
+  border: 1px solid var(--grey-150);
+  border-radius: 26px;
+  padding: 16px 0 18px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+.bodymap-svg { width: auto; height: 358px; max-width: 100%; display: block; }
+.bm-base ellipse, .bm-base rect, .bm-base path { fill: var(--grey-150); stroke: var(--grey-200); stroke-width: 1; }
+.muscle {
+  fill: var(--grey-200);
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.2;
+  cursor: pointer;
+  transition: fill 0.3s ease, stroke 0.15s ease;
+}
+.muscle.selected { stroke: var(--accent-strong); stroke-width: 2.4; }
+.bodymap-pill {
+  position: absolute;
+  left: 0; top: 0;
+  transform: translate(-50%, -118%);
+  background: rgba(22, 22, 30, 0.84);
+  color: #fff;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-radius: 100px;
+  padding: 5px 11px 5px 9px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  z-index: 3;
+}
+.bodymap-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.body-legend { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 14px; }
+.body-legend-label { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; color: var(--grey-400); text-transform: uppercase; }
+.body-legend-bar { width: 116px; height: 7px; border-radius: 100px; background: linear-gradient(90deg, var(--grey-200), #B49DF4 55%, var(--accent)); }
+.body-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.body-chip {
+  flex: 1 1 calc(33.33% - 8px);
+  min-width: 92px;
+  border: 1px solid var(--grey-150);
+  border-radius: 14px;
+  padding: 10px 12px 11px;
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+.body-chip:active { transform: scale(0.97); }
+.body-chip.selected { border-color: var(--accent); background: var(--accent-pale); }
+.body-chip-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.body-chip-name { font-size: 12.5px; font-weight: 700; color: var(--charcoal); }
+.body-chip-pct { font-size: 11px; font-weight: 800; color: var(--accent-strong); font-variant-numeric: tabular-nums; }
+.body-chip-bar { margin-top: 8px; height: 5px; border-radius: 100px; background: var(--grey-100); overflow: hidden; }
+.body-chip-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--accent), #A78BFA); transition: width 0.4s ease; }
+.body-chip-sub { margin-top: 7px; font-size: 10.5px; color: var(--grey-400); font-weight: 600; letter-spacing: 0.2px; }
+.body-panel { margin-top: 20px; }
+.body-panel-hint { text-align: center; color: var(--grey-400); font-size: 13px; padding: 16px 0; }
+.body-panel-card { border: 1px solid var(--grey-150); border-radius: 20px; padding: 16px; background: var(--white); }
+.body-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.body-panel-title { font-size: 17px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; }
+.body-panel-meta { font-size: 12px; font-weight: 600; color: var(--grey-500); white-space: nowrap; }
+.body-ex-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.body-ex { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 13px; background: var(--grey-50); border-radius: 12px; }
+.body-ex-name { font-size: 13px; font-weight: 600; color: var(--charcoal); }
+.body-ex-target { font-size: 11px; font-weight: 600; color: var(--grey-400); white-space: nowrap; }
+.body-ex-empty { font-size: 13px; color: var(--grey-400); padding: 4px 2px; line-height: 1.5; }
+.body-go-btn {
+  margin-top: 14px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.body-go-btn:active { opacity: 0.9; transform: scale(0.98); }
 
 /* Active session banner */
 .session-active-banner {
@@ -2323,6 +2516,21 @@ body.in-session #end-session-dashboard { display: flex; }
               </div>
             </div>
 
+            <!-- Photo & note for the active session — only visible during active session -->
+            <button id="session-media-cta" type="button" aria-haspopup="dialog">
+              <span class="smc-icon" aria-hidden="true">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z"/>
+                  <circle cx="12" cy="13" r="3.2"/>
+                </svg>
+              </span>
+              <span class="smc-text">
+                <span class="smc-title" id="smc-title">Add photo &amp; note</span>
+                <span class="smc-sub" id="smc-sub">Capture how this session went</span>
+              </span>
+              <svg class="smc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
             <!-- End Session button — only visible during active session -->
             <button id="end-session-dashboard">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -2452,6 +2660,95 @@ body.in-session #end-session-dashboard { display: flex; }
             </div>
             <div class="session-cal" id="session-cal" style="display:none;"></div>
 
+          </section>
+
+          <!-- BODY MAP -->
+          <section class="view" data-view="body">
+            <div class="app-bar">
+              <div class="brand-pill">
+                <span class="brand-dot"></span>
+                Gym Tracker
+              </div>
+              <button class="icon-btn" data-go="settings" aria-label="Settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="page-head log-head">
+              <h2>Body Map</h2>
+              <div class="log-toggle" role="tablist" aria-label="Body side">
+                <button class="log-toggle-btn active" data-bodyside="front" role="tab">Front</button>
+                <button class="log-toggle-btn" data-bodyside="back" role="tab">Back</button>
+              </div>
+            </div>
+            <p class="body-intro">Muscle activity this week. Tap a region to see related workouts.</p>
+
+            <div class="bodymap-stage">
+              <svg class="bodymap-svg" viewBox="0 0 240 470" role="img" aria-label="Body muscle map" xmlns="http://www.w3.org/2000/svg">
+                <!-- FRONT -->
+                <g class="bm-side bm-front">
+                  <g class="bm-base">
+                    <ellipse cx="120" cy="40" rx="23" ry="26"/>
+                    <rect x="109" y="62" width="22" height="16" rx="7"/>
+                    <rect x="98" y="148" width="44" height="60" rx="17"/>
+                    <rect x="92" y="204" width="56" height="34" rx="15"/>
+                    <rect x="98" y="234" width="20" height="82" rx="10"/>
+                    <rect x="122" y="234" width="20" height="82" rx="10"/>
+                    <rect x="99" y="318" width="18" height="80" rx="9"/>
+                    <rect x="123" y="318" width="18" height="80" rx="9"/>
+                    <rect x="57" y="150" width="16" height="66" rx="8"/>
+                    <rect x="167" y="150" width="16" height="66" rx="8"/>
+                    <ellipse cx="65" cy="222" rx="9" ry="11"/>
+                    <ellipse cx="175" cy="222" rx="9" ry="11"/>
+                  </g>
+                  <ellipse class="muscle" data-group="Shoulders" cx="82" cy="96" rx="20" ry="16"/>
+                  <ellipse class="muscle" data-group="Shoulders" cx="158" cy="96" rx="20" ry="16"/>
+                  <rect class="muscle" data-group="Chest" x="86" y="100" width="30" height="28" rx="11"/>
+                  <rect class="muscle" data-group="Chest" x="124" y="100" width="30" height="28" rx="11"/>
+                  <rect class="muscle" data-group="Biceps" x="62" y="106" width="18" height="48" rx="9"/>
+                  <rect class="muscle" data-group="Biceps" x="160" y="106" width="18" height="48" rx="9"/>
+                  <path class="muscle muscle-heart" data-group="Cardio" transform="translate(109,103) scale(0.92)" d="M12 21s-7.4-6.2-9.5-10.1C1.1 7.9 2.9 4.8 6 4.8c1.9 0 3.2 1.1 4 2.3.8-1.2 2.1-2.3 4-2.3 3.1 0 4.9 3.1 3.5 6.1C19.4 14.8 12 21 12 21Z"/>
+                </g>
+                <!-- BACK -->
+                <g class="bm-side bm-back" style="display:none">
+                  <g class="bm-base">
+                    <ellipse cx="120" cy="40" rx="23" ry="26"/>
+                    <rect x="109" y="62" width="22" height="16" rx="7"/>
+                    <rect x="98" y="148" width="44" height="60" rx="17"/>
+                    <rect x="92" y="204" width="56" height="34" rx="15"/>
+                    <rect x="98" y="234" width="20" height="82" rx="10"/>
+                    <rect x="122" y="234" width="20" height="82" rx="10"/>
+                    <rect x="99" y="318" width="18" height="80" rx="9"/>
+                    <rect x="123" y="318" width="18" height="80" rx="9"/>
+                    <rect x="57" y="150" width="16" height="66" rx="8"/>
+                    <rect x="167" y="150" width="16" height="66" rx="8"/>
+                    <ellipse cx="65" cy="222" rx="9" ry="11"/>
+                    <ellipse cx="175" cy="222" rx="9" ry="11"/>
+                  </g>
+                  <ellipse class="muscle" data-group="Shoulders" cx="82" cy="96" rx="20" ry="16"/>
+                  <ellipse class="muscle" data-group="Shoulders" cx="158" cy="96" rx="20" ry="16"/>
+                  <path class="muscle" data-group="Back" d="M90 102 Q120 95 150 102 L152 134 Q120 152 88 134 Z"/>
+                  <rect class="muscle" data-group="Triceps" x="62" y="106" width="18" height="48" rx="9"/>
+                  <rect class="muscle" data-group="Triceps" x="160" y="106" width="18" height="48" rx="9"/>
+                </g>
+              </svg>
+              <div class="bodymap-pill" id="bodymap-pill" hidden></div>
+            </div>
+
+            <div class="body-legend">
+              <span class="body-legend-label">Less</span>
+              <span class="body-legend-bar"></span>
+              <span class="body-legend-label">More</span>
+            </div>
+
+            <div class="body-chips" id="body-chips"></div>
+
+            <div class="body-panel" id="body-panel">
+              <div class="body-panel-hint">Tap a muscle above to see related exercises.</div>
+            </div>
           </section>
 
           <!-- SETTINGS -->
@@ -2611,12 +2908,14 @@ body.in-session #end-session-dashboard { display: flex; }
             </svg>
             <span class="nav-label">Log</span>
           </button>
-          <button class="nav-item" data-target="settings" role="tab" aria-label="Settings">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          <button class="nav-item" data-target="body" role="tab" aria-label="Body Map">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="4.5" r="2"/>
+              <path d="M5 9c2.5 1.2 4.5 1.5 7 1.5S16.5 10.2 19 9"/>
+              <path d="M12 10.5V15"/>
+              <path d="m9 22 3-7 3 7"/>
             </svg>
-            <span class="nav-label">Settings</span>
+            <span class="nav-label">Body</span>
           </button>
         </nav>
 
@@ -2811,7 +3110,49 @@ body.in-session #end-session-dashboard { display: flex; }
           </div>
           <div class="detail-meta" id="detail-meta"></div>
           <div id="detail-list"></div>
+          <div id="detail-media"></div>
           <button id="detail-delete-btn" class="detail-delete-btn">Delete session</button>
+        </div>
+
+        <!-- Session photo & note sheet -->
+        <div class="sheet" id="sheet-session-media" role="dialog" aria-modal="true" aria-labelledby="smedia-title">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header sheet-header--row">
+            <div>
+              <div class="sheet-pretitle">THIS SESSION</div>
+              <div class="sheet-title" id="smedia-title">Photo &amp; note</div>
+            </div>
+            <button class="sheet-close-btn" id="smedia-close" type="button" aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div class="smedia-photo-wrap" id="smedia-photo-wrap">
+            <div class="smedia-placeholder" id="smedia-placeholder">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+              <span>No photo yet</span>
+            </div>
+          </div>
+
+          <div class="smedia-photo-actions">
+            <button type="button" class="smedia-btn" id="smedia-camera-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+              Camera
+            </button>
+            <button type="button" class="smedia-btn" id="smedia-upload-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg>
+              Upload
+            </button>
+          </div>
+          <button type="button" class="smedia-remove" id="smedia-remove-btn" hidden>Remove photo</button>
+
+          <input type="file" id="smedia-camera-input" accept="image/*" capture="environment" hidden>
+          <input type="file" id="smedia-upload-input" accept="image/*" hidden>
+
+          <label class="smedia-note-label" for="smedia-note">Note</label>
+          <textarea id="smedia-note" class="smedia-note" rows="3" maxlength="500" placeholder="How did it go? Energy, PRs, how you felt…"></textarea>
+
+          <button type="button" class="smedia-save" id="smedia-save">Save</button>
         </div>
 
         <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
@@ -2852,6 +3193,52 @@ body.in-session #end-session-dashboard { display: flex; }
   }
   function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
   function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+  // ─── Session media (photo + note) ───────────────────────────────────────────────
+  function sessionMetaKey(date, quickKey) { return date + '|' + (quickKey || 'manual'); }
+  function getSessionMeta(date, quickKey) {
+    const d = loadData();
+    return (d.sessionMeta && d.sessionMeta[sessionMetaKey(date, quickKey)]) || null;
+  }
+  // Returns true on success, false if storage rejected the write (e.g. quota).
+  function saveSessionMeta(date, quickKey, meta) {
+    const d = loadData();
+    if (!d.sessionMeta) d.sessionMeta = {};
+    const key = sessionMetaKey(date, quickKey);
+    if (!meta || (!meta.photo && !(meta.note && meta.note.trim()))) {
+      delete d.sessionMeta[key];
+    } else {
+      d.sessionMeta[key] = { photo: meta.photo || null, note: (meta.note || '').trim() };
+    }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); return true; }
+    catch (e) { return false; }
+  }
+  // Downscale + re-encode an image File to a compact JPEG data URL.
+  function compressImage(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('read-failed'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('decode-failed'));
+        img.onload = () => {
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+          if (!w || !h) { reject(new Error('no-dimensions')); return; }
+          if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else if (h >= w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          try { resolve(canvas.toDataURL('image/jpeg', quality)); }
+          catch (err) { reject(err); }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
   function formatDate(iso) {
     const d = new Date(iso + 'T00:00:00');
     const t = new Date(); t.setHours(0,0,0,0);
@@ -2930,14 +3317,25 @@ body.in-session #end-session-dashboard { display: flex; }
     if (active) active.scrollTop = 0;
     if (name === 'stats') { renderFrequency(); }
     if (name === 'log') { renderSessionLog(); }
+    if (name === 'body') { renderBody(); if (bodySelected) requestAnimationFrame(() => positionBodyPill(bodySelected)); }
     tap();
   }
   navItems.forEach(item => item.addEventListener('click', () => switchView(item.dataset.target)));
   document.querySelectorAll('[data-go]').forEach(el => {
     el.addEventListener('click', e => { e.stopPropagation(); switchView(el.dataset.go); });
   });
-  document.querySelectorAll('.log-toggle-btn').forEach(btn => {
+  document.querySelectorAll('.log-toggle-btn[data-logview]').forEach(btn => {
     btn.addEventListener('click', () => { setLogView(btn.dataset.logview); tap(); });
+  });
+  document.querySelectorAll('.log-toggle-btn[data-bodyside]').forEach(btn => {
+    btn.addEventListener('click', () => { setBodySide(btn.dataset.bodyside); tap(); });
+  });
+  document.querySelectorAll('.bodymap-svg .muscle').forEach(el => {
+    el.addEventListener('click', () => { selectMuscle(el.dataset.group); tap(); });
+  });
+  window.addEventListener('resize', () => {
+    const bodyActive = document.querySelector('.view[data-view="body"]')?.classList.contains('active');
+    if (bodyActive && bodySelected) positionBodyPill(bodySelected);
   });
 
   // ─── Workout card collapse ────────────────────────────────────────────────────
@@ -3378,6 +3776,7 @@ body.in-session #end-session-dashboard { display: flex; }
         renderSessionLog();
         closeAllSheets();
         setSwipeSession(displayName, dayKey);
+        updateMediaCta();
         showToast(info.name + ' session logged ✓');
         tap();
       });
@@ -3518,9 +3917,117 @@ body.in-session #end-session-dashboard { display: flex; }
     // Clear all check-done state so exercise items reset visually
     document.querySelectorAll('.exercise-item.done').forEach(el => el.classList.remove('done'));
     renderSessionLog();
+    updateMediaCta();
     showToast('Session ended');
     tap();
   }
+
+  // ─── Session media sheet (photo + note) ─────────────────────────────────────────
+  let mediaDraft = { photo: null, note: '' };
+
+  // Identifies the session the in-progress photo/note belongs to.
+  function activeSessionRef() {
+    const a = loadData().activeSession;
+    if (!a) return null;
+    return { date: todayISO(), quickKey: a.exerciseKey || ('Quick: ' + a.name) };
+  }
+
+  function updateMediaCta() {
+    const cta = document.getElementById('session-media-cta');
+    if (!cta) return;
+    const ref = activeSessionRef();
+    const meta = ref ? getSessionMeta(ref.date, ref.quickKey) : null;
+    const noteText = meta && meta.note ? meta.note.trim() : '';
+    const hasMedia = !!(meta && (meta.photo || noteText));
+    cta.classList.toggle('has-media', hasMedia);
+    const title = document.getElementById('smc-title');
+    const sub = document.getElementById('smc-sub');
+    if (hasMedia) {
+      if (title) title.textContent = 'Photo & note added';
+      if (sub) {
+        const bits = [];
+        if (meta.photo) bits.push('Photo');
+        if (noteText) bits.push('Note');
+        sub.textContent = bits.join(' · ') + ' — tap to edit';
+      }
+    } else {
+      if (title) title.textContent = 'Add photo & note';
+      if (sub) sub.textContent = 'Capture how this session went';
+    }
+  }
+
+  function renderMediaPreview() {
+    const wrap = document.getElementById('smedia-photo-wrap');
+    const placeholder = document.getElementById('smedia-placeholder');
+    const removeBtn = document.getElementById('smedia-remove-btn');
+    if (!wrap) return;
+    const existingImg = wrap.querySelector('img');
+    if (existingImg) existingImg.remove();
+    if (mediaDraft.photo) {
+      const img = document.createElement('img');
+      img.alt = 'Session photo';
+      img.src = mediaDraft.photo;
+      wrap.appendChild(img);
+      wrap.classList.add('has-photo');
+      if (placeholder) placeholder.style.display = 'none';
+      if (removeBtn) removeBtn.hidden = false;
+    } else {
+      wrap.classList.remove('has-photo');
+      if (placeholder) placeholder.style.display = '';
+      if (removeBtn) removeBtn.hidden = true;
+    }
+  }
+
+  function openMediaSheet() {
+    const ref = activeSessionRef();
+    if (!ref) { showToast('Start a session first'); return; }
+    const meta = getSessionMeta(ref.date, ref.quickKey);
+    mediaDraft = { photo: (meta && meta.photo) || null, note: (meta && meta.note) || '' };
+    const note = document.getElementById('smedia-note');
+    if (note) note.value = mediaDraft.note;
+    renderMediaPreview();
+    const sheet = document.getElementById('sheet-session-media');
+    if (sheet) { sheet.classList.add('show'); overlay.classList.add('show'); }
+    tap();
+  }
+
+  function handleMediaFile(file) {
+    if (!file) return;
+    if (!file.type || file.type.indexOf('image/') !== 0) { showToast('Please choose an image'); return; }
+    compressImage(file, 1080, 0.7)
+      .then(dataUrl => { mediaDraft.photo = dataUrl; renderMediaPreview(); tap(); })
+      .catch(() => showToast("Couldn't process that image"));
+  }
+
+  (function initSessionMedia() {
+    const cta = document.getElementById('session-media-cta');
+    if (cta) cta.addEventListener('click', openMediaSheet);
+    const closeBtn = document.getElementById('smedia-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeAllSheets);
+    const camBtn = document.getElementById('smedia-camera-btn');
+    const camInput = document.getElementById('smedia-camera-input');
+    const upBtn = document.getElementById('smedia-upload-btn');
+    const upInput = document.getElementById('smedia-upload-input');
+    if (camBtn && camInput) camBtn.addEventListener('click', () => camInput.click());
+    if (upBtn && upInput) upBtn.addEventListener('click', () => upInput.click());
+    if (camInput) camInput.addEventListener('change', e => { handleMediaFile(e.target.files && e.target.files[0]); e.target.value = ''; });
+    if (upInput) upInput.addEventListener('change', e => { handleMediaFile(e.target.files && e.target.files[0]); e.target.value = ''; });
+    const removeBtn = document.getElementById('smedia-remove-btn');
+    if (removeBtn) removeBtn.addEventListener('click', () => { mediaDraft.photo = null; renderMediaPreview(); tap(); });
+    const saveBtn = document.getElementById('smedia-save');
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+      const ref = activeSessionRef();
+      if (!ref) { closeAllSheets(); return; }
+      const note = document.getElementById('smedia-note');
+      mediaDraft.note = note ? note.value : '';
+      const ok = saveSessionMeta(ref.date, ref.quickKey, { photo: mediaDraft.photo, note: mediaDraft.note });
+      if (!ok) { showToast('Storage full — remove the photo or use a smaller one'); return; }
+      updateMediaCta();
+      closeAllSheets();
+      showToast('Saved ✓');
+      tap();
+    });
+  })();
 
   function initSwipeLog() {
     const track = document.getElementById('swipe-track');
@@ -3783,6 +4290,156 @@ body.in-session #end-session-dashboard { display: flex; }
     document.getElementById('freq-total-num').innerHTML = totalDone + '<span class="of"> / ' + totalTarget + '</span>';
     renderDashboardStats();
     renderStats();
+  }
+
+  // ─── Body map ─────────────────────────────────────────────────────────────────
+  const BODY_SIDE_GROUPS = { front: ['Shoulders', 'Chest', 'Biceps', 'Cardio'], back: ['Shoulders', 'Back', 'Triceps'] };
+  let bodySide = 'front';
+  let bodySelected = null;
+
+  function heatColor(ratio) {
+    if (ratio <= 0) return 'var(--grey-200)';
+    if (ratio < 0.5) return '#E0D6FA';
+    if (ratio < 1) return '#B49DF4';
+    return 'var(--accent)';
+  }
+
+  function setBodySide(side) {
+    if (side !== 'front' && side !== 'back') return;
+    bodySide = side;
+    document.querySelectorAll('.bodymap-svg .bm-front').forEach(g => { g.style.display = side === 'front' ? '' : 'none'; });
+    document.querySelectorAll('.bodymap-svg .bm-back').forEach(g => { g.style.display = side === 'back' ? '' : 'none'; });
+    document.querySelectorAll('.log-toggle-btn[data-bodyside]').forEach(b =>
+      b.classList.toggle('active', b.dataset.bodyside === side));
+    if (bodySelected && !BODY_SIDE_GROUPS[side].includes(bodySelected)) bodySelected = null;
+    hideBodyPill();
+    renderBody();
+    if (bodySelected) requestAnimationFrame(() => positionBodyPill(bodySelected));
+  }
+
+  function renderBody() {
+    const counts = getThisWeekCounts();
+    document.querySelectorAll('.bodymap-svg .bm-side').forEach(sideG => {
+      const visible = sideG.classList.contains('bm-' + bodySide);
+      sideG.querySelectorAll('.muscle').forEach(el => {
+        const g = el.dataset.group;
+        const target = TARGETS[g] || 2;
+        el.style.fill = heatColor((counts[g] || 0) / target);
+        el.classList.toggle('selected', visible && bodySelected === g);
+      });
+    });
+    renderBodyChips(counts);
+    renderBodyPanel(counts);
+  }
+
+  function renderBodyChips(counts) {
+    const wrap = document.getElementById('body-chips');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    BODY_SIDE_GROUPS[bodySide].forEach(group => {
+      const target = TARGETS[group] || 2;
+      const done = counts[group] || 0;
+      const pct = Math.min(100, Math.round((done / target) * 100));
+      const chip = document.createElement('button');
+      chip.className = 'body-chip' + (bodySelected === group ? ' selected' : '');
+      chip.dataset.group = group;
+      chip.innerHTML =
+        '<div class="body-chip-top"><span class="body-chip-name">' + group + '</span>' +
+        '<span class="body-chip-pct">' + pct + '%</span></div>' +
+        '<div class="body-chip-bar"><div class="body-chip-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="body-chip-sub">' + done + ' / ' + target + ' this week</div>';
+      chip.addEventListener('click', () => { selectMuscle(group); tap(); });
+      wrap.appendChild(chip);
+    });
+  }
+
+  function selectMuscle(group) {
+    if (!group) return;
+    bodySelected = (bodySelected === group) ? null : group;
+    renderBody();
+    if (bodySelected) positionBodyPill(bodySelected); else hideBodyPill();
+  }
+
+  function positionBodyPill(group) {
+    const pill = document.getElementById('bodymap-pill');
+    const stage = document.querySelector('.bodymap-stage');
+    if (!pill || !stage) return;
+    const sideG = document.querySelector('.bodymap-svg .bm-' + bodySide);
+    const el = sideG && sideG.querySelector('.muscle[data-group="' + group + '"]');
+    if (!el) { pill.hidden = true; return; }
+    const counts = getThisWeekCounts();
+    const target = TARGETS[group] || 2;
+    const done = counts[group] || 0;
+    pill.innerHTML = '<span class="dot" style="background:' + heatColor(done / target) + '"></span>' + group + ' · ' + done + '/' + target;
+    pill.hidden = false;
+    const r = el.getBoundingClientRect();
+    const s = stage.getBoundingClientRect();
+    pill.style.left = (r.left + r.width / 2 - s.left) + 'px';
+    pill.style.top = (r.top - s.top) + 'px';
+  }
+
+  function hideBodyPill() {
+    const pill = document.getElementById('bodymap-pill');
+    if (pill) pill.hidden = true;
+  }
+
+  function getExercisesForGroup(group) {
+    const items = document.querySelectorAll('.workout-card .exercise-item[data-group="' + group + '"]');
+    const seen = new Set();
+    const out = [];
+    items.forEach(item => {
+      const name = item.dataset.exercise;
+      if (!name || seen.has(name)) return;
+      seen.add(name);
+      out.push({ name, target: item.dataset.target || '' });
+    });
+    return out;
+  }
+
+  function renderBodyPanel(counts) {
+    const panel = document.getElementById('body-panel');
+    if (!panel) return;
+    if (!bodySelected) {
+      panel.innerHTML = '<div class="body-panel-hint">Tap a muscle above to see related exercises.</div>';
+      return;
+    }
+    const group = bodySelected;
+    const target = TARGETS[group] || 2;
+    const done = counts[group] || 0;
+    const exs = getExercisesForGroup(group);
+    let listHtml;
+    if (exs.length) {
+      listHtml = '<div class="body-ex-list">' + exs.map(e =>
+        '<div class="body-ex"><span class="body-ex-name">' + e.name + '</span>' +
+        (e.target ? '<span class="body-ex-target">' + e.target + '</span>' : '') + '</div>'
+      ).join('') + '</div>';
+    } else if (group === 'Cardio') {
+      listHtml = '<div class="body-ex-empty">Cardio isn’t tied to a workout card. Log it from the dashboard quick-add.</div>';
+    } else {
+      listHtml = '<div class="body-ex-empty">No exercises mapped to this muscle yet.</div>';
+    }
+    const goLabel = group === 'Cardio' ? 'Log cardio' : 'Go to workout';
+    panel.innerHTML =
+      '<div class="body-panel-card">' +
+        '<div class="body-panel-head"><span class="body-panel-title">' + group + '</span>' +
+        '<span class="body-panel-meta">' + done + ' / ' + target + ' this week</span></div>' +
+        listHtml +
+        '<button class="body-go-btn" id="body-go-btn">' + goLabel + '</button>' +
+      '</div>';
+    const btn = panel.querySelector('#body-go-btn');
+    if (btn) btn.addEventListener('click', () => bodyGoToWorkout(group));
+  }
+
+  function bodyGoToWorkout(group) {
+    tap();
+    switchView('dashboard');
+    if (group === 'Cardio') { setTimeout(openQuickLog, 200); return; }
+    const item = document.querySelector('.workout-card .exercise-item[data-group="' + group + '"]');
+    const card = item ? item.closest('.workout-card') : null;
+    if (card) {
+      card.classList.remove('collapsed');
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 140);
+    }
   }
 
   // ─── Statistics page (real data) ──────────────────────────────────────────────
@@ -4055,6 +4712,22 @@ body.in-session #end-session-dashboard { display: flex; }
       });
     }
 
+    // Photo & note for this session (if any)
+    const detailMedia = document.getElementById('detail-media');
+    if (detailMedia) {
+      const meta = getSessionMeta(date, quickKey);
+      const noteText = meta && meta.note ? meta.note.trim() : '';
+      if (meta && (meta.photo || noteText)) {
+        let html = '<div class="detail-media">';
+        if (meta.photo) html += '<img class="detail-media-img" alt="Session photo" src="' + meta.photo + '">';
+        if (noteText) html += '<div class="detail-note-label">Note</div><div class="detail-note">' + escapeHtml(meta.note) + '</div>';
+        html += '</div>';
+        detailMedia.innerHTML = html;
+      } else {
+        detailMedia.innerHTML = '';
+      }
+    }
+
     // Delete button — clone to clear old listeners
     const oldBtn = document.getElementById('detail-delete-btn');
     if (oldBtn) {
@@ -4092,6 +4765,8 @@ body.in-session #end-session-dashboard { display: flex; }
               d2.exercises[s.exercise].sessions.filter(es => es.date !== date);
           }
         });
+        // Drop the photo/note attached to this session
+        if (d2.sessionMeta) delete d2.sessionMeta[sessionMetaKey(date, quickKey)];
         // If we deleted the currently active session, also end it
         const deletedActiveSession = d2.activeSession &&
           quickKey && d2.activeSession.exerciseKey === quickKey;
@@ -4102,6 +4777,7 @@ body.in-session #end-session-dashboard { display: flex; }
         closeAllSheets();
         if (deletedActiveSession) {
           setSwipeIdle();
+          updateMediaCta();
         }
         renderSessionLog();
         renderFrequency();
@@ -4372,7 +5048,7 @@ body.in-session #end-session-dashboard { display: flex; }
     logViewMode = mode;
     const list = document.getElementById('session-log-list');
     const cal = document.getElementById('session-cal');
-    document.querySelectorAll('.log-toggle-btn').forEach(b =>
+    document.querySelectorAll('.log-toggle-btn[data-logview]').forEach(b =>
       b.classList.toggle('active', b.dataset.logview === mode));
     if (mode === 'calendar') {
       if (list) list.style.display = 'none';
@@ -4407,6 +5083,7 @@ body.in-session #end-session-dashboard { display: flex; }
       const snackName = document.getElementById('snackbar-name');
       if (snackName) snackName.textContent = stored.displayName;
       requestAnimationFrame(() => setSwipeSession(stored.displayName, stored.dayKey ?? null));
+      updateMediaCta();
     } else if (stored) {
       // Corrupted activeSession — clear it so the UI isn't stuck in-session
       d.activeSession = null;
