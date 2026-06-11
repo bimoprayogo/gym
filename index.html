@@ -1460,6 +1460,52 @@ button:focus-visible { border-radius: 8px; }
 .quick-log-card {
   margin-top: 18px;
 }
+/* ── Live training timer — only visible during an active session ── */
+.session-timer {
+  display: none;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--grey-150);
+  border-radius: 18px;
+  box-shadow: 0 6px 22px -14px rgba(0,0,0,0.3);
+}
+body.in-session .session-timer { display: flex; }
+.session-timer-pulse {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #22C55E;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.45);
+  animation: timer-pulse 2s ease-out infinite;
+}
+@keyframes timer-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+.session-timer-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.session-timer-time {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.session-timer-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--grey-400);
+}
+@media (prefers-reduced-motion: reduce) {
+  .session-timer-pulse { animation: none; }
+}
 .swipe-track {
   height: 56px;
   background: var(--grey-100);
@@ -2497,6 +2543,14 @@ body.in-session #session-media-cta { display: flex; }
             </div>
 
             <div class="quick-log-card">
+              <!-- Live training timer — only shown during an active session -->
+              <div class="session-timer" id="session-timer" role="timer" aria-label="Training time">
+                <span class="session-timer-pulse" aria-hidden="true"></span>
+                <div class="session-timer-main">
+                  <div class="session-timer-time" id="session-timer-time">0:00</div>
+                  <div class="session-timer-label">Training time</div>
+                </div>
+              </div>
               <div class="swipe-track" id="swipe-track">
                 <div class="swipe-fill" id="swipe-fill"></div>
                 <div class="swipe-thumb" id="swipe-thumb">
@@ -3240,7 +3294,7 @@ body.in-session #session-media-cta { display: flex; }
           <span class="snackbar-dot"></span>
           <div class="snackbar-text">
             <span class="snackbar-name" id="snackbar-name">Push Day</span>
-            <span class="snackbar-sub">In progress</span>
+            <span class="snackbar-sub"><span id="snackbar-time">0:00</span> elapsed</span>
           </div>
           <button class="snackbar-end-btn" id="snackbar-end-btn">End Session</button>
         </div>
@@ -3527,10 +3581,10 @@ body.in-session #session-media-cta { display: flex; }
   // Normalize stored meta to { photos: [], note: '' }, migrating the older
   // single-`photo` shape transparently.
   function normalizeMeta(raw) {
-    if (!raw) return { photos: [], note: '' };
+    if (!raw) return { photos: [], note: '', durationMs: 0 };
     let photos = Array.isArray(raw.photos) ? raw.photos.filter(Boolean) : [];
     if (!photos.length && raw.photo) photos = [raw.photo];
-    return { photos: photos.slice(0, MAX_PHOTOS), note: raw.note || '' };
+    return { photos: photos.slice(0, MAX_PHOTOS), note: raw.note || '', durationMs: raw.durationMs || 0 };
   }
   function getSessionMeta(date, quickKey) {
     const d = loadData();
@@ -3542,15 +3596,36 @@ body.in-session #session-media-cta { display: flex; }
     const d = loadData();
     if (!d.sessionMeta) d.sessionMeta = {};
     const key = sessionMetaKey(date, quickKey);
+    const existing = d.sessionMeta[key] || {};
     const photos = (meta && Array.isArray(meta.photos)) ? meta.photos.filter(Boolean).slice(0, MAX_PHOTOS) : [];
     const note = (meta && meta.note ? meta.note : '').trim();
-    if (!photos.length && !note) {
+    // Preserve any recorded training time unless this call explicitly sets it.
+    const durationMs = (meta && meta.durationMs != null) ? meta.durationMs : (existing.durationMs || 0);
+    if (!photos.length && !note && !durationMs) {
       delete d.sessionMeta[key];
     } else {
-      d.sessionMeta[key] = { photos, note };
+      d.sessionMeta[key] = { photos, note, durationMs };
     }
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); return true; }
     catch (e) { return false; }
+  }
+  // "M:SS" (or "H:MM:SS") for the live ticking clock.
+  function fmtTimer(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    const p = n => String(n).padStart(2, '0');
+    return h > 0 ? `${h}:${p(m)}:${p(s)}` : `${m}:${p(s)}`;
+  }
+  // Compact "1h 12m" / "47m" / "<1m" for logged history.
+  function fmtDurationLabel(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    if (total < 60) return '<1m';
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    if (h > 0) return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    return `${m}m`;
   }
   // Downscale + re-encode an image File to a compact JPEG data URL.
   function compressImage(file, maxDim, quality) {
@@ -4261,12 +4336,13 @@ body.in-session #session-media-cta { display: flex; }
             });
           }
         }
-        data.activeSession = { cat: btn.dataset.cat, name: info.name, displayName, dayKey, exerciseKey };
+        data.activeSession = { cat: btn.dataset.cat, name: info.name, displayName, dayKey, exerciseKey, startedAt: Date.now() };
         saveData(data);
         renderFrequency();
         renderSessionLog();
         closeAllSheets();
         setSwipeSession(displayName, dayKey);
+        startSessionTimer(data.activeSession.startedAt);
         updateMediaCta();
         showToast(info.name + ' session logged ✓');
         tap();
@@ -4406,15 +4482,52 @@ body.in-session #session-media-cta { display: flex; }
         });
       }
     }
+    // Record how long this session ran so it shows in the log + detail view.
+    let endedMs = 0;
+    if (active && active.startedAt) {
+      endedMs = Math.max(0, Date.now() - active.startedAt);
+      const dDate = active.date || todayISO();
+      const dKey = active.exerciseKey || ('Quick: ' + active.name);
+      if (!d.sessionMeta) d.sessionMeta = {};
+      const mKey = sessionMetaKey(dDate, dKey);
+      const cur = normalizeMeta(d.sessionMeta[mKey]);
+      d.sessionMeta[mKey] = { photos: cur.photos, note: cur.note, durationMs: endedMs };
+    }
     d.activeSession = null;
     saveData(d);
+    stopSessionTimer();
     setSwipeIdle();
     // Clear all check-done state so exercise items reset visually
     document.querySelectorAll('.exercise-item.done').forEach(el => el.classList.remove('done'));
     renderSessionLog();
     updateMediaCta();
-    showToast('Session ended');
+    showToast(endedMs ? ('Session ended · ' + fmtDurationLabel(endedMs)) : 'Session ended');
     tap();
+  }
+
+  // ─── Live session timer ───────────────────────────────────────────────────────
+  // Ticks once a second, painting the dashboard hero clock and the snackbar.
+  // Time is derived from an absolute start timestamp, so it self-corrects after
+  // the tab is backgrounded/throttled and survives a reload.
+  let sessionTimerInterval = null;
+  let sessionStartedAt = 0;
+  function startSessionTimer(startedAt) {
+    stopSessionTimer();
+    sessionStartedAt = startedAt || Date.now();
+    tickSessionTimer();
+    sessionTimerInterval = setInterval(tickSessionTimer, 1000);
+  }
+  function stopSessionTimer() {
+    if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
+    sessionStartedAt = 0;
+  }
+  function tickSessionTimer() {
+    if (!sessionStartedAt) return;
+    const txt = fmtTimer(Date.now() - sessionStartedAt);
+    const hero = document.getElementById('session-timer-time');
+    const snack = document.getElementById('snackbar-time');
+    if (hero) hero.textContent = txt;
+    if (snack) snack.textContent = txt;
   }
 
   // ─── Session media sheet (photos + note) ────────────────────────────────────────
@@ -5439,7 +5552,9 @@ body.in-session #session-media-cta { display: flex; }
     const fullDate = d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     document.getElementById('detail-pretitle').textContent = 'SESSION';
     document.getElementById('detail-title').textContent = sessionName;
-    document.getElementById('detail-meta').textContent = fullDate;
+    const detailMeta = getSessionMeta(date, quickKey);
+    const detailDur = detailMeta ? detailMeta.durationMs : 0;
+    document.getElementById('detail-meta').textContent = detailDur ? (fullDate + '  ·  ' + fmtDurationLabel(detailDur)) : fullDate;
 
     // Build best-weight map from explicitly logged entries
     const best = {};
@@ -5680,8 +5795,13 @@ body.in-session #session-media-cta { display: flex; }
 
         const uniqueNames = new Set((lEntries || []).map(s => s.exercise));
         const topW = (lEntries || []).reduce((max, s) => s.weight > max ? s.weight : max, 0);
-        const weightPill = uniqueNames.size > 0
-          ? `<div class="session-tl-weights">${uniqueNames.size} exercise${uniqueNames.size !== 1 ? 's' : ''}${topW > 0 ? ' · top ' + topW + ' kg' : ''}</div>`
+        const slotMeta = getSessionMeta(slot.date, slot.quickKey);
+        const slotDur = slotMeta ? slotMeta.durationMs : 0;
+        const pillBits = [];
+        if (slotDur) pillBits.push(fmtDurationLabel(slotDur));
+        if (uniqueNames.size > 0) pillBits.push(`${uniqueNames.size} exercise${uniqueNames.size !== 1 ? 's' : ''}${topW > 0 ? ' · top ' + topW + ' kg' : ''}`);
+        const weightPill = pillBits.length
+          ? `<div class="session-tl-weights">${pillBits.join(' · ')}</div>`
           : '';
 
         const card = document.createElement('div');
@@ -5839,7 +5959,10 @@ body.in-session #session-media-cta { display: flex; }
       document.body.classList.add('in-session');
       const snackName = document.getElementById('snackbar-name');
       if (snackName) snackName.textContent = stored.displayName;
+      // Backfill a start time for sessions begun before timers existed.
+      if (!stored.startedAt) { stored.startedAt = Date.now(); d.activeSession = stored; saveData(d); }
       requestAnimationFrame(() => setSwipeSession(stored.displayName, stored.dayKey ?? null));
+      startSessionTimer(stored.startedAt);
       updateMediaCta();
     } else if (stored) {
       // Corrupted activeSession — clear it so the UI isn't stuck in-session
