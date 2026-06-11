@@ -1334,20 +1334,25 @@ body.in-session .session-snackbar {
   min-width: 0;
 }
 .snackbar-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--white);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.58);
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: -0.1px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
 }
-.snackbar-sub {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.42);
-  letter-spacing: 0.1px;
+.snackbar-time {
+  display: block;
+  margin-top: 1px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.05;
+  letter-spacing: -0.4px;
+  font-variant-numeric: tabular-nums;
 }
 .snackbar-end-btn {
   background: rgba(255,255,255,0.1);
@@ -1459,52 +1464,6 @@ button:focus-visible { border-radius: 8px; }
 /* ===== Quick log swipe card ===== */
 .quick-log-card {
   margin-top: 18px;
-}
-/* ── Live training timer — only visible during an active session ── */
-.session-timer {
-  display: none;
-  align-items: center;
-  gap: 13px;
-  padding: 14px 18px;
-  margin-bottom: 12px;
-  background: var(--surface);
-  border: 1px solid var(--grey-150);
-  border-radius: 18px;
-  box-shadow: 0 6px 22px -14px rgba(0,0,0,0.3);
-}
-body.in-session .session-timer { display: flex; }
-.session-timer-pulse {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: #22C55E;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 0 rgba(34,197,94,0.45);
-  animation: timer-pulse 2s ease-out infinite;
-}
-@keyframes timer-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); }
-  70%  { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
-  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
-}
-.session-timer-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.session-timer-time {
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-.session-timer-label {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--grey-400);
-}
-@media (prefers-reduced-motion: reduce) {
-  .session-timer-pulse { animation: none; }
 }
 .swipe-track {
   height: 56px;
@@ -2543,14 +2502,6 @@ body.in-session #session-media-cta { display: flex; }
             </div>
 
             <div class="quick-log-card">
-              <!-- Live training timer — only shown during an active session -->
-              <div class="session-timer" id="session-timer" role="timer" aria-label="Training time">
-                <span class="session-timer-pulse" aria-hidden="true"></span>
-                <div class="session-timer-main">
-                  <div class="session-timer-time" id="session-timer-time">0:00</div>
-                  <div class="session-timer-label">Training time</div>
-                </div>
-              </div>
               <div class="swipe-track" id="swipe-track">
                 <div class="swipe-fill" id="swipe-fill"></div>
                 <div class="swipe-thumb" id="swipe-thumb">
@@ -3294,7 +3245,7 @@ body.in-session #session-media-cta { display: flex; }
           <span class="snackbar-dot"></span>
           <div class="snackbar-text">
             <span class="snackbar-name" id="snackbar-name">Push Day</span>
-            <span class="snackbar-sub"><span id="snackbar-time">0:00</span> elapsed</span>
+            <span class="snackbar-time" id="snackbar-time">0:00</span>
           </div>
           <button class="snackbar-end-btn" id="snackbar-end-btn">End Session</button>
         </div>
@@ -4506,7 +4457,7 @@ body.in-session #session-media-cta { display: flex; }
   }
 
   // ─── Live session timer ───────────────────────────────────────────────────────
-  // Ticks once a second, painting the dashboard hero clock and the snackbar.
+  // Ticks once a second, painting the elapsed time into the persistent snackbar.
   // Time is derived from an absolute start timestamp, so it self-corrects after
   // the tab is backgrounded/throttled and survives a reload.
   let sessionTimerInterval = null;
@@ -4523,11 +4474,8 @@ body.in-session #session-media-cta { display: flex; }
   }
   function tickSessionTimer() {
     if (!sessionStartedAt) return;
-    const txt = fmtTimer(Date.now() - sessionStartedAt);
-    const hero = document.getElementById('session-timer-time');
     const snack = document.getElementById('snackbar-time');
-    if (hero) hero.textContent = txt;
-    if (snack) snack.textContent = txt;
+    if (snack) snack.textContent = fmtTimer(Date.now() - sessionStartedAt);
   }
 
   // ─── Session media sheet (photos + note) ────────────────────────────────────────
