@@ -817,6 +817,11 @@ body.in-session .ex-check { display: flex; }
 }
 
 .stepper { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.reps-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; }
+.reps-display { display: flex; align-items: baseline; gap: 5px; }
+.reps-input { width: 3ch; text-align: center; border: none; background: none; font-family: inherit; font-size: 30px; font-weight: 800; color: var(--charcoal); letter-spacing: -1px; padding: 0; -webkit-appearance: none; }
+.reps-input:focus { outline: none; }
+.reps-unit { font-size: 14px; font-weight: 600; color: var(--grey-400); }
 .step-btn {
   width: 52px;
   height: 52px;
@@ -1762,6 +1767,17 @@ body.in-session #session-media-cta { display: flex; }
 }
 .detail-weight-input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
 .detail-weight-unit { font-size: 12px; font-weight: 600; color: var(--grey-400); }
+.detail-weight-times { font-size: 14px; font-weight: 700; color: var(--grey-400); }
+.detail-reps-input {
+  width: 50px; height: 44px; box-sizing: border-box;
+  border: 1px solid var(--grey-200); border-radius: 10px;
+  background: var(--grey-50);
+  text-align: center; padding: 0 6px;
+  font-family: inherit; font-size: 15px; font-weight: 700; color: var(--charcoal);
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s, background 0.15s;
+}
+.detail-reps-input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
 .detail-media-edit-btn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; margin-top: 14px; padding: 13px;
@@ -3347,6 +3363,15 @@ body.in-session #session-media-cta { display: flex; }
             </div>
           </div>
 
+          <div class="sheet-block reps-block">
+            <div class="sheet-block-label">Reps done</div>
+            <div class="reps-row">
+              <button class="step-btn" id="rep-minus" type="button" aria-label="Fewer reps">−</button>
+              <div class="reps-display"><input id="reps-value" class="reps-input" type="text" inputmode="numeric" value="10" aria-label="Reps performed"><span class="reps-unit">reps</span></div>
+              <button class="step-btn" id="rep-plus" type="button" aria-label="More reps">+</button>
+            </div>
+          </div>
+
           <div class="sheet-block">
             <div class="sheet-block-label">Recent Sessions</div>
             <div class="history-list" id="history-list">
@@ -3706,12 +3731,15 @@ body.in-session #session-media-cta { display: flex; }
     const n = parseFloat(v);
     return isNaN(n) ? 0 : n;
   }
-  function logWeight(name, weight, group) {
+  function logWeight(name, weight, group, reps) {
     const data = loadData();
     if (!data.exercises[name]) data.exercises[name] = { sessions: [] };
     const date = todayISO();
-    data.exercises[name].sessions.push({ date, weight });
-    data.sessions.push({ date, exercise: name, group, weight });
+    const hist = { date, weight };
+    const sess = { date, exercise: name, group, weight };
+    if (reps != null && reps > 0) { hist.reps = reps; sess.reps = reps; }
+    data.exercises[name].sessions.push(hist);
+    data.sessions.push(sess);
     saveData(data);
   }
   function clearAllData() {
@@ -4137,12 +4165,16 @@ body.in-session #session-media-cta { display: flex; }
   const weightHelper = document.getElementById('weight-helper');
   const stepMinus = document.getElementById('step-minus');
   const stepPlus = document.getElementById('step-plus');
+  const repsValueEl = document.getElementById('reps-value');
+  const repMinus = document.getElementById('rep-minus');
+  const repPlus = document.getElementById('rep-plus');
   const historyList = document.getElementById('history-list');
   const btnCancel = document.getElementById('btn-cancel');
   const btnLog = document.getElementById('btn-log');
 
   let currentWeight = 0;
   let currentStep = 2.5;
+  let currentReps = 10;
   let currentIsBW = false;
 
   function openSheet(item) {
@@ -4188,6 +4220,8 @@ body.in-session #session-media-cta { display: flex; }
     const sessions = (loadData().exercises[name]?.sessions) || [];
     currentWeight = sessions.length > 0 ? sessions[sessions.length - 1].weight : (currentIsBW ? 0 : getDefaultWeight(item));
     updateWeightDisplay();
+    currentReps = defaultReps(item, sessions);
+    updateRepsDisplay();
     renderHistory(name);
     sheet.classList.add('show');
     overlay.classList.add('show');
@@ -4249,6 +4283,36 @@ body.in-session #session-media-cta { display: flex; }
     updateWeightDisplay(); tap();
   });
 
+  // ── Reps ──
+  function updateRepsDisplay() { if (repsValueEl) repsValueEl.value = String(currentReps); }
+  // Default reps: last logged reps for this exercise, else the target's rep count, else 10.
+  function defaultReps(item, sessions) {
+    const last = sessions.length ? sessions[sessions.length - 1] : null;
+    if (last && last.reps != null && last.reps > 0) return last.reps;
+    const after = ((item && item.dataset.target) || '').split(/×|x/i)[1];
+    if (after) { const n = parseInt(after, 10); if (!isNaN(n) && n > 0) return n; }
+    return 10;
+  }
+  function commitRepsInput() {
+    let n = parseInt((repsValueEl && repsValueEl.value) || '', 10);
+    if (isNaN(n) || n < 0) n = 0;
+    if (n > 999) n = 999;
+    currentReps = n;
+    updateRepsDisplay();
+  }
+  if (repsValueEl) {
+    repsValueEl.addEventListener('focus', () => setTimeout(() => repsValueEl.select(), 0));
+    repsValueEl.addEventListener('input', () => {
+      const v = repsValueEl.value.replace(/[^0-9]/g, '').slice(0, 3);
+      repsValueEl.value = v;
+      const n = parseInt(v, 10); if (!isNaN(n)) currentReps = n;
+    });
+    repsValueEl.addEventListener('blur', commitRepsInput);
+    repsValueEl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); repsValueEl.blur(); } });
+  }
+  if (repMinus) repMinus.addEventListener('click', () => { commitRepsInput(); currentReps = Math.max(0, currentReps - 1); updateRepsDisplay(); tap(); });
+  if (repPlus) repPlus.addEventListener('click', () => { commitRepsInput(); currentReps = Math.min(999, currentReps + 1); updateRepsDisplay(); tap(); });
+
   function renderHistory(name) {
     const sessions = (loadData().exercises[name]?.sessions || []).slice().reverse();
     historyList.innerHTML = '';
@@ -4272,7 +4336,7 @@ body.in-session #session-media-cta { display: flex; }
       row.innerHTML = `
         <div class="history-date ${isToday ? 'today' : ''}">${formatDate(s.date)}</div>
         <div class="history-right">
-          <div class="history-weight">${s.weight === 0 ? 'BW' : s.weight + ' kg'}</div>
+          <div class="history-weight">${s.weight === 0 ? 'BW' : s.weight + ' kg'}${s.reps ? ' × ' + s.reps : ''}</div>
           ${trendHtml}
         </div>
       `;
@@ -4285,12 +4349,12 @@ body.in-session #session-media-cta { display: flex; }
     if (!currentItem) return;
     const name = currentItem.dataset.exercise;
     const group = currentItem.dataset.group;
-    logWeight(name, currentWeight, group);
+    logWeight(name, currentWeight, group, currentReps);
     currentItem.classList.add('done');
     updateExerciseBadge(currentItem);
     renderFrequency();
     renderSessionLog();
-    showToast(name + ' · ' + (currentWeight === 0 ? 'BW' : currentWeight + ' kg') + ' logged');
+    showToast(name + ' · ' + (currentWeight === 0 ? 'BW' : currentWeight + ' kg') + (currentReps > 0 ? ' × ' + currentReps : '') + ' logged');
     tap();
     closeAllSheets();
   });
@@ -5475,16 +5539,22 @@ body.in-session #session-media-cta { display: flex; }
         `</div>`;
       if (detailEditMode && !isCardio) {
         const wVal = (s.weight == null) ? 0 : s.weight;
+        const rVal = (s.reps == null) ? '' : s.reps;
         row.innerHTML = infoHtml +
           `<div class="detail-weight-edit">` +
             `<input type="number" inputmode="decimal" class="detail-weight-input" data-ex="${escapeHtml(s.exercise)}" value="${wVal}" min="0" step="0.5" aria-label="Weight in kilograms for ${escapeHtml(s.exercise)}">` +
             `<span class="detail-weight-unit">kg</span>` +
+            `<span class="detail-weight-times">×</span>` +
+            `<input type="number" inputmode="numeric" class="detail-reps-input" data-ex="${escapeHtml(s.exercise)}" value="${rVal}" min="0" step="1" placeholder="–" aria-label="Reps for ${escapeHtml(s.exercise)}">` +
           `</div>`;
       } else {
         let weightLabel;
         if (isCardio) weightLabel = 'Done';
-        else if (s.weight === 0 || s.weight == null) weightLabel = 'BW';
-        else weightLabel = s.weight + ' kg';
+        else {
+          if (s.weight === 0 || s.weight == null) weightLabel = 'BW';
+          else weightLabel = s.weight + ' kg';
+          if (s.reps) weightLabel += ' × ' + s.reps;
+        }
         row.innerHTML = infoHtml + `<div class="detail-row-weight">${weightLabel}</div>`;
       }
       list.appendChild(row);
@@ -5542,28 +5612,40 @@ body.in-session #session-media-cta { display: flex; }
     const data = loadData();
     if (!data.exercises) data.exercises = {};
     if (!data.sessions) data.sessions = [];
+    // Collect edited reps per exercise (blank or 0 → no reps recorded).
+    const repsByEx = {};
+    document.querySelectorAll('#detail-list .detail-reps-input').forEach(inp => {
+      const ex = inp.dataset.ex; if (!ex) return;
+      const r = parseInt(inp.value, 10);
+      repsByEx[ex] = (isNaN(r) || r <= 0) ? null : r;
+    });
     document.querySelectorAll('#detail-list .detail-weight-input').forEach(inp => {
       const exName = inp.dataset.ex;
       if (!exName) return;
       let w = parseFloat(inp.value);
       if (isNaN(w) || w < 0) w = 0;
+      const reps = Object.prototype.hasOwnProperty.call(repsByEx, exName) ? repsByEx[exName] : null;
       const group = (detailCtx.best[exName] && detailCtx.best[exName].group) || '';
       // Upsert into the global session list for this date + exercise
       let found = false;
       data.sessions.forEach(s => {
-        if (s && s.date === date && s.exercise === exName) { s.weight = w; if (group && !s.group) s.group = group; found = true; }
+        if (s && s.date === date && s.exercise === exName) {
+          s.weight = w; if (group && !s.group) s.group = group;
+          if (reps != null) s.reps = reps; else delete s.reps;
+          found = true;
+        }
       });
-      if (!found) data.sessions.push({ date, exercise: exName, group, weight: w });
+      if (!found) { const ns = { date, exercise: exName, group, weight: w }; if (reps != null) ns.reps = reps; data.sessions.push(ns); }
       // Upsert per-exercise history (update the latest same-date entry, else add)
       if (!data.exercises[exName]) data.exercises[exName] = { sessions: [] };
       const hist = data.exercises[exName].sessions;
       let histFound = false;
       for (let i = hist.length - 1; i >= 0; i--) {
-        if (hist[i] && hist[i].date === date) { hist[i].weight = w; histFound = true; break; }
+        if (hist[i] && hist[i].date === date) { hist[i].weight = w; if (reps != null) hist[i].reps = reps; else delete hist[i].reps; histFound = true; break; }
       }
-      if (!histFound) hist.push({ date, weight: w });
+      if (!histFound) { const nh = { date, weight: w }; if (reps != null) nh.reps = reps; hist.push(nh); }
       // Reflect in best so the immediate re-render shows the saved values
-      detailCtx.best[exName] = { exercise: exName, group, weight: w };
+      detailCtx.best[exName] = { exercise: exName, group, weight: w, reps: reps == null ? undefined : reps };
     });
     saveData(data);
     detailEditMode = false;
