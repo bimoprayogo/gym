@@ -1,6 +1,6 @@
 // Gym Tracker — Service Worker
 // Bump CACHE_NAME whenever you need to force a full re-cache on all devices.
-const CACHE_NAME = 'gym-v2';
+const CACHE_NAME = 'gym-v3';
 
 const PRECACHE_ASSETS = [
   './',

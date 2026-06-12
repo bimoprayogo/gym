@@ -1208,6 +1208,22 @@ body.in-session .ex-check { display: flex; }
 .signout-row { margin-top: 20px; background: var(--surface); border: 1px solid var(--grey-150); border-radius: 18px; overflow: hidden; }
 .signout-row .setting-row { justify-content: center; }
 .signout-row .setting-name { color: var(--danger); text-align: center; width: 100%; }
+/* ── Account / cloud sync ── */
+.account-signin {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 13px 16px;
+  background: #fff; color: #1f1f1f;
+  font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: -0.1px;
+  border: 1px solid var(--grey-200); border-radius: 14px;
+  cursor: pointer; transition: background 0.15s ease, transform 0.1s ease;
+}
+.account-signin:active { transform: scale(0.99); background: #f1f1f3; }
+.gbtn-logo { display: inline-flex; flex-shrink: 0; }
+.account-hint { font-size: 11.5px; color: var(--grey-400); text-align: center; margin-top: 9px; line-height: 1.45; }
+.account-email { font-size: 13.5px; font-weight: 600; color: var(--charcoal); letter-spacing: -0.1px; word-break: break-all; }
+.account-sync { font-size: 11px; font-weight: 600; color: var(--grey-400); margin-top: 2px; }
+.account-sync.ok { color: var(--success); }
+.account-sync.err { color: var(--danger); }
 .version-info { text-align: center; margin-top: 18px; font-size: 10.5px; color: var(--grey-400); font-weight: 500; letter-spacing: 0.3px; }
 
 .bottom-nav {
@@ -3097,6 +3113,18 @@ body.in-session #session-media-cta { display: flex; }
               <button class="edit-pill">Edit</button>
             </div>
 
+            <!-- Account — cloud backup & cross-device sync (filled by renderAccountUI) -->
+            <div class="settings-section">
+              <div class="settings-label">Account</div>
+              <div class="settings-group" id="account-group">
+                <button class="account-signin" id="google-signin-btn" type="button">
+                  <span class="gbtn-logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>
+                  Sign in with Google
+                </button>
+                <div class="account-hint">Back up your log and sync across devices.</div>
+              </div>
+            </div>
+
             <div class="settings-section">
               <div class="settings-label">Your Goal</div>
               <div class="settings-group">
@@ -3194,11 +3222,6 @@ body.in-session #session-media-cta { display: flex; }
               </div>
             </div>
 
-            <div class="signout-row">
-              <div class="setting-row">
-                <div class="setting-name">Sign Out</div>
-              </div>
-            </div>
 
             <div class="version-info">Gym Tracker · v1.1.0</div>
           </section>
@@ -3503,6 +3526,16 @@ body.in-session #session-media-cta { display: flex; }
   'use strict';
 
   const STORAGE_KEY = 'gym-tracker-v1';
+  // ── Supabase cloud sync (optional, local-first) ──────────────────────────────
+  // The anon key below is a public client key; data is private via Row-Level
+  // Security so only its signed-in owner can read or write their own row.
+  const SUPABASE_URL = 'https://xfaejzpxdehkssatynad.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYWVqenB4ZGVoa3NzYXR5bmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTMyMTUsImV4cCI6MjA5NjgyOTIxNX0.Hm4DulWA_AqHh95T_Y53wa2N7q3l44wIO_1GbpE1vaM';
+  let sb = null;            // Supabase client (null until the SDK loads)
+  let currentUser = null;   // signed-in user object, or null
+  let cloudReady = false;   // client created and initial session resolved
+  let pushTimer = null;     // debounce handle for background pushes
+  let syncing = false;      // a full pull-merge-push is in flight
   const TARGETS = { Chest: 2, Back: 2, Shoulders: 2, Biceps: 2, Triceps: 2, Cardio: 2 };
   const GROUP_ORDER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Cardio'];
   const QUICK_MAP = {
@@ -3523,7 +3556,11 @@ body.in-session #session-media-cta { display: flex; }
       return { exercises: {}, sessions: [], customExercises: {}, profileName: '' };
     }
   }
-  function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+  function saveData(d) {
+    try { if (d && typeof d === 'object') d.updatedAt = Date.now(); } catch (e) {}
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    scheduleCloudPush();
+  }
   function todayISO() { return new Date().toISOString().split('T')[0]; }
 
   // ─── Session media (photos + note) ──────────────────────────────────────────────
@@ -3632,7 +3669,12 @@ body.in-session #session-media-cta { display: flex; }
     data.sessions.push({ date, exercise: name, group, weight });
     saveData(data);
   }
-  function clearAllData() { localStorage.removeItem(STORAGE_KEY); }
+  function clearAllData() {
+    localStorage.removeItem(STORAGE_KEY);
+    // A reset is a deliberate wipe — overwrite the cloud copy too (not a merge),
+    // so it doesn't sync the old data back in.
+    if (cloudReady && sb && currentUser) pushState({ updatedAt: Date.now() });
+  }
 
   // ─── Custom exercises ─────────────────────────────────────────────────────────
   function getCustomExercises(day) {
@@ -4919,8 +4961,7 @@ body.in-session #session-media-cta { display: flex; }
         }
         return;
       }
-      if (name === 'Sign Out') showToast('Signed out');
-      else showToast(name);
+      showToast(name);
       tap();
     });
   });
@@ -5882,6 +5923,188 @@ body.in-session #session-media-cta { display: flex; }
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────────
+  // ─── Cloud backup & sync (Supabase) ───────────────────────────────────────────
+  // Local-first: localStorage stays the source of truth on each device. While the
+  // user is signed in, the whole data blob is mirrored to a private Supabase row
+  // (one per user, guarded by Row-Level Security). Syncing is a union-merge so
+  // nothing is ever lost in either direction. Degrades silently to local-only when
+  // offline or signed out.
+  const GOOGLE_G_SVG = '<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+
+  function loadCloud() {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+    if (window.supabase && window.supabase.createClient) { initCloud(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.async = true;
+    s.onload = initCloud;
+    s.onerror = () => {};   // offline / blocked → stay local-only
+    document.head.appendChild(s);
+  }
+  function initCloud() {
+    if (cloudReady || !window.supabase || !window.supabase.createClient) return;
+    try {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      });
+    } catch (e) { return; }
+    cloudReady = true;
+    sb.auth.getSession().then(({ data }) => {
+      currentUser = (data && data.session) ? data.session.user : null;
+      renderAccountUI();
+      if (currentUser) syncNow();
+    }).catch(() => {});
+    sb.auth.onAuthStateChange((_event, session) => {
+      const prev = currentUser ? currentUser.id : null;
+      currentUser = session ? session.user : null;
+      renderAccountUI();
+      if (currentUser && currentUser.id !== prev) syncNow();   // a fresh sign-in
+    });
+  }
+  function doSignIn() {
+    if (!cloudReady || !sb) { showToast('Connecting…'); loadCloud(); return; }
+    tap();
+    const redirectTo = (location.origin + location.pathname).replace(/index\.html$/, '');
+    sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } })
+      .catch(() => showToast('Sign-in failed'));
+  }
+  function doSignOut() {
+    if (!sb) return;
+    tap();
+    sb.auth.signOut().then(() => { currentUser = null; renderAccountUI(); showToast('Signed out'); });
+  }
+  // Pull remote → union-merge with local → save locally → push the merged result.
+  function syncNow() {
+    if (!cloudReady || !sb || !currentUser || syncing) return;
+    syncing = true; setSyncStatus('Syncing…');
+    sb.from('app_state').select('data').eq('user_id', currentUser.id).maybeSingle()
+      .then(({ data, error }) => {
+        if (error) throw error;
+        const remote = (data && data.data) ? data.data : null;
+        const merged = mergeStates(loadData(), remote);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        refreshAllViews();
+        return pushState(merged);
+      })
+      .then(() => { syncing = false; setSyncStatus('Synced', 'ok'); })
+      .catch(() => { syncing = false; setSyncStatus('Sync failed', 'err'); });
+  }
+  function pushState(state) {
+    if (!cloudReady || !sb || !currentUser) return Promise.resolve();
+    const row = { user_id: currentUser.id, data: state, updated_at: new Date().toISOString() };
+    return sb.from('app_state').upsert(row, { onConflict: 'user_id' })
+      .then(({ error }) => { if (error) throw error; });
+  }
+  function scheduleCloudPush() {
+    if (!cloudReady || !sb || !currentUser) return;
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(() => {
+      pushTimer = null;
+      setSyncStatus('Syncing…');
+      pushState(loadData())
+        .then(() => setSyncStatus('Synced', 'ok'))
+        .catch(() => setSyncStatus('Sync failed', 'err'));
+    }, 1500);
+  }
+  // ── Union merge: combine two data blobs without losing anything ──
+  function mergeStates(local, remote) {
+    local = local || {};
+    if (!remote) return local;
+    const out = {};
+    out.sessions = dedupeArr([...(local.sessions || []), ...(remote.sessions || [])]);
+    out.exercises = mergeExerciseMaps(local.exercises || {}, remote.exercises || {});
+    out.customExercises = Object.assign({}, remote.customExercises || {}, local.customExercises || {});
+    out.sessionMeta = mergeMetaMaps(local.sessionMeta || {}, remote.sessionMeta || {});
+    const localNewer = (local.updatedAt || 0) >= (remote.updatedAt || 0);
+    out.profileName = pickScalar(local.profileName, remote.profileName, localNewer);
+    out.theme = pickScalar(local.theme, remote.theme, localNewer);
+    out.activeSession = local.activeSession || remote.activeSession || null;
+    out.updatedAt = Math.max(local.updatedAt || 0, remote.updatedAt || 0) || Date.now();
+    // Carry any other top-level keys, preferring the newer side.
+    [localNewer ? remote : local, localNewer ? local : remote].forEach(src => {
+      Object.keys(src || {}).forEach(k => { if (!(k in out)) out[k] = src[k]; });
+    });
+    return out;
+  }
+  function dedupeArr(arr) {
+    const seen = new Set(); const out = [];
+    for (const item of arr) { const k = JSON.stringify(item); if (!seen.has(k)) { seen.add(k); out.push(item); } }
+    return out;
+  }
+  function mergeExerciseMaps(a, b) {
+    const out = {};
+    new Set([...Object.keys(a), ...Object.keys(b)]).forEach(n => {
+      const ea = a[n], eb = b[n];
+      if (ea && eb) out[n] = Object.assign({}, eb, ea, { sessions: dedupeArr([...(eb.sessions || []), ...(ea.sessions || [])]) });
+      else out[n] = ea || eb;
+    });
+    return out;
+  }
+  function mergeMetaMaps(a, b) {
+    const out = {};
+    new Set([...Object.keys(a), ...Object.keys(b)]).forEach(k => {
+      const ma = a[k], mb = b[k];
+      if (ma && mb) {
+        const pa = Array.isArray(ma.photos) ? ma.photos : [];
+        const pb = Array.isArray(mb.photos) ? mb.photos : [];
+        out[k] = {
+          photos: pa.length >= pb.length ? pa : pb,
+          note: (ma.note || '').length >= (mb.note || '').length ? (ma.note || '') : (mb.note || ''),
+          durationMs: Math.max(ma.durationMs || 0, mb.durationMs || 0)
+        };
+      } else out[k] = ma || mb;
+    });
+    return out;
+  }
+  function pickScalar(l, r, localNewer) {
+    if (l && !r) return l;
+    if (r && !l) return r;
+    return localNewer ? l : r;
+  }
+  // ── Account UI (Settings) ──
+  function setSyncStatus(text, cls) {
+    const el = document.getElementById('account-sync');
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'account-sync' + (cls ? ' ' + cls : '');
+  }
+  function renderAccountUI() {
+    const group = document.getElementById('account-group');
+    if (!group) return;
+    if (currentUser) {
+      group.innerHTML =
+        '<div class="setting-row"><div class="setting-info">' +
+          '<div class="account-email">' + escapeHtml(currentUser.email || 'Signed in') + '</div>' +
+          '<div class="account-sync ok" id="account-sync">Synced</div>' +
+        '</div></div>' +
+        '<div class="setting-row danger" id="signout-row-btn"><div class="setting-name">Sign out</div></div>';
+      const so = document.getElementById('signout-row-btn');
+      if (so) so.addEventListener('click', doSignOut);
+    } else {
+      group.innerHTML =
+        '<button class="account-signin" id="google-signin-btn" type="button">' +
+          '<span class="gbtn-logo" aria-hidden="true">' + GOOGLE_G_SVG + '</span>Sign in with Google' +
+        '</button>' +
+        '<div class="account-hint">Back up your log and sync across devices.</div>';
+      const gi = document.getElementById('google-signin-btn');
+      if (gi) gi.addEventListener('click', doSignIn);
+    }
+  }
+  // Repaint data-driven views after a sync brings in new data.
+  function refreshAllViews() {
+    try {
+      const dd = loadData();
+      renderSessionLog();
+      renderFrequency();
+      renderExerciseLists();
+      if (typeof renderDashboardStats === 'function') renderDashboardStats();
+      if (dd.theme === 'dark' || dd.theme === 'light') applyTheme(dd.theme === 'dark');
+      const pn = document.getElementById('profile-name');
+      const nm = (dd.profileName || '').trim();
+      if (pn && nm) pn.textContent = nm;
+    } catch (e) {}
+  }
+
   function boot() {
     const d = loadData();
     if (d.profileName) {
@@ -5917,6 +6140,9 @@ body.in-session #session-media-cta { display: flex; }
       d.activeSession = null;
       saveData(d);
     }
+    // Bind the account UI and kick off cloud sync (no-op until signed in / online).
+    renderAccountUI();
+    loadCloud();
   }
   boot();
 
