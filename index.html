@@ -3120,9 +3120,11 @@ body.in-session #session-media-cta { display: flex; }
               <div class="settings-group" id="account-group">
                 <div class="account-signin-form">
                   <input type="email" id="account-email" class="text-input" placeholder="you@email.com" autocomplete="email" inputmode="email">
-                  <button class="account-signin" id="email-signin-btn" type="button">Email me a sign-in link</button>
+                  <button class="account-signin" id="email-signin-btn" type="button">Email me a sign-in code</button>
+                  <input type="text" id="account-code" class="text-input" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" style="display:none;">
+                  <button class="account-signin" id="code-verify-btn" type="button" style="display:none;">Verify &amp; sign in</button>
                 </div>
-                <div class="account-hint" id="account-hint">Back up your log and sync across devices. No password — just tap the link we email you.</div>
+                <div class="account-hint" id="account-hint">Back up your log and sync across devices. We'll email you a 6-digit code — no password.</div>
               </div>
             </div>
 
@@ -5960,24 +5962,49 @@ body.in-session #session-media-cta { display: flex; }
       if (currentUser && currentUser.id !== prev) syncNow();   // a fresh sign-in
     });
   }
-  function sendMagicLink() {
+  let pendingEmail = '';
+  function sendCode() {
     const input = document.getElementById('account-email');
     const email = ((input && input.value) || '').trim();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showToast('Enter a valid email'); return; }
     if (!cloudReady || !sb) { showToast('Connecting…'); loadCloud(); return; }
     tap();
+    pendingEmail = email;
     const hint = document.getElementById('account-hint');
-    if (hint) hint.textContent = 'Sending your link…';
+    if (hint) hint.textContent = 'Sending your code…';
     const emailRedirectTo = (location.origin + location.pathname).replace(/index\.html$/, '');
     sb.auth.signInWithOtp({ email, options: { emailRedirectTo } })
       .then(({ error }) => {
         if (error) throw error;
-        if (hint) hint.textContent = 'Check ' + email + ' for your sign-in link, then tap it on this device. (Check spam too.)';
-        showToast('Sign-in link sent ✓');
+        const code = document.getElementById('account-code');
+        const vb = document.getElementById('code-verify-btn');
+        if (code) { code.style.display = ''; code.focus(); }
+        if (vb) vb.style.display = '';
+        if (hint) hint.textContent = 'Enter the 6-digit code we emailed you (check spam). The link in that email also works in a browser.';
+        showToast('Code sent ✓');
       })
       .catch(() => {
-        if (hint) hint.textContent = 'Couldn\'t send the link — check the address and try again.';
-        showToast('Couldn\'t send link');
+        if (hint) hint.textContent = 'Couldn\'t send — check the address and try again.';
+        showToast('Couldn\'t send');
+      });
+  }
+  function verifyCode() {
+    const codeEl = document.getElementById('account-code');
+    const token = ((codeEl && codeEl.value) || '').trim();
+    if (!/^\d{6}$/.test(token)) { showToast('Enter the 6-digit code'); return; }
+    if (!cloudReady || !sb || !pendingEmail) { showToast('Send a code first'); return; }
+    tap();
+    const hint = document.getElementById('account-hint');
+    if (hint) hint.textContent = 'Signing you in…';
+    sb.auth.verifyOtp({ email: pendingEmail, token, type: 'email' })
+      .then(({ error }) => {
+        if (error) throw error;
+        // onAuthStateChange flips the UI to signed-in and kicks off the sync.
+        showToast('Signed in ✓');
+      })
+      .catch(() => {
+        if (hint) hint.textContent = 'That code didn\'t work — double-check it or resend.';
+        showToast('Invalid code');
       });
   }
   function doSignOut() {
@@ -6096,13 +6123,19 @@ body.in-session #session-media-cta { display: flex; }
       group.innerHTML =
         '<div class="account-signin-form">' +
           '<input type="email" id="account-email" class="text-input" placeholder="you@email.com" autocomplete="email" inputmode="email">' +
-          '<button class="account-signin" id="email-signin-btn" type="button">Email me a sign-in link</button>' +
+          '<button class="account-signin" id="email-signin-btn" type="button">Email me a sign-in code</button>' +
+          '<input type="text" id="account-code" class="text-input" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" style="display:none;">' +
+          '<button class="account-signin" id="code-verify-btn" type="button" style="display:none;">Verify &amp; sign in</button>' +
         '</div>' +
-        '<div class="account-hint" id="account-hint">Back up your log and sync across devices. No password — just tap the link we email you.</div>';
+        '<div class="account-hint" id="account-hint">Back up your log and sync across devices. We\'ll email you a 6-digit code — no password.</div>';
       const gi = document.getElementById('email-signin-btn');
-      if (gi) gi.addEventListener('click', sendMagicLink);
+      if (gi) gi.addEventListener('click', sendCode);
+      const vb = document.getElementById('code-verify-btn');
+      if (vb) vb.addEventListener('click', verifyCode);
       const inp = document.getElementById('account-email');
-      if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') sendMagicLink(); });
+      if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') sendCode(); });
+      const cinp = document.getElementById('account-code');
+      if (cinp) cinp.addEventListener('keydown', e => { if (e.key === 'Enter') verifyCode(); });
     }
   }
   // Repaint data-driven views after a sync brings in new data.
