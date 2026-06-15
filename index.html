@@ -1407,6 +1407,7 @@ body.in-session .session-snackbar {
   letter-spacing: -0.4px;
   font-variant-numeric: tabular-nums;
 }
+.snackbar-time.over-hour { color: #FBBF24; }
 .snackbar-end-btn {
   background: rgba(255,255,255,0.1);
   color: var(--white);
@@ -4625,9 +4626,12 @@ body.in-session #session-media-cta { display: flex; }
   // the tab is backgrounded/throttled and survives a reload.
   let sessionTimerInterval = null;
   let sessionStartedAt = 0;
-  function startSessionTimer(startedAt) {
+  let hourAlertFired = false;            // true once the 1-hour nudge has fired this session
+  const HOUR_MS = 60 * 60 * 1000;
+  function startSessionTimer(startedAt, alreadyNotified) {
     stopSessionTimer();
     sessionStartedAt = startedAt || Date.now();
+    hourAlertFired = !!alreadyNotified;
     tickSessionTimer();
     sessionTimerInterval = setInterval(tickSessionTimer, 1000);
   }
@@ -4637,8 +4641,27 @@ body.in-session #session-media-cta { display: flex; }
   }
   function tickSessionTimer() {
     if (!sessionStartedAt) return;
+    const elapsed = Date.now() - sessionStartedAt;
     const snack = document.getElementById('snackbar-time');
-    if (snack) snack.textContent = fmtTimer(Date.now() - sessionStartedAt);
+    if (snack) {
+      snack.textContent = fmtTimer(elapsed);
+      snack.classList.toggle('over-hour', elapsed >= HOUR_MS);
+    }
+    if (!hourAlertFired && elapsed >= HOUR_MS) { hourAlertFired = true; fireHourAlert(); }
+  }
+  // One-time nudge when a session crosses the 1-hour mark.
+  function fireHourAlert() {
+    // Remember it on the session so reopening the app doesn't re-alert.
+    try { const d = loadData(); if (d.activeSession) { d.activeSession.hourNotified = true; saveData(d); } } catch (e) {}
+    if (window.navigator && navigator.vibrate) navigator.vibrate([40, 60, 40]);
+    showToast("⏱️ Over 1 hour of training — nice work!");
+    // If the user happens to have granted notifications, pop one too (works when
+    // the app is open/backgrounded on supporting platforms).
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Still going 💪', { body: "You've been training for over an hour." });
+      }
+    } catch (e) {}
   }
 
   // ─── Session media sheet (photos + note) ────────────────────────────────────────
@@ -6307,7 +6330,7 @@ body.in-session #session-media-cta { display: flex; }
       // Backfill a start time for sessions begun before timers existed.
       if (!stored.startedAt) { stored.startedAt = Date.now(); d.activeSession = stored; saveData(d); }
       requestAnimationFrame(() => setSwipeSession(stored.displayName, stored.dayKey ?? null));
-      startSessionTimer(stored.startedAt);
+      startSessionTimer(stored.startedAt, stored.hourNotified);
       updateMediaCta();
     } else if (stored) {
       // Corrupted activeSession — clear it so the UI isn't stuck in-session
