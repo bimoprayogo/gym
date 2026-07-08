@@ -518,6 +518,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   position: static;
   transform: none !important;
   opacity: 1 !important;
+  pointer-events: auto !important;
   box-shadow: none;
   transition: none;
 }
@@ -4564,8 +4565,16 @@ body.in-session #session-media-cta { display: flex; }
     document.querySelectorAll('.workout-card').forEach(card => {
       const match = dayKey != null && card.dataset.day === dayKey;
       card.style.display = match ? '' : 'none';
-      // Ensure the active card is expanded
-      if (match) card.classList.remove('collapsed');
+      if (match) {
+        card.classList.remove('collapsed');
+        // Clear the stacked-deck inline styles renderDeck left on this card.
+        // Without this, a card that was a back card in the stack keeps its
+        // inline pointer-events:none and stays unclickable for the whole session.
+        card.style.pointerEvents = '';
+        card.style.transform = '';
+        card.style.opacity = '';
+        card.style.zIndex = '';
+      }
     });
     // Collapse the deck to just the live card flowing normally
     if (deckEl) { deckEl.classList.add('deck-session'); deckEl.style.height = ''; }
